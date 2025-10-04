@@ -156,7 +156,8 @@
         }
         
         .calendar-container,
-        .documents-container {
+        .documents-container,
+        .clients-container {
             max-width: 1400px;
             margin: 0 auto;
         }
@@ -495,6 +496,100 @@
             background: #2563eb;
         }
         
+        .clients-header {
+            background: white;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .clients-main {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            overflow: hidden;
+        }
+        
+        .clients-toolbar {
+            padding: 16px 24px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .client-card {
+            padding: 20px 24px;
+            border-bottom: 1px solid #f1f5f9;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .client-card:hover {
+            background: #f8fafc;
+        }
+        
+        .client-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 12px;
+        }
+        
+        .client-name {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+        
+        .client-contact {
+            display: flex;
+            gap: 16px;
+            font-size: 14px;
+            color: #64748b;
+            flex-wrap: wrap;
+        }
+        
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: capitalize;
+        }
+        
+        .status-active {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .status-inactive {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+        
+        .client-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            font-size: 13px;
+        }
+        
+        .client-info-item {
+            color: #64748b;
+        }
+        
+        .client-info-item span {
+            font-weight: 500;
+            color: #1e293b;
+        }
+        
         .modal {
             display: none;
             position: fixed;
@@ -682,8 +777,8 @@
                 <div class="header-logo">ClinicalCanvas</div>
                 <nav class="nav-tabs">
                     <div class="nav-tab active" onclick="showSection('calendar')">Calendar</div>
-                    <div class="nav-tab" onclick="showSection('documents')">Documents</div>
                     <div class="nav-tab" onclick="showSection('clients')">Clients</div>
+                    <div class="nav-tab" onclick="showSection('documents')">Documents</div>
                     <div class="nav-tab" onclick="showSection('analytics')">Analytics</div>
                 </nav>
             </div>
@@ -733,6 +828,38 @@
         </div>
     </div>
     
+    <div class="content-section" id="clientsSection">
+        <div class="clients-container">
+            <h1 class="section-title">Clients</h1>
+            <p class="section-text">Manage client information and relationships</p>
+            
+            <div class="clients-header">
+                <h2 style="font-size: 20px; font-weight: 600;">All Clients</h2>
+                <button class="btn-new-appt" onclick="openAddClient()">+ Add Client</button>
+            </div>
+            
+            <div class="clients-main">
+                <div class="clients-toolbar">
+                    <input type="text" class="doc-search" placeholder="Search clients..." id="clientSearch" oninput="searchClients()">
+                    <select class="doc-filter" id="clientStatusFilter" onchange="searchClients()">
+                        <option value="">All Statuses</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                    <select class="doc-filter" id="clientInsuranceFilter" onchange="searchClients()">
+                        <option value="">All Insurance</option>
+                        <option value="Anthem">Anthem</option>
+                        <option value="UnitedHealthcare">UnitedHealthcare</option>
+                        <option value="Aetna">Aetna</option>
+                        <option value="Self-Pay">Self-Pay</option>
+                    </select>
+                </div>
+                
+                <div id="clientsList"></div>
+            </div>
+        </div>
+    </div>
+    
     <div class="content-section" id="documentsSection">
         <div class="documents-container">
             <h1 class="section-title">Documents</h1>
@@ -771,11 +898,6 @@
                 </div>
             </div>
         </div>
-    </div>
-    
-    <div class="content-section" id="clientsSection">
-        <h1 class="section-title">Clients</h1>
-        <p class="section-text">Manage client information</p>
     </div>
     
     <div class="content-section" id="analyticsSection">
@@ -893,6 +1015,68 @@
     </div>
 </div>
 
+<div class="modal" id="addClientModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">Add New Client</h2>
+            <button class="close-btn" onclick="closeAddClient()">×</button>
+        </div>
+        
+        <div class="form-grid">
+            <div class="form-field">
+                <label>Full Name *</label>
+                <input type="text" id="newClientName" placeholder="John Doe">
+            </div>
+            
+            <div class="form-row">
+                <div class="form-field">
+                    <label>Email</label>
+                    <input type="email" id="newClientEmail" placeholder="john@example.com">
+                </div>
+                
+                <div class="form-field">
+                    <label>Phone</label>
+                    <input type="tel" id="newClientPhone" placeholder="(555) 123-4567">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-field">
+                    <label>Date of Birth</label>
+                    <input type="date" id="newClientDOB">
+                </div>
+                
+                <div class="form-field">
+                    <label>Insurance</label>
+                    <select id="newClientInsurance">
+                        <option value="Self-Pay">Self-Pay</option>
+                        <option value="Anthem">Anthem</option>
+                        <option value="UnitedHealthcare">UnitedHealthcare</option>
+                        <option value="Aetna">Aetna</option>
+                        <option value="Cigna">Cigna</option>
+                        <option value="Blue Cross">Blue Cross</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-field">
+                <label>Primary Diagnosis</label>
+                <input type="text" id="newClientDiagnosis" placeholder="e.g., Generalized Anxiety Disorder">
+            </div>
+            
+            <div class="form-field">
+                <label>Notes</label>
+                <textarea id="newClientNotes" placeholder="Any relevant notes about the client..."></textarea>
+            </div>
+        </div>
+        
+        <div class="modal-actions">
+            <button class="btn-primary" onclick="saveNewClient()">Add Client</button>
+            <button class="btn-secondary" onclick="closeAddClient()">Cancel</button>
+        </div>
+    </div>
+</div>
+
 <script>
 var currentMonth = 9;
 var currentYear = 2025;
@@ -925,7 +1109,19 @@ var documents = [
     { id: 12, name: 'Beck Anxiety Inventory', category: 'assessment', type: 'pdf', size: '720 KB', modified: '4 days ago', tags: ['assessment', 'anxiety'] }
 ];
 
+var clients = [
+    { id: 1, name: 'Sarah Johnson', email: 'sarah.j@email.com', phone: '(555) 123-4567', dob: '1985-03-15', insurance: 'Anthem', diagnosis: 'Generalized Anxiety Disorder', status: 'active', sessions: 12, lastVisit: '2 days ago', nextAppt: 'Oct 5, 2025' },
+    { id: 2, name: 'Mike Davis', email: 'mdavis@email.com', phone: '(555) 234-5678', dob: '1978-07-22', insurance: 'UnitedHealthcare', diagnosis: 'Relationship Issues', status: 'active', sessions: 8, lastVisit: '1 week ago', nextAppt: 'Oct 7, 2025' },
+    { id: 3, name: 'Emily Chen', email: 'echen@email.com', phone: '(555) 345-6789', dob: '1992-11-08', insurance: 'Aetna', diagnosis: 'Major Depressive Disorder', status: 'active', sessions: 15, lastVisit: '3 days ago', nextAppt: 'Oct 6, 2025' },
+    { id: 4, name: 'Robert Wilson', email: 'rwilson@email.com', phone: '(555) 456-7890', dob: '1980-05-30', insurance: 'Self-Pay', diagnosis: 'PTSD', status: 'active', sessions: 6, lastVisit: '1 day ago', nextAppt: 'Oct 8, 2025' },
+    { id: 5, name: 'Jennifer Martinez', email: 'jmart@email.com', phone: '(555) 567-8901', dob: '1988-09-12', insurance: 'Anthem', diagnosis: 'Bipolar II Disorder', status: 'active', sessions: 24, lastVisit: '5 days ago', nextAppt: 'Oct 9, 2025' },
+    { id: 6, name: 'David Lee', email: 'dlee@email.com', phone: '(555) 678-9012', dob: '1995-01-25', insurance: 'UnitedHealthcare', diagnosis: 'Social Anxiety', status: 'inactive', sessions: 10, lastVisit: '3 months ago', nextAppt: 'None' },
+    { id: 7, name: 'Amanda Brown', email: 'abrown@email.com', phone: '(555) 789-0123', dob: '1990-06-18', insurance: 'Self-Pay', diagnosis: 'Adjustment Disorder', status: 'active', sessions: 4, lastVisit: '1 week ago', nextAppt: 'Oct 10, 2025' },
+    { id: 8, name: 'James Taylor', email: 'jtaylor@email.com', phone: '(555) 890-1234', dob: '1983-12-05', insurance: 'Aetna', diagnosis: 'OCD', status: 'active', sessions: 18, lastVisit: '4 days ago', nextAppt: 'Oct 11, 2025' }
+];
+
 var filteredDocuments = documents;
+var filteredClients = clients;
 
 var users = [
     { user: 'jholub', pass: 'demo123', name: 'Joseph Holub MHA, LAC, CAS', avatar: 'JH' }
@@ -987,6 +1183,10 @@ function showSection(sectionName) {
     
     if (sectionName === 'documents') {
         renderDocuments();
+    }
+    
+    if (sectionName === 'clients') {
+        renderClients();
     }
 }
 
@@ -1277,6 +1477,154 @@ function uploadDocument() {
     renderDocuments();
     
     alert('Document "' + name + '" uploaded successfully!');
+}
+
+function renderClients() {
+    var list = document.getElementById('clientsList');
+    list.innerHTML = '';
+    
+    for (var i = 0; i < filteredClients.length; i++) {
+        var client = filteredClients[i];
+        
+        var card = document.createElement('div');
+        card.className = 'client-card';
+        card.onclick = function(c) {
+            return function() {
+                viewClient(c);
+            };
+        }(client);
+        
+        var header = document.createElement('div');
+        header.className = 'client-header';
+        
+        var leftDiv = document.createElement('div');
+        leftDiv.style.flex = '1';
+        
+        var name = document.createElement('div');
+        name.className = 'client-name';
+        name.textContent = client.name;
+        
+        var contact = document.createElement('div');
+        contact.className = 'client-contact';
+        contact.innerHTML = '<span>📧 ' + client.email + '</span><span>📱 ' + client.phone + '</span>';
+        
+        leftDiv.appendChild(name);
+        leftDiv.appendChild(contact);
+        
+        var badge = document.createElement('span');
+        badge.className = 'status-badge status-' + client.status;
+        badge.textContent = client.status;
+        
+        header.appendChild(leftDiv);
+        header.appendChild(badge);
+        
+        var infoGrid = document.createElement('div');
+        infoGrid.className = 'client-info-grid';
+        infoGrid.innerHTML = 
+            '<div class="client-info-item">Insurance: <span>' + client.insurance + '</span></div>' +
+            '<div class="client-info-item">Diagnosis: <span>' + client.diagnosis + '</span></div>' +
+            '<div class="client-info-item">Sessions: <span>' + client.sessions + '</span></div>' +
+            '<div class="client-info-item">Last Visit: <span>' + client.lastVisit + '</span></div>' +
+            '<div class="client-info-item">Next Appt: <span>' + client.nextAppt + '</span></div>';
+        
+        card.appendChild(header);
+        card.appendChild(infoGrid);
+        
+        list.appendChild(card);
+    }
+}
+
+function searchClients() {
+    var searchTerm = document.getElementById('clientSearch').value.toLowerCase();
+    var statusFilter = document.getElementById('clientStatusFilter').value;
+    var insuranceFilter = document.getElementById('clientInsuranceFilter').value;
+    
+    filteredClients = [];
+    for (var i = 0; i < clients.length; i++) {
+        var client = clients[i];
+        var matchesSearch = client.name.toLowerCase().indexOf(searchTerm) > -1 || 
+                           client.email.toLowerCase().indexOf(searchTerm) > -1 ||
+                           client.diagnosis.toLowerCase().indexOf(searchTerm) > -1;
+        var matchesStatus = !statusFilter || client.status === statusFilter;
+        var matchesInsurance = !insuranceFilter || client.insurance === insuranceFilter;
+        
+        if (matchesSearch && matchesStatus && matchesInsurance) {
+            filteredClients.push(client);
+        }
+    }
+    
+    renderClients();
+}
+
+function viewClient(client) {
+    var details = 'CLIENT PROFILE\n\n';
+    details += 'Name: ' + client.name + '\n';
+    details += 'Status: ' + client.status.toUpperCase() + '\n\n';
+    details += 'CONTACT INFORMATION\n';
+    details += 'Email: ' + client.email + '\n';
+    details += 'Phone: ' + client.phone + '\n';
+    details += 'DOB: ' + client.dob + '\n\n';
+    details += 'INSURANCE & BILLING\n';
+    details += 'Insurance: ' + client.insurance + '\n\n';
+    details += 'CLINICAL INFORMATION\n';
+    details += 'Primary Diagnosis: ' + client.diagnosis + '\n';
+    details += 'Total Sessions: ' + client.sessions + '\n';
+    details += 'Last Visit: ' + client.lastVisit + '\n';
+    details += 'Next Appointment: ' + client.nextAppt + '\n\n';
+    details += 'In production, this would open a detailed client profile page with full history.';
+    
+    alert(details);
+}
+
+function openAddClient() {
+    document.getElementById('addClientModal').classList.add('show');
+}
+
+function closeAddClient() {
+    document.getElementById('addClientModal').classList.remove('show');
+    document.getElementById('newClientName').value = '';
+    document.getElementById('newClientEmail').value = '';
+    document.getElementById('newClientPhone').value = '';
+    document.getElementById('newClientDOB').value = '';
+    document.getElementById('newClientInsurance').value = 'Self-Pay';
+    document.getElementById('newClientDiagnosis').value = '';
+    document.getElementById('newClientNotes').value = '';
+}
+
+function saveNewClient() {
+    var name = document.getElementById('newClientName').value.trim();
+    var email = document.getElementById('newClientEmail').value.trim();
+    var phone = document.getElementById('newClientPhone').value.trim();
+    var dob = document.getElementById('newClientDOB').value;
+    var insurance = document.getElementById('newClientInsurance').value;
+    var diagnosis = document.getElementById('newClientDiagnosis').value.trim();
+    
+    if (!name) {
+        alert('Please enter client name');
+        return;
+    }
+    
+    var newClient = {
+        id: clients.length + 1,
+        name: name,
+        email: email || 'N/A',
+        phone: phone || 'N/A',
+        dob: dob || 'N/A',
+        insurance: insurance,
+        diagnosis: diagnosis || 'Pending Assessment',
+        status: 'active',
+        sessions: 0,
+        lastVisit: 'Never',
+        nextAppt: 'To be scheduled'
+    };
+    
+    clients.push(newClient);
+    filteredClients.push(newClient);
+    
+    closeAddClient();
+    renderClients();
+    
+    alert('Client "' + name + '" added successfully!');
 }
 </script>
 
