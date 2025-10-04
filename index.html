@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MindStream - Practice Management</title>
+    <title>ClinicalCanvas - Practice Management</title>
     <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -155,7 +155,8 @@
             margin-bottom: 32px;
         }
         
-        .calendar-container {
+        .calendar-container,
+        .documents-container {
             max-width: 1400px;
             margin: 0 auto;
         }
@@ -331,6 +332,169 @@
             background: #2563eb;
         }
         
+        .documents-layout {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 24px;
+        }
+        
+        .doc-sidebar {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            padding: 20px;
+            height: fit-content;
+        }
+        
+        .doc-sidebar-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 12px;
+        }
+        
+        .doc-categories {
+            list-style: none;
+        }
+        
+        .doc-category {
+            padding: 10px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-bottom: 4px;
+            transition: all 0.2s;
+        }
+        
+        .doc-category:hover {
+            background: #f1f5f9;
+        }
+        
+        .doc-category.active {
+            background: #eff6ff;
+            color: #2563eb;
+            font-weight: 500;
+        }
+        
+        .doc-main {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            overflow: hidden;
+        }
+        
+        .doc-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .doc-header-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+        
+        .doc-toolbar {
+            padding: 16px 24px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            gap: 12px;
+        }
+        
+        .doc-search {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .doc-filter {
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+        }
+        
+        .doc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            padding: 24px;
+        }
+        
+        .doc-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .doc-card:hover {
+            border-color: #3b82f6;
+            background: #f8fafc;
+        }
+        
+        .doc-icon {
+            width: 48px;
+            height: 48px;
+            background: #f3f4f6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+        
+        .doc-name {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+        
+        .doc-meta {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+        
+        .doc-tags {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        
+        .doc-tag {
+            padding: 2px 8px;
+            background: #f1f5f9;
+            border-radius: 12px;
+            font-size: 11px;
+            color: #475569;
+        }
+        
+        .btn-upload {
+            padding: 10px 20px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .btn-upload:hover {
+            background: #2563eb;
+        }
+        
         .modal {
             display: none;
             position: fixed;
@@ -470,6 +634,14 @@
             .nav-tabs {
                 display: none;
             }
+            
+            .documents-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .doc-sidebar {
+                display: none;
+            }
         }
     </style>
 </head>
@@ -477,7 +649,7 @@
 
 <div class="login-screen" id="loginScreen">
     <div class="login-box">
-        <div class="logo">MindStream</div>
+        <div class="logo">ClinicalCanvas</div>
         
         <div class="error" id="errorMsg"></div>
         
@@ -507,11 +679,11 @@
     <header class="header">
         <div class="header-content">
             <div class="header-left">
-                <div class="header-logo">MindStream</div>
+                <div class="header-logo">ClinicalCanvas</div>
                 <nav class="nav-tabs">
                     <div class="nav-tab active" onclick="showSection('calendar')">Calendar</div>
-                    <div class="nav-tab" onclick="showSection('clients')">Clients</div>
                     <div class="nav-tab" onclick="showSection('documents')">Documents</div>
+                    <div class="nav-tab" onclick="showSection('clients')">Clients</div>
                     <div class="nav-tab" onclick="showSection('analytics')">Analytics</div>
                 </nav>
             </div>
@@ -561,14 +733,49 @@
         </div>
     </div>
     
+    <div class="content-section" id="documentsSection">
+        <div class="documents-container">
+            <h1 class="section-title">Documents</h1>
+            <p class="section-text">Manage practice documents and forms</p>
+            
+            <div class="documents-layout">
+                <aside class="doc-sidebar">
+                    <h3 class="doc-sidebar-title">Categories</h3>
+                    <ul class="doc-categories">
+                        <li class="doc-category active" onclick="filterDocuments('all')">All Documents</li>
+                        <li class="doc-category" onclick="filterDocuments('intake')">Intake Forms</li>
+                        <li class="doc-category" onclick="filterDocuments('assessment')">Assessments</li>
+                        <li class="doc-category" onclick="filterDocuments('treatment')">Treatment Plans</li>
+                        <li class="doc-category" onclick="filterDocuments('progress')">Progress Notes</li>
+                        <li class="doc-category" onclick="filterDocuments('legal')">Legal Documents</li>
+                    </ul>
+                </aside>
+                
+                <div class="doc-main">
+                    <div class="doc-header">
+                        <h2 class="doc-header-title">All Documents</h2>
+                        <button class="btn-upload" onclick="openUploadModal()">+ Upload</button>
+                    </div>
+                    
+                    <div class="doc-toolbar">
+                        <input type="text" class="doc-search" placeholder="Search documents..." id="docSearch" oninput="searchDocuments()">
+                        <select class="doc-filter" id="docTypeFilter" onchange="searchDocuments()">
+                            <option value="">All Types</option>
+                            <option value="pdf">PDF</option>
+                            <option value="word">Word</option>
+                            <option value="excel">Excel</option>
+                        </select>
+                    </div>
+                    
+                    <div class="doc-grid" id="docGrid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <div class="content-section" id="clientsSection">
         <h1 class="section-title">Clients</h1>
         <p class="section-text">Manage client information</p>
-    </div>
-    
-    <div class="content-section" id="documentsSection">
-        <h1 class="section-title">Documents</h1>
-        <p class="section-text">Manage practice documents</p>
     </div>
     
     <div class="content-section" id="analyticsSection">
@@ -640,10 +847,57 @@
     </div>
 </div>
 
+<div class="modal" id="uploadModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">Upload Document</h2>
+            <button class="close-btn" onclick="closeUploadModal()">×</button>
+        </div>
+        
+        <div class="form-grid">
+            <div class="form-field">
+                <label>Document Name</label>
+                <input type="text" id="uploadName" placeholder="e.g., Client Consent Form">
+            </div>
+            
+            <div class="form-field">
+                <label>Category</label>
+                <select id="uploadCategory">
+                    <option value="intake">Intake Forms</option>
+                    <option value="assessment">Assessments</option>
+                    <option value="treatment">Treatment Plans</option>
+                    <option value="progress">Progress Notes</option>
+                    <option value="legal">Legal Documents</option>
+                </select>
+            </div>
+            
+            <div class="form-field">
+                <label>Document Type</label>
+                <select id="uploadType">
+                    <option value="pdf">PDF</option>
+                    <option value="word">Word Document</option>
+                    <option value="excel">Excel Spreadsheet</option>
+                </select>
+            </div>
+            
+            <div class="form-field">
+                <label>File</label>
+                <input type="file" style="padding: 8px;">
+            </div>
+        </div>
+        
+        <div class="modal-actions">
+            <button class="btn-primary" onclick="uploadDocument()">Upload Document</button>
+            <button class="btn-secondary" onclick="closeUploadModal()">Cancel</button>
+        </div>
+    </div>
+</div>
+
 <script>
 var currentMonth = 9;
 var currentYear = 2025;
 var currentUserName = '';
+var currentDocCategory = 'all';
 
 var appointments = [
     { date: '2025-10-03', time: '09:00', client: 'Sarah Johnson', type: 'therapy', duration: 45 },
@@ -655,6 +909,23 @@ var appointments = [
     { date: '2025-10-12', time: '13:00', client: 'Mike Davis', type: 'couples', duration: 60 },
     { date: '2025-10-15', time: '10:00', client: 'Emily Chen', type: 'intake', duration: 60 }
 ];
+
+var documents = [
+    { id: 1, name: 'Client Intake Form', category: 'intake', type: 'pdf', size: '2.4 MB', modified: '2 days ago', tags: ['intake', 'required'] },
+    { id: 2, name: 'PHQ-9 Depression Assessment', category: 'assessment', type: 'pdf', size: '856 KB', modified: '1 week ago', tags: ['assessment', 'mental health'] },
+    { id: 3, name: 'Treatment Plan Template', category: 'treatment', type: 'word', size: '1.2 MB', modified: '3 days ago', tags: ['template', 'treatment'] },
+    { id: 4, name: 'Progress Note Template', category: 'progress', type: 'word', size: '768 KB', modified: '1 day ago', tags: ['template', 'progress'] },
+    { id: 5, name: 'Consent for Treatment', category: 'legal', type: 'pdf', size: '1.8 MB', modified: '2 weeks ago', tags: ['legal', 'consent'] },
+    { id: 6, name: 'GAD-7 Anxiety Assessment', category: 'assessment', type: 'pdf', size: '642 KB', modified: '5 days ago', tags: ['assessment', 'anxiety'] },
+    { id: 7, name: 'HIPAA Privacy Notice', category: 'legal', type: 'pdf', size: '1.1 MB', modified: '1 month ago', tags: ['legal', 'HIPAA'] },
+    { id: 8, name: 'Initial Assessment Form', category: 'intake', type: 'word', size: '945 KB', modified: '3 days ago', tags: ['intake', 'assessment'] },
+    { id: 9, name: 'Discharge Summary Template', category: 'treatment', type: 'word', size: '823 KB', modified: '1 week ago', tags: ['template', 'discharge'] },
+    { id: 10, name: 'Medication Log', category: 'progress', type: 'excel', size: '512 KB', modified: '2 days ago', tags: ['medication', 'tracking'] },
+    { id: 11, name: 'Couples Therapy Intake', category: 'intake', type: 'pdf', size: '1.5 MB', modified: '1 week ago', tags: ['intake', 'couples'] },
+    { id: 12, name: 'Beck Anxiety Inventory', category: 'assessment', type: 'pdf', size: '720 KB', modified: '4 days ago', tags: ['assessment', 'anxiety'] }
+];
+
+var filteredDocuments = documents;
 
 var users = [
     { user: 'jholub', pass: 'demo123', name: 'Joseph Holub MHA, LAC, CAS', avatar: 'JH' }
@@ -712,6 +983,10 @@ function showSection(sectionName) {
     
     if (event && event.target && event.target.classList.contains('nav-tab')) {
         event.target.classList.add('active');
+    }
+    
+    if (sectionName === 'documents') {
+        renderDocuments();
     }
 }
 
@@ -870,6 +1145,138 @@ function viewAppointment(e, date, index) {
     }
     
     alert(details);
+}
+
+function renderDocuments() {
+    var grid = document.getElementById('docGrid');
+    grid.innerHTML = '';
+    
+    var icons = {
+        pdf: '📄',
+        word: '📝',
+        excel: '📊'
+    };
+    
+    for (var i = 0; i < filteredDocuments.length; i++) {
+        var doc = filteredDocuments[i];
+        
+        var card = document.createElement('div');
+        card.className = 'doc-card';
+        card.onclick = function(d) {
+            return function() {
+                viewDocument(d);
+            };
+        }(doc);
+        
+        var icon = document.createElement('div');
+        icon.className = 'doc-icon';
+        icon.textContent = icons[doc.type] || '📄';
+        
+        var name = document.createElement('div');
+        name.className = 'doc-name';
+        name.textContent = doc.name;
+        
+        var meta = document.createElement('div');
+        meta.className = 'doc-meta';
+        meta.textContent = doc.size + ' • ' + doc.modified;
+        
+        var tagsDiv = document.createElement('div');
+        tagsDiv.className = 'doc-tags';
+        for (var j = 0; j < doc.tags.length; j++) {
+            var tag = document.createElement('span');
+            tag.className = 'doc-tag';
+            tag.textContent = doc.tags[j];
+            tagsDiv.appendChild(tag);
+        }
+        
+        card.appendChild(icon);
+        card.appendChild(name);
+        card.appendChild(meta);
+        card.appendChild(tagsDiv);
+        
+        grid.appendChild(card);
+    }
+}
+
+function filterDocuments(category) {
+    currentDocCategory = category;
+    
+    var categories = document.querySelectorAll('.doc-category');
+    for (var i = 0; i < categories.length; i++) {
+        categories[i].classList.remove('active');
+    }
+    event.target.classList.add('active');
+    
+    searchDocuments();
+}
+
+function searchDocuments() {
+    var searchTerm = document.getElementById('docSearch').value.toLowerCase();
+    var typeFilter = document.getElementById('docTypeFilter').value;
+    
+    filteredDocuments = [];
+    for (var i = 0; i < documents.length; i++) {
+        var doc = documents[i];
+        var matchesCategory = currentDocCategory === 'all' || doc.category === currentDocCategory;
+        var matchesSearch = doc.name.toLowerCase().indexOf(searchTerm) > -1;
+        var matchesType = !typeFilter || doc.type === typeFilter;
+        
+        if (matchesCategory && matchesSearch && matchesType) {
+            filteredDocuments.push(doc);
+        }
+    }
+    
+    renderDocuments();
+}
+
+function viewDocument(doc) {
+    var details = 'DOCUMENT DETAILS\n\n';
+    details += 'Name: ' + doc.name + '\n';
+    details += 'Type: ' + doc.type.toUpperCase() + '\n';
+    details += 'Size: ' + doc.size + '\n';
+    details += 'Category: ' + doc.category + '\n';
+    details += 'Modified: ' + doc.modified + '\n';
+    details += 'Tags: ' + doc.tags.join(', ') + '\n\n';
+    details += 'In production, this would open the document viewer or download the file.';
+    
+    alert(details);
+}
+
+function openUploadModal() {
+    document.getElementById('uploadModal').classList.add('show');
+}
+
+function closeUploadModal() {
+    document.getElementById('uploadModal').classList.remove('show');
+}
+
+function uploadDocument() {
+    var name = document.getElementById('uploadName').value;
+    var category = document.getElementById('uploadCategory').value;
+    var type = document.getElementById('uploadType').value;
+    
+    if (!name) {
+        alert('Please enter a document name');
+        return;
+    }
+    
+    var newDoc = {
+        id: documents.length + 1,
+        name: name,
+        category: category,
+        type: type,
+        size: '1.2 MB',
+        modified: 'Just now',
+        tags: [category]
+    };
+    
+    documents.push(newDoc);
+    filteredDocuments.push(newDoc);
+    
+    closeUploadModal();
+    renderDocuments();
+    
+    alert('Document "' + name + '" uploaded successfully!');
 }
 </script>
 
