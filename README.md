@@ -1,1 +1,1 @@
-# MindStream
+# ClinicalCanvas
