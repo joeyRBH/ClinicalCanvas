@@ -1480,34 +1480,42 @@ async function createClient(e) {
     }
 }
 
-// Edit Client Profile
+// Edit Client Profile - FIXED VERSION
 function editClientProfile() {
     if (!currentEditingClient) return;
     
-    // Populate edit form
-    document.getElementById('editClientName').value = currentEditingClient.name;
-    document.getElementById('editClientEmail').value = currentEditingClient.email || '';
-    document.getElementById('editClientPhone').value = currentEditingClient.phone || '';
-    document.getElementById('editClientDOB').value = currentEditingClient.dob || '';
-    document.getElementById('editClientAddress').value = currentEditingClient.address || '';
-    document.getElementById('editClientInsurance').value = currentEditingClient.insurance || '';
-    document.getElementById('editClientStatus').value = currentEditingClient.status || 'active';
-    document.getElementById('editClientNotes').value = currentEditingClient.notes || '';
+    // Store reference before any modal changes
+    const clientToEdit = currentEditingClient;
     
-    closeClientProfile();
+    // Populate edit form
+    document.getElementById('editClientName').value = clientToEdit.name;
+    document.getElementById('editClientEmail').value = clientToEdit.email || '';
+    document.getElementById('editClientPhone').value = clientToEdit.phone || '';
+    document.getElementById('editClientDOB').value = clientToEdit.dob || '';
+    document.getElementById('editClientAddress').value = clientToEdit.address || '';
+    document.getElementById('editClientInsurance').value = clientToEdit.insurance || '';
+    document.getElementById('editClientStatus').value = clientToEdit.status || 'active';
+    document.getElementById('editClientNotes').value = clientToEdit.notes || '';
+    
+    // Close profile modal
+    document.getElementById('clientProfileModal').classList.remove('active');
+    
+    // Keep the client reference active for saving
+    currentEditingClient = clientToEdit;
+    
+    // Open edit modal
     document.getElementById('editClientModal').classList.add('active');
 }
 
 function closeEditClientModal() {
     document.getElementById('editClientModal').classList.remove('active');
+    // Clear the editing reference when closing edit modal
+    currentEditingClient = null;
 }
 
 // Save Client Changes
 async function saveClientChanges(e) {
     e.preventDefault();
-    
-    console.log('Save button clicked');
-    console.log('Current editing client:', currentEditingClient);
     
     if (!currentEditingClient) {
         alert('Error: No client selected for editing');
@@ -1525,21 +1533,16 @@ async function saveClientChanges(e) {
         notes: document.getElementById('editClientNotes').value
     };
     
-    console.log('Updated data:', updatedData);
-    
     try {
-        const result = await apiCall(`/clients/${currentEditingClient.id}`, {
+        await apiCall(`/clients/${currentEditingClient.id}`, {
             method: 'PUT',
             body: JSON.stringify(updatedData)
         });
-        
-        console.log('Update result:', result);
         
         closeEditClientModal();
         await loadClients();
         alert('Client updated successfully!');
     } catch (error) {
-        console.error('Error updating client:', error);
         alert('Error updating client: ' + error.message);
     }
 }
@@ -1909,7 +1912,7 @@ async function openClientProfile(clientId) {
 
 function closeClientProfile() {
     document.getElementById('clientProfileModal').classList.remove('active');
-    currentEditingClient = null;
+    // Don't clear currentEditingClient here - let closeEditClientModal handle it
 }
 
 function switchProfileTab(tab) {
