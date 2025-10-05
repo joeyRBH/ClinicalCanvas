@@ -1,170 +1,1631 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClinicalCanvas - Practice Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f8f9fa;
+            color: #1f2937;
+        }
+
+        /* Auth Page Styles */
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .auth-box {
+            background: white;
+            border-radius: 16px;
+            padding: 48px;
+            max-width: 440px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .auth-box h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+            color: #1f2937;
+        }
+
+        .auth-box p {
+            color: #6b7280;
+            margin-bottom: 32px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .auth-toggle {
+            text-align: center;
+            margin-top: 24px;
+            color: #6b7280;
+        }
+
+        .auth-toggle a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .error-message {
+            background: #fee;
+            border: 1px solid #fcc;
+            color: #c33;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            display: none;
+        }
+
+        /* Main App Styles */
+        .app-container {
+            display: none;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 260px;
+            background: white;
+            border-right: 1px solid #e5e7eb;
+            padding: 24px 0;
+            z-index: 100;
+        }
+
+        .logo {
+            padding: 0 24px 24px;
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .nav-menu {
+            margin-top: 24px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 24px;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: #f9fafb;
+            color: #667eea;
+        }
+
+        .nav-item.active {
+            background: #f0f4ff;
+            color: #667eea;
+            border-left-color: #667eea;
+            font-weight: 600;
+        }
+
+        .nav-item svg {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+        }
+
+        .user-section {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 16px 24px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            margin-right: 12px;
+        }
+
+        .logout-btn {
+            width: 100%;
+            padding: 8px;
+            background: #f3f4f6;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .logout-btn:hover {
+            background: #e5e7eb;
+        }
+
+        .main-content {
+            margin-left: 260px;
+            min-height: 100vh;
+            padding: 32px;
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .section-text {
+            color: #6b7280;
+            margin-bottom: 32px;
+        }
+
+        .btn-primary {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6b7280;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6b7280;
+        }
+
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+
+        /* Client List */
+        .client-list {
+            display: grid;
+            gap: 16px;
+        }
+
+        .client-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .client-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        }
+
+        .client-info h3 {
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+
+        .client-info p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-header h2 {
+            font-size: 24px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #6b7280;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn-secondary {
+            padding: 12px 24px;
+            background: #f3f4f6;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Client Profile */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 24px;
+        }
+
+        .profile-avatar-large {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .profile-tabs {
+            display: flex;
+            gap: 24px;
+            border-bottom: 2px solid #e5e7eb;
+            margin-bottom: 24px;
+        }
+
+        .profile-tab {
+            padding: 12px 0;
+            cursor: pointer;
+            color: #6b7280;
+            font-weight: 600;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+        }
+
+        .profile-tab:hover {
+            color: #667eea;
+        }
+
+        .profile-tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .profile-section {
+            display: none;
+        }
+
+        .profile-section.active {
+            display: block;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .info-item {
+            padding: 16px;
+            background: #f9fafb;
+            border-radius: 8px;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 16px;
+            color: #1f2937;
+        }
+
+        .session-item {
+            padding: 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .session-date {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .session-type {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .intake-form {
+            max-width: 800px;
+        }
+
+        .form-section {
+            margin-bottom: 32px;
+        }
+
+        .form-section h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1f2937;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+        }
+
+        .large-modal .modal-content {
+            max-width: 900px;
+        }
+
+        /* Calendar */
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .calendar-nav button {
+            padding: 8px 16px;
+            background: #f3f4f6;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .calendar-nav button:hover {
+            background: #e5e7eb;
+        }
+
+        .calendar-month {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .calendar-day-header {
+            text-align: center;
+            font-weight: 600;
+            color: #6b7280;
+            padding: 12px;
+            font-size: 14px;
+        }
+
+        .calendar-day {
+            min-height: 100px;
+            padding: 8px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .calendar-day:hover {
+            background: #f9fafb;
+            border-color: #667eea;
+        }
+
+        .calendar-day.other-month {
+            color: #d1d5db;
+            background: #f9fafb;
+        }
+
+        .calendar-day.today {
+            background: #f0f4ff;
+            border-color: #667eea;
+        }
+
+        .calendar-day-number {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .calendar-appointment {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            margin-top: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            background: white;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Auth Page -->
+<div id="authContainer" class="auth-container">
+    <div class="auth-box">
+        <h1 id="authTitle">Welcome Back</h1>
+        <p id="authSubtitle">Sign in to your ClinicalCanvas account</p>
+        
+        <div id="errorMessage" class="error-message"></div>
+
+        <form id="authForm">
+            <div class="form-group" id="nameGroup" style="display:none;">
+                <label>Full Name</label>
+                <input type="text" id="nameInput" placeholder="Dr. Jane Smith">
+            </div>
+            
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="emailInput" placeholder="you@example.com" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="passwordInput" placeholder="••••••••" required>
+            </div>
+            
+            <button type="submit" class="auth-btn" id="authButton">Sign In</button>
+        </form>
+
+        <div class="auth-toggle">
+            <span id="toggleText">Don't have an account?</span>
+            <a href="#" id="toggleLink">Sign up</a>
+        </div>
+    </div>
+</div>
+
+<!-- Main App -->
+<div id="appContainer" class="app-container">
+    <div class="sidebar">
+        <div class="logo">ClinicalCanvas</div>
+        <div class="nav-menu">
+            <div class="nav-item active" onclick="showSection('calendar')">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+                Calendar
+            </div>
+            <div class="nav-item" onclick="showSection('clients')">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                </svg>
+                Clients
+            </div>
+            <div class="nav-item" onclick="showSection('billing')">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                </svg>
+                Billing
+            </div>
+            <div class="nav-item" onclick="showSection('notes')">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+                AI Notes
+            </div>
+        </div>
+
+        <div class="user-section">
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <div>
+                    <div style="font-weight: 600; font-size: 14px;" id="userName">User</div>
+                    <div style="font-size: 12px; color: #6b7280;" id="userEmail">user@example.com</div>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="logout()">Sign Out</button>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <!-- Calendar Section -->
+        <div class="content-section active" id="calendarSection">
+            <h1 class="section-title">Calendar</h1>
+            <p class="section-text">Manage your appointments and schedule</p>
+            
+            <button class="btn-primary" onclick="openNewAppointmentModal()">+ New Appointment</button>
+            
+            <div style="margin-top: 24px;">
+                <div class="calendar-header">
+                    <div class="calendar-month" id="calendarMonth">Month Year</div>
+                    <div class="calendar-nav">
+                        <button onclick="previousMonth()">← Previous</button>
+                        <button onclick="today()">Today</button>
+                        <button onclick="nextMonth()">Next →</button>
+                    </div>
+                </div>
+                
+                <div class="calendar-grid" id="calendarGrid">
+                    <!-- Calendar will be rendered here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Clients Section -->
+        <div class="content-section" id="clientsSection">
+            <h1 class="section-title">Clients</h1>
+            <p class="section-text">Manage your client information</p>
+            
+            <button class="btn-primary" onclick="openNewClientModal()">+ New Client</button>
+            
+            <div id="clientsList" class="loading">Loading clients...</div>
+        </div>
+
+        <!-- Billing Section -->
+        <div class="content-section" id="billingSection">
+            <h1 class="section-title">Billing & Payments</h1>
+            <p class="section-text">Manage invoices and payments</p>
+            
+            <button class="btn-primary" onclick="openNewInvoiceModal()">+ New Invoice</button>
+            
+            <div id="invoicesList" class="loading">Loading invoices...</div>
+        </div>
+
+        <!-- Notes Section -->
+        <div class="content-section" id="notesSection">
+            <h1 class="section-title">AI Clinical Notes</h1>
+            <p class="section-text">Generate professional clinical documentation</p>
+            
+            <div class="card">
+                <div class="form-group">
+                    <label>Client Name</label>
+                    <input type="text" id="noteClientName" placeholder="Enter client name" style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
+                </div>
+                
+                <div class="form-group">
+                    <label>Session Notes</label>
+                    <textarea id="noteContent" placeholder="Brief session summary..." style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px; min-height: 120px;"></textarea>
+                </div>
+                
+                <button class="btn-primary" onclick="generateNote()">Generate Clinical Note</button>
+                
+                <div id="noteOutput" style="margin-top: 24px; padding: 20px; background: #f9fafb; border-radius: 8px; white-space: pre-wrap; display: none;"></div>
+                <button id="copyNoteBtn" class="btn-secondary" onclick="copyNote()" style="margin-top: 12px; display: none;">Copy Note</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- New Client Modal -->
+<div id="clientModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>New Client</h2>
+            <button class="close-btn" onclick="closeClientModal()">×</button>
+        </div>
+        
+        <form id="clientForm">
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" id="clientName" required style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
+            </div>
+            
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="clientEmail" style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
+            </div>
+            
+            <div class="form-group">
+                <label>Phone</label>
+                <input type="tel" id="clientPhone" style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeClientModal()">Cancel</button>
+                <button type="submit" class="btn-primary">Create Client</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- New Appointment Modal -->
+<div id="appointmentModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>New Appointment</h2>
+            <button class="close-btn" onclick="closeAppointmentModal()">×</button>
+        </div>
+        
+        <form id="appointmentForm">
+            <div class="form-group">
+                <label>Client</label>
+                <select id="appointmentClient" required>
+                    <option value="">Select a client...</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Date</label>
+                <input type="date" id="appointmentDate" required style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
+            </div>
+            
+            <div class="form-group">
+                <label>Start Time</label>
+                <input type="time" id="appointmentStartTime" required style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
+            </div>
+            
+            <div class="form-group">
+                <label>Duration (minutes)</label>
+                <select id="appointmentDuration" required>
+                    <option value="30">30 minutes</option>
+                    <option value="45">45 minutes</option>
+                    <option value="60" selected>60 minutes</option>
+                    <option value="90">90 minutes</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Type</label>
+                <select id="appointmentType" required>
+                    <option value="session">Therapy Session</option>
+                    <option value="initial">Initial Consultation</option>
+                    <option value="followup">Follow-up</option>
+                    <option value="assessment">Assessment</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Notes (optional)</label>
+                <textarea id="appointmentNotes" style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px; min-height: 80px;"></textarea>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeAppointmentModal()">Cancel</button>
+                <button type="submit" class="btn-primary">Create Appointment</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <!-- Client Profile Modal -->
-        <div id="clientProfileModal" class="modal">
-            <div class="modal-content" style="max-width: 1400px; max-height: 95vh; overflow-y: auto; padding: 0;">
-                <!-- Profile Header -->
-                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 32px; color: white; position: relative;">
-                    <button onclick="closeClientProfile()" style="position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.2); border: none; color: white; width: 40px; height: 40px; border-radius: 50%; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center;">&times;</button>
-                    
-                    <div style="display: flex; align-items: center; gap: 24px;">
-                        <div id="profileAvatar" style="width: 100px; height: 100px; border-radius: 50%; background: white; color: #667eea; display: flex; align-items: center; justify-content: center; font-size: 42px; font-weight: 700; box-shadow: 0 8px 16px rgba(0,0,0,0.2);">
-                            SJ
+<div id="clientProfileModal" class="modal large-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Client Profile</h2>
+            <button class="close-btn" onclick="closeClientProfile()">×</button>
+        </div>
+        
+        <div class="profile-header">
+            <div class="profile-avatar-large" id="profileAvatar">C</div>
+            <div>
+                <h2 id="profileName">Client Name</h2>
+                <p style="color: #6b7280;" id="profileContact">contact info</p>
+            </div>
+        </div>
+        
+        <div class="profile-tabs">
+            <div class="profile-tab active" onclick="switchProfileTab('info')">Information</div>
+            <div class="profile-tab" onclick="switchProfileTab('sessions')">Sessions</div>
+            <div class="profile-tab" onclick="switchProfileTab('intake')">Intake Document</div>
+        </div>
+        
+        <div id="profileInfoSection" class="profile-section active">
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Email</div>
+                    <div class="info-value" id="profileEmail">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Phone</div>
+                    <div class="info-value" id="profilePhone">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Date of Birth</div>
+                    <div class="info-value" id="profileDOB">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Insurance</div>
+                    <div class="info-value" id="profileInsurance">-</div>
+                </div>
+            </div>
+            <div class="info-item" style="grid-column: 1 / -1;">
+                <div class="info-label">Address</div>
+                <div class="info-value" id="profileAddress">-</div>
+            </div>
+            <div class="info-item" style="grid-column: 1 / -1; margin-top: 16px;">
+                <div class="info-label">Notes</div>
+                <div class="info-value" id="profileNotes">-</div>
+            </div>
+        </div>
+        
+        <div id="profileSessionsSection" class="profile-section">
+            <div id="sessionsList">
+                <div class="empty-state"><p>No sessions yet</p></div>
+            </div>
+        </div>
+        
+        <div id="profileIntakeSection" class="profile-section">
+            <div class="intake-form">
+                <div class="form-section">
+                    <h3>Personal Information</h3>
+                    <div class="form-group">
+                        <label>Emergency Contact Name</label>
+                        <input type="text" id="intakeEmergencyName" style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
+                    </div>
+                    <div class="form-group">
+                        <label>Emergency Contact Phone</label>
+                        <input type="tel" id="intakeEmergencyPhone" style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Presenting Concerns</h3>
+                    <div class="form-group">
+                        <label>What brings you to therapy today?</label>
+                        <textarea id="intakeConcerns" rows="4" placeholder="Describe your current concerns..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Previous Treatment</h3>
+                    <div class="form-group">
+                        <label>Have you received therapy or counseling before?</label>
+                        <select id="intakePreviousTherapy" style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
+                            <option value="">Select...</option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>If yes, please describe</label>
+                        <textarea id="intakePreviousDetails" rows="3"></textarea>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Current Symptoms (check all that apply)</h3>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="symptomAnxiety" value="anxiety">
+                            <label for="symptomAnxiety">Anxiety</label>
                         </div>
-                        <div style="flex: 1;">
-                            <h2 id="profileName" style="margin: 0 0 8px 0; font-size: 32px; font-weight: 600;">Sarah Johnson</h2>
-                            <div style="display: flex; gap: 24px; font-size: 14px; opacity: 0.95;">
-                                <span id="profileContact">📧 sarah.j@email.com • 📱 (555) 123-4567</span>
-                            </div>
-                            <div style="margin-top: 12px; display: flex; gap: 12px;">
-                                <span id="profileStatus" style="background: rgba(255,255,255,0.25); padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600;">Active</span>
-                                <span id="profileSessionCount" style="background: rgba(255,255,255,0.25); padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600;">12 Sessions</span>
-                            </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="symptomDepression" value="depression">
+                            <label for="symptomDepression">Depression</label>
                         </div>
-                        <div style="display: flex; gap: 12px;">
-                            <button onclick="editClientProfile()" style="background: rgba(255,255,255,0.2); color: white; border: 2px solid white; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px;">✏️ Edit Profile</button>
-                            <button onclick="scheduleAppointment()" style="background: white; color: #667eea; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px;">📅 Schedule</button>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="symptomSleep" value="sleep">
+                            <label for="symptomSleep">Sleep difficulties</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="symptomStress" value="stress">
+                            <label for="symptomStress">Stress</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="symptomTrauma" value="trauma">
+                            <label for="symptomTrauma">Trauma</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="symptomRelationship" value="relationship">
+                            <label for="symptomRelationship">Relationship issues</label>
                         </div>
                     </div>
                 </div>
-
-                <!-- Profile Tabs -->
-                <div style="background: white; border-bottom: 2px solid #e5e7eb; padding: 0 32px; display: flex; gap: 8px;">
-                    <button onclick="switchProfileTab('info')" id="tab-info" class="profile-tab active" style="padding: 16px 24px; background: none; border: none; border-bottom: 3px solid transparent; cursor: pointer; font-weight: 600; color: #64748b; font-size: 14px;">Overview</button>
-                    <button onclick="switchProfileTab('sessions')" id="tab-sessions" class="profile-tab" style="padding: 16px 24px; background: none; border: none; border-bottom: 3px solid transparent; cursor: pointer; font-weight: 600; color: #64748b; font-size: 14px;">Sessions</button>
-                    <button onclick="switchProfileTab('notes')" id="tab-notes" class="profile-tab" style="padding: 16px 24px; background: none; border: none; border-bottom: 3px solid transparent; cursor: pointer; font-weight: 600; color: #64748b; font-size: 14px;">Clinical Notes</button>
-                    <button onclick="switchProfileTab('documents')" id="tab-documents" class="profile-tab" style="padding: 16px 24px; background: none; border: none; border-bottom: 3px solid transparent; cursor: pointer; font-weight: 600; color: #64748b; font-size: 14px;">Documents</button>
-                    <button onclick="switchProfileTab('billing')" id="tab-billing" class="profile-tab" style="padding: 16px 24px; background: none; border: none; border-bottom: 3px solid transparent; cursor: pointer; font-weight: 600; color: #64748b; font-size: 14px;">Billing</button>
-                </div>
-
-                <!-- Profile Content -->
-                <div style="padding: 32px;">
-                    <!-- Overview Tab -->
-                    <div id="profile-info" class="profile-tab-content">
-                        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
-                            <!-- Left Column -->
-                            <div style="display: flex; flex-direction: column; gap: 24px;">
-                                <!-- Contact Information -->
-                                <div style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 24px;">
-                                    <h3 style="margin: 0 0 20px 0; font-size: 18px; color: #1e293b;">Contact Information</h3>
-                                    <div style="display: grid; gap: 16px;">
-                                        <div><span style="color: #64748b; font-size: 13px; display: block; margin-bottom: 4px;">Email</span><strong id="profileEmail" style="font-size: 14px;">sarah.j@email.com</strong></div>
-                                        <div><span style="color: #64748b; font-size: 13px; display: block; margin-bottom: 4px;">Phone</span><strong id="profilePhone" style="font-size: 14px;">(555) 123-4567</strong></div>
-                                        <div><span style="color: #64748b; font-size: 13px; display: block; margin-bottom: 4px;">Date of Birth</span><strong id="profileDOB" style="font-size: 14px;">-</strong></div>
-                                        <div><span style="color: #64748b; font-size: 13px; display: block; margin-bottom: 4px;">Address</span><strong id="profileAddress" style="font-size: 14px;">-</strong></div>
-                                    </div>
-                                </div>
-
-                                <!-- Clinical Information -->
-                                <div style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 24px;">
-                                    <h3 style="margin: 0 0 20px 0; font-size: 18px; color: #1e293b;">Clinical Information</h3>
-                                    <div style="display: grid; gap: 16px;">
-                                        <div><span style="color: #64748b; font-size: 13px; display: block; margin-bottom: 4px;">Primary Diagnosis</span><strong id="profileDiagnosis" style="font-size: 14px;">Generalized Anxiety Disorder</strong></div>
-                                        <div><span style="color: #64748b; font-size: 13px; display: block; margin-bottom: 4px;">Insurance</span><strong id="profileInsurance" style="font-size: 14px;">Anthem</strong></div>
-                                        <div><span style="color: #64748b; font-size: 13px; display: block; margin-bottom: 4px;">Notes</span><p id="profileNotes" style="margin: 4px 0 0 0; font-size: 14px; color: #475569;">-</p></div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Right Column -->
-                            <div style="display: flex; flex-direction: column; gap: 24px;">
-                                <!-- Quick Stats -->
-                                <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 12px; padding: 24px; color: white;">
-                                    <h4 style="margin: 0 0 16px 0; font-size: 16px; opacity: 0.95;">Quick Stats</h4>
-                                    <div style="display: flex; flex-direction: column; gap: 12px;">
-                                        <div><span style="font-size: 13px; opacity: 0.9;">Total Sessions</span><div style="font-size: 28px; font-weight: 700;" id="profileTotalSessions">12</div></div>
-                                        <div><span style="font-size: 13px; opacity: 0.9;">Last Visit</span><div style="font-size: 18px; font-weight: 600;" id="profileLastVisit">2 days ago</div></div>
-                                        <div><span style="font-size: 13px; opacity: 0.9;">Next Appointment</span><div style="font-size: 18px; font-weight: 600;" id="profileNextAppt">Oct 5, 2025</div></div>
-                                    </div>
-                                </div>
-
-                                <!-- Quick Actions -->
-                                <div style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 24px;">
-                                    <h4 style="margin: 0 0 16px 0; font-size: 16px; color: #1e293b;">Quick Actions</h4>
-                                    <div style="display: flex; flex-direction: column; gap: 10px;">
-                                        <button style="padding: 12px 16px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; text-align: left;">📝 Add Clinical Note</button>
-                                        <button style="padding: 12px 16px; background: #10b981; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; text-align: left;">💳 Create Invoice</button>
-                                        <button style="padding: 12px 16px; background: #f59e0b; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; text-align: left;">📄 Upload Document</button>
-                                        <button style="padding: 12px 16px; background: #8b5cf6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; text-align: left;">📧 Send Message</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Sessions Tab -->
-                    <div id="profile-sessions" class="profile-tab-content" style="display: none;">
-                        <div style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 24px;">
-                            <h3 style="margin: 0 0 20px 0; font-size: 18px; color: #1e293b;">Session History</h3>
-                            <div id="sessionsList" style="display: flex; flex-direction: column; gap: 12px;">
-                                <!-- Sessions will be populated here -->
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Clinical Notes Tab -->
-                    <div id="profile-notes" class="profile-tab-content" style="display: none;">
-                        <div style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 24px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                                <h3 style="margin: 0; font-size: 18px; color: #1e293b;">Clinical Notes</h3>
-                                <button style="padding: 10px 20px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px;">+ Add Note</button>
-                            </div>
-                            <div style="display: flex; flex-direction: column; gap: 16px;">
-                                <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px;">
-                                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
-                                        <div>
-                                            <strong style="color: #1e293b;">Session Note - Oct 2, 2025</strong>
-                                            <div style="color: #64748b; font-size: 13px; margin-top: 4px;">CPT 90834 - Individual Psychotherapy (60 min)</div>
-                                        </div>
-                                        <span style="background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;">Signed</span>
-                                    </div>
-                                    <p style="color: #475569; font-size: 14px; line-height: 1.6; margin: 0;">Client presented with decreased anxiety symptoms. Discussed coping strategies and progress in managing work-related stress...</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Documents Tab -->
-                    <div id="profile-documents" class="profile-tab-content" style="display: none;">
-                        <div style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 24px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                                <h3 style="margin: 0; font-size: 18px; color: #1e293b;">Documents</h3>
-                                <button style="padding: 10px 20px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px;">📤 Upload</button>
-                            </div>
-                            <div style="display: grid; gap: 12px;">
-                                <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; display: flex; justify-content: space-between; align-items: center;">
-                                    <div style="display: flex; align-items: center; gap: 12px;">
-                                        <span style="font-size: 24px;">📄</span>
-                                        <div>
-                                            <strong style="color: #1e293b; font-size: 14px;">Intake Form</strong>
-                                            <div style="color: #64748b; font-size: 12px;">Uploaded July 15, 2025</div>
-                                        </div>
-                                    </div>
-                                    <button style="padding: 8px 16px; background: #f1f5f9; border: none; border-radius: 6px; cursor: pointer; color: #475569; font-weight: 600; font-size: 13px;">View</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Billing Tab -->
-                    <div id="profile-billing" class="profile-tab-content" style="display: none;">
-                        <div style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 24px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                                <h3 style="margin: 0; font-size: 18px; color: #1e293b;">Billing & Payments</h3>
-                                <button style="padding: 10px 20px; background: #10b981; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px;">+ Create Invoice</button>
-                            </div>
-                            <div style="display: grid; gap: 12px;">
-                                <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px;">
-                                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                                        <div>
-                                            <strong style="color: #1e293b;">Invoice #001-2025</strong>
-                                            <div style="color: #64748b; font-size: 13px; margin-top: 4px;">Oct 2, 2025 - Session Payment</div>
-                                        </div>
-                                        <div style="text-align: right;">
-                                            <div style="font-size: 18px; font-weight: 700; color: #1e293b;">$120.00</div>
-                                            <span style="background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;">Paid</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                
+                <div class="form-section">
+                    <h3>Goals for Therapy</h3>
+                    <div class="form-group">
+                        <label>What do you hope to achieve through therapy?</label>
+                        <textarea id="intakeGoals" rows="4"></textarea>
                     </div>
                 </div>
+                
+                <button type="button" class="btn-primary" onclick="saveIntakeForm()">Save Intake Document</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Appointment Detail Modal -->
+<div id="appointmentDetailModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Appointment Details</h2>
+            <button class="close-btn" onclick="closeAppointmentDetail()">×</button>
+        </div>
+        
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-label">Client</div>
+                <div class="info-value" id="detailClient">-</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Type</div>
+                <div class="info-value" id="detailType">-</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Date</div>
+                <div class="info-value" id="detailDate">-</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Time</div>
+                <div class="info-value" id="detailTime">-</div>
+            </div>
+            <div class="info-item" style="grid-column: 1 / -1;">
+                <div class="info-label">Status</div>
+                <div class="info-value" id="detailStatus">-</div>
+            </div>
+            <div class="info-item" style="grid-column: 1 / -1;">
+                <div class="info-label">Notes</div>
+                <div class="info-value" id="detailNotes">-</div>
+            </div>
+        </div>
+        
+        <div class="modal-footer" style="margin-top: 24px;">
+            <button type="button" class="btn-secondary" onclick="closeAppointmentDetail()">Close</button>
+            <button type="button" class="btn-primary" onclick="alert('Edit functionality coming soon!')">Edit Appointment</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const API_URL = 'https://mind-stream-delta.vercel.app/api';
+let authToken = localStorage.getItem('authToken');
+let currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+let isLoginMode = true;
+let allClients = [];
+let allAppointments = [];
+let currentDate = new Date();
+const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+// Auth Functions
+function showAuth() {
+    document.getElementById('authContainer').style.display = 'flex';
+    document.getElementById('appContainer').style.display = 'none';
+}
+
+function showApp() {
+    document.getElementById('authContainer').style.display = 'none';
+    document.getElementById('appContainer').style.display = 'block';
+    
+    // Set user info
+    document.getElementById('userName').textContent = currentUser.name || 'User';
+    document.getElementById('userEmail').textContent = currentUser.email || '';
+    document.getElementById('userAvatar').textContent = (currentUser.name || 'U')[0].toUpperCase();
+    
+    // Load initial data
+    loadClients();
+    loadAppointments();
+    loadInvoices();
+}
+
+function toggleAuthMode() {
+    isLoginMode = !isLoginMode;
+    
+    if (isLoginMode) {
+        document.getElementById('authTitle').textContent = 'Welcome Back';
+        document.getElementById('authSubtitle').textContent = 'Sign in to your ClinicalCanvas account';
+        document.getElementById('authButton').textContent = 'Sign In';
+        document.getElementById('toggleText').textContent = "Don't have an account?";
+        document.getElementById('toggleLink').textContent = 'Sign up';
+        document.getElementById('nameGroup').style.display = 'none';
+    } else {
+        document.getElementById('authTitle').textContent = 'Create Account';
+        document.getElementById('authSubtitle').textContent = 'Start managing your practice today';
+        document.getElementById('authButton').textContent = 'Sign Up';
+        document.getElementById('toggleText').textContent = 'Already have an account?';
+        document.getElementById('toggleLink').textContent = 'Sign in';
+        document.getElementById('nameGroup').style.display = 'block';
+    }
+}
+
+async function handleAuth(e) {
+    e.preventDefault();
+    
+    const email = document.getElementById('emailInput').value;
+    const password = document.getElementById('passwordInput').value;
+    const name = document.getElementById('nameInput').value;
+    
+    const endpoint = isLoginMode ? '/auth/login' : '/auth/register';
+    const body = isLoginMode ? { email, password } : { email, password, name };
+    
+    try {
+        const response = await fetch(API_URL + endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            showError(data.error || 'Authentication failed');
+            return;
+        }
+        
+        // Save token and user
+        authToken = data.token;
+        currentUser = data.user;
+        localStorage.setItem('authToken', authToken);
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        
+        showApp();
+    } catch (error) {
+        showError('Network error. Please try again.');
+    }
+}
+
+function showError(message) {
+    const errorEl = document.getElementById('errorMessage');
+    errorEl.textContent = message;
+    errorEl.style.display = 'block';
+    setTimeout(() => errorEl.style.display = 'none', 5000);
+}
+
+function logout() {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('currentUser');
+    authToken = null;
+    currentUser = {};
+    showAuth();
+}
+
+// API Helper
+async function apiCall(endpoint, options = {}) {
+    const headers = {
+        'Content-Type': 'application/json',
+        ...options.headers
+    };
+    
+    if (authToken) {
+        headers['Authorization'] = `Bearer ${authToken}`;
+    }
+    
+    const response = await fetch(API_URL + endpoint, {
+        ...options,
+        headers
+    });
+    
+    if (response.status === 401) {
+        logout();
+        throw new Error('Unauthorized');
+    }
+    
+    return response.json();
+}
+
+// Client Functions
+async function loadClients() {
+    const container = document.getElementById('clientsList');
+    container.innerHTML = '<div class="loading">Loading clients...</div>';
+    
+    try {
+        allClients = await apiCall('/clients');
+        
+        if (allClients.length === 0) {
+            container.innerHTML = '<div class="empty-state"><p>No clients yet. Click "New Client" to add one.</p></div>';
+            return;
+        }
+        
+        container.innerHTML = '<div class="client-list"></div>';
+        const list = container.querySelector('.client-list');
+        
+        allClients.forEach(client => {
+            const card = document.createElement('div');
+            card.className = 'client-card';
+            card.onclick = () => openClientProfile(client.id);
+            card.innerHTML = `
+                <div class="client-info">
+                    <h3>${client.name}</h3>
+                    <p>${client.email || 'No email'} • ${client.phone || 'No phone'}</p>
+                </div>
+            `;
+            list.appendChild(card);
+        });
+    } catch (error) {
+        container.innerHTML = '<div class="empty-state"><p>Error loading clients</p></div>';
+    }
+}
+
+function openNewClientModal() {
+    document.getElementById('clientModal').classList.add('active');
+}
+
+function closeClientModal() {
+    document.getElementById('clientModal').classList.remove('active');
+    document.getElementById('clientForm').reset();
+}
+
+async function createClient(e) {
+    e.preventDefault();
+    
+    const client = {
+        name: document.getElementById('clientName').value,
+        email: document.getElementById('clientEmail').value,
+        phone: document.getElementById('clientPhone').value
+    };
+    
+    try {
+        await apiCall('/clients', {
+            method: 'POST',
+            body: JSON.stringify(client)
+        });
+        
+        closeClientModal();
+        loadClients();
+    } catch (error) {
+        alert('Error creating client');
+    }
+}
+
+// Appointment Functions
+async function loadAppointments() {
+    try {
+        allAppointments = await apiCall('/appointments');
+        renderCalendar();
+    } catch (error) {
+        console.error('Error loading appointments:', error);
+    }
+}
+
+function openNewAppointmentModal() {
+    // Populate client dropdown
+    const clientSelect = document.getElementById('appointmentClient');
+    clientSelect.innerHTML = '<option value="">Select a client...</option>';
+    
+    allClients.forEach(client => {
+        const option = document.createElement('option');
+        option.value = client.id;
+        option.textContent = client.name;
+        clientSelect.appendChild(option);
+    });
+    
+    // Set default date to today
+    document.getElementById('appointmentDate').valueAsDate = new Date();
+    
+    document.getElementById('appointmentModal').classList.add('active');
+}
+
+function closeAppointmentModal() {
+    document.getElementById('appointmentModal').classList.remove('active');
+    document.getElementById('appointmentForm').reset();
+}
+
+async function createAppointment(e) {
+    e.preventDefault();
+    
+    const date = document.getElementById('appointmentDate').value;
+    const startTime = document.getElementById('appointmentStartTime').value;
+    const duration = parseInt(document.getElementById('appointmentDuration').value);
+    
+    // Create start and end datetime
+    const startDateTime = new Date(`${date}T${startTime}`);
+    const endDateTime = new Date(startDateTime.getTime() + duration * 60000);
+    
+    const appointment = {
+        client_id: parseInt(document.getElementById('appointmentClient').value),
+        start_time: startDateTime.toISOString(),
+        end_time: endDateTime.toISOString(),
+        type: document.getElementById('appointmentType').value,
+        notes: document.getElementById('appointmentNotes').value
+    };
+    
+    try {
+        await apiCall('/appointments', {
+            method: 'POST',
+            body: JSON.stringify(appointment)
+        });
+        
+        closeAppointmentModal();
+        loadAppointments();
+    } catch (error) {
+        alert('Error creating appointment');
+    }
+}
+
+// Calendar Functions
+function renderCalendar() {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    
+    // Update header
+    document.getElementById('calendarMonth').textContent = `${monthNames[month]} ${year}`;
+    
+    // Get first day of month and number of days
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startingDayOfWeek = firstDay.getDay();
+    
+    // Get previous month info for overflow
+    const prevMonthLastDay = new Date(year, month, 0).getDate();
+    
+    const grid = document.getElementById('calendarGrid');
+    grid.innerHTML = '';
+    
+    // Add day headers
+    dayNames.forEach(day => {
+        const header = document.createElement('div');
+        header.className = 'calendar-day-header';
+        header.textContent = day;
+        grid.appendChild(header);
+    });
+    
+    // Add previous month overflow days
+    for (let i = startingDayOfWeek - 1; i >= 0; i--) {
+        const day = document.createElement('div');
+        day.className = 'calendar-day other-month';
+        day.innerHTML = `<div class="calendar-day-number">${prevMonthLastDay - i}</div>`;
+        grid.appendChild(day);
+    }
+    
+    // Add current month days
+    const today = new Date();
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dayEl = document.createElement('div');
+        dayEl.className = 'calendar-day';
+        
+        const currentDayDate = new Date(year, month, day);
+        
+        // Check if today
+        if (currentDayDate.toDateString() === today.toDateString()) {
+            dayEl.classList.add('today');
+        }
+        
+        dayEl.innerHTML = `<div class="calendar-day-number">${day}</div>`;
+        
+        // Add appointments for this day
+        const dayAppointments = allAppointments.filter(apt => {
+            const aptDate = new Date(apt.start_time);
+            return aptDate.getFullYear() === year && 
+                   aptDate.getMonth() === month && 
+                   aptDate.getDate() === day;
+        });
+        
+        dayAppointments.forEach(apt => {
+            const aptEl = document.createElement('div');
+            aptEl.className = 'calendar-appointment';
+            const time = new Date(apt.start_time).toLocaleTimeString('en-US', { 
+                hour: 'numeric', 
+                minute: '2-digit' 
+            });
+            aptEl.textContent = `${time} ${apt.client_name || 'Appointment'}`;
+            aptEl.onclick = (e) => {
+                e.stopPropagation();
+                openAppointmentDetail(apt);
+            };
+            dayEl.appendChild(aptEl);
+        });
+        
+        // Click to create appointment on this day
+        dayEl.onclick = () => {
+            const dateStr = currentDayDate.toISOString().split('T')[0];
+            document.getElementById('appointmentDate').value = dateStr;
+            openNewAppointmentModal();
+        };
+        
+        grid.appendChild(dayEl);
+    }
+    
+    // Add next month overflow days
+    const totalCells = grid.children.length - 7; // Subtract headers
+    const remainingCells = 42 - totalCells - 7; // 6 weeks * 7 days - headers
+    for (let day = 1; day <= remainingCells; day++) {
+        const dayEl = document.createElement('div');
+        dayEl.className = 'calendar-day other-month';
+        dayEl.innerHTML = `<div class="calendar-day-number">${day}</div>`;
+        grid.appendChild(dayEl);
+    }
+}
+
+function previousMonth() {
+    currentDate.setMonth(currentDate.getMonth() - 1);
+    renderCalendar();
+}
+
+function nextMonth() {
+    currentDate.setMonth(currentDate.getMonth() + 1);
+    renderCalendar();
+}
+
+function today() {
+    currentDate = new Date();
+    renderCalendar();
+}
+
+// Invoice Functions
+async function loadInvoices() {
+    const container = document.getElementById('invoicesList');
+    container.innerHTML = '<div class="loading">Loading invoices...</div>';
+    
+    try {
+        const invoices = await apiCall('/invoices');
+        
+        if (invoices.length === 0) {
+            container.innerHTML = '<div class="empty-state"><p>No invoices yet</p></div>';
+            return;
+        }
+        
+        container.innerHTML = '<div class="client-list"></div>';
+        const list = container.querySelector('.client-list');
+        
+        invoices.forEach(inv => {
+            const card = document.createElement('div');
+            card.className = 'client-card';
+            card.innerHTML = `
+                <div class="client-info">
+                    <h3>${inv.client_name || 'Unknown Client'}</h3>
+                    <p>$${inv.amount} • ${inv.status}</p>
+                </div>
+            `;
+            list.appendChild(card);
+        });
+    } catch (error) {
+        container.innerHTML = '<div class="empty-state"><p>Error loading invoices</p></div>';
+    }
+}
+
+function openNewInvoiceModal() {
+    alert('Invoice creation coming soon!');
+}
+
+// Notes Functions
+function generateNote() {
+    const clientName = document.getElementById('noteClientName').value;
+    const content = document.getElementById('noteContent').value;
+    
+    if (!clientName || !content) {
+        alert('Please fill in client name and session notes');
+        return;
+    }
+    
+    const output = document.getElementById('noteOutput');
+    const copyBtn = document.getElementById('copyNoteBtn');
+    
+    output.textContent = 'Generating clinical note...';
+    output.style.display = 'block';
+    
+    setTimeout(() => {
+        let note = `CLINICAL PROGRESS NOTE\n\n`;
+        note += `Client: ${clientName}\n`;
+        note += `Date: ${new Date().toLocaleDateString()}\n`;
+        note += `Session Type: Individual Therapy\n\n`;
+        note += `Presenting Concerns:\n${content}\n\n`;
+        note += `Clinical Observations:\nClient appeared engaged and cooperative during session.\n\n`;
+        note += `Interventions:\n- Cognitive behavioral techniques\n- Mindfulness exercises\n\n`;
+        note += `Progress:\nClient showed good insight and participation.\n\n`;
+        note += `Plan:\nContinue weekly sessions. Monitor progress on current goals.`;
+        
+        output.textContent = note;
+        copyBtn.style.display = 'block';
+    }, 1500);
+}
+
+function copyNote() {
+    const note = document.getElementById('noteOutput').textContent;
+    navigator.clipboard.writeText(note).then(() => {
+        const btn = document.getElementById('copyNoteBtn');
+        btn.textContent = '✓ Copied!';
+        setTimeout(() => btn.textContent = 'Copy Note', 2000);
+    });
+}
+
+// Navigation
+function showSection(section) {
+    document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    
+    document.getElementById(section + 'Section').classList.add('active');
+    event.currentTarget.classList.add('active');
+}
+
+// Client Profile Functions
+async function openClientProfile(clientId) {
+    const client = allClients.find(c => c.id === clientId);
+    if (!client) return;
+    
+    // Set basic info
+    document.getElementById('profileName').textContent = client.name;
+    document.getElementById('profileContact').textContent = `${client.email || 'No email'} • ${client.phone || 'No phone'}`;
+    document.getElementById('profileAvatar').textContent = client.name[0].toUpperCase();
+    
+    // Set detailed info
+    document.getElementById('profileEmail').textContent = client.email || '-';
+    document.getElementById('profilePhone').textContent = client.phone || '-';
+    document.getElementById('profileDOB').textContent = client.dob ? new Date(client.dob).toLocaleDateString() : '-';
+    document.getElementById('profileInsurance').textContent = client.insurance || '-';
+    document.getElementById('profileAddress').textContent = client.address || '-';
+    document.getElementById('profileNotes').textContent = client.notes || '-';
+    
+    // Load sessions for this client
+    loadClientSessions(clientId);
+    
+    // Reset to first tab
+    switchProfileTab('info');
+    
+    document.getElementById('clientProfileModal').classList.add('active');
+}
+
+function closeClientProfile() {
+    document.getElementById('clientProfileModal').classList.remove('active');
+}
+
+function switchProfileTab(tab) {
+    document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.profile-section').forEach(s => s.classList.remove('active'));
+    
+    const tabs = document.querySelectorAll('.profile-tab');
+    if (tab === 'info') tabs[0].classList.add('active');
+    if (tab === 'sessions') tabs[1].classList.add('active');
+    if (tab === 'intake') tabs[2].classList.add('active');
+    
+    document.getElementById(`profile${tab.charAt(0).toUpperCase() + tab.slice(1)}Section`).classList.add('active');
+}
+
+async function loadClientSessions(clientId) {
+    const container = document.getElementById('sessionsList');
+    
+    const clientSessions = allAppointments.filter(apt => apt.client_id === clientId);
+    
+    if (clientSessions.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>No sessions yet</p></div>';
+        return;
+    }
+    
+    container.innerHTML = '';
+    clientSessions.sort((a, b) => new Date(b.start_time) - new Date(a.start_time));
+    
+    clientSessions.forEach(session => {
+        const sessionEl = document.createElement('div');
+        sessionEl.className = 'session-item';
+        const date = new Date(session.start_time);
+        sessionEl.innerHTML = `
+            <div class="session-date">${date.toLocaleDateString()} at ${date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}</div>
+            <div class="session-type">${session.type || 'Session'} ${session.status ? '• ' + session.status : ''}</div>
+        `;
+        sessionEl.onclick = () => openAppointmentDetail(session);
+        sessionEl.style.cursor = 'pointer';
+        container.appendChild(sessionEl);
+    });
+}
+
+function saveIntakeForm() {
+    const symptoms = [];
+    ['anxiety', 'depression', 'sleep', 'stress', 'trauma', 'relationship'].forEach(symptom => {
+        if (document.getElementById(`symptom${symptom.charAt(0).toUpperCase() + symptom.slice(1)}`).checked) {
+            symptoms.push(symptom);
+        }
+    });
+    
+    const intakeData = {
+        emergencyName: document.getElementById('intakeEmergencyName').value,
+        emergencyPhone: document.getElementById('intakeEmergencyPhone').value,
+        concerns: document.getElementById('intakeConcerns').value,
+        previousTherapy: document.getElementById('intakePreviousTherapy').value,
+        previousDetails: document.getElementById('intakePreviousDetails').value,
+        symptoms: symptoms,
+        goals: document.getElementById('intakeGoals').value
+    };
+    
+    // In a real app, this would save to the database
+    console.log('Intake form data:', intakeData);
+    alert('Intake document saved successfully!');
+}
+
+// Appointment Detail Functions
+function openAppointmentDetail(appointment) {
+    document.getElementById('detailClient').textContent = appointment.client_name || 'Unknown Client';
+    document.getElementById('detailType').textContent = appointment.type || 'Session';
+    
+    const date = new Date(appointment.start_time);
+    document.getElementById('detailDate').textContent = date.toLocaleDateString();
+    document.getElementById('detailTime').textContent = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) + ' - ' + new Date(appointment.end_time).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+    document.getElementById('detailStatus').textContent = appointment.status || 'Scheduled';
+    document.getElementById('detailNotes').textContent = appointment.notes || 'No notes';
+    
+    document.getElementById('appointmentDetailModal').classList.add('active');
+}
+
+function closeAppointmentDetail() {
+    document.getElementById('appointmentDetailModal').classList.remove('active');
+}
+
+// Event Listeners
+document.getElementById('authForm').addEventListener('submit', handleAuth);
+document.getElementById('toggleLink').addEventListener('click', (e) => {
+    e.preventDefault();
+    toggleAuthMode();
+});
+document.getElementById('clientForm').addEventListener('submit', createClient);
+document.getElementById('appointmentForm').addEventListener('submit', createAppointment);
+
+// Initialize
+if (authToken) {
+    showApp();
+} else {
+    showAuth();
+}
+</script>
+
+</body>
+</html>
