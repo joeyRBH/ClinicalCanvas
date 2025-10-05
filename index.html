@@ -2097,6 +2097,9 @@ async function updateAppointmentStatus() {
 function openEditAppointment() {
     if (!currentViewingAppointment) return;
     
+    // Store reference before any modal changes
+    const appointmentToEdit = currentViewingAppointment;
+    
     // Populate client dropdown
     const clientSelect = document.getElementById('editAppointmentClient');
     clientSelect.innerHTML = '<option value="">Select a client...</option>';
@@ -2105,29 +2108,36 @@ function openEditAppointment() {
         const option = document.createElement('option');
         option.value = client.id;
         option.textContent = client.name;
-        if (client.id === currentViewingAppointment.client_id) {
+        if (client.id === appointmentToEdit.client_id) {
             option.selected = true;
         }
         clientSelect.appendChild(option);
     });
     
     // Populate form fields
-    const startDate = new Date(currentViewingAppointment.start_time);
-    const endDate = new Date(currentViewingAppointment.end_time);
+    const startDate = new Date(appointmentToEdit.start_time);
+    const endDate = new Date(appointmentToEdit.end_time);
     const duration = Math.round((endDate - startDate) / 60000); // Convert to minutes
     
     document.getElementById('editAppointmentDate').value = startDate.toISOString().split('T')[0];
     document.getElementById('editAppointmentStartTime').value = startDate.toTimeString().slice(0, 5);
     document.getElementById('editAppointmentDuration').value = duration;
-    document.getElementById('editAppointmentType').value = currentViewingAppointment.type || 'session';
-    document.getElementById('editAppointmentNotes').value = currentViewingAppointment.notes || '';
+    document.getElementById('editAppointmentType').value = appointmentToEdit.type || 'session';
+    document.getElementById('editAppointmentNotes').value = appointmentToEdit.notes || '';
     
-    closeAppointmentDetail();
+    // Close detail modal
+    document.getElementById('appointmentDetailModal').classList.remove('active');
+    
+    // Keep the appointment reference active for saving
+    currentViewingAppointment = appointmentToEdit;
+    
+    // Open edit modal
     document.getElementById('editAppointmentModal').classList.add('active');
 }
 
 function closeEditAppointmentModal() {
     document.getElementById('editAppointmentModal').classList.remove('active');
+    // Don't clear currentViewingAppointment here - save function will handle it
 }
 
 // Save Edited Appointment
