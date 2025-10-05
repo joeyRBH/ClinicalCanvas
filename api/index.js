@@ -256,24 +256,25 @@ app.post('/api/appointments', authenticateToken, async (req, res) => {
 });
 
 // Update appointment
-app.put('/api/appointments/:id', authenticateToken, async (req, res) => {
+app.put('/appointments/:id', authenticateToken, async (req, res) => {
   try {
-    const { client_id, start_time, end_time, type, status, location, notes } = req.body;
-
+    const { id } = req.params;
+    const { client_id, start_time, end_time, type, notes, status } = req.body;  // Removed location
+    
     const result = await sql`
       UPDATE appointments 
-      SET client_id = ${client_id}, start_time = ${start_time}, end_time = ${end_time},
-          type = ${type}, status = ${status}, location = ${location}, notes = ${notes},
-          updated_at = NOW()
-      WHERE id = ${req.params.id} AND therapist_id = ${req.user.id}
+      SET 
+        client_id = ${client_id},
+        start_time = ${start_time},
+        end_time = ${end_time},
+        type = ${type},
+        notes = ${notes},
+        status = ${status}
+      WHERE id = ${id} AND user_id = ${req.user.userId}
       RETURNING *
     `;
-
-    if (result.length === 0) {
-      return res.status(404).json({ error: 'Appointment not found' });
-    }
-
-    res.json(result[0]);
+    
+    res.json(result.rows[0]);
   } catch (error) {
     console.error('Update appointment error:', error);
     res.status(500).json({ error: 'Failed to update appointment' });
