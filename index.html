@@ -1533,16 +1533,31 @@ async function saveClientChanges(e) {
         notes: document.getElementById('editClientNotes').value
     };
     
+    console.log('Saving client ID:', currentEditingClient.id);
+    console.log('Updated data being sent:', updatedData);
+    
     try {
-        await apiCall(`/clients/${currentEditingClient.id}`, {
+        const result = await apiCall(`/clients/${currentEditingClient.id}`, {
             method: 'PUT',
             body: JSON.stringify(updatedData)
         });
         
+        console.log('API response:', result);
+        
         closeEditClientModal();
         await loadClients();
-        alert('Client updated successfully!');
+        
+        // Verify the update by checking if the client data changed
+        const updatedClient = allClients.find(c => c.id === currentEditingClient.id);
+        console.log('Client after refresh:', updatedClient);
+        
+        if (updatedClient && updatedClient.name === updatedData.name) {
+            alert('Client updated successfully!');
+        } else {
+            alert('Warning: Client may not have been updated. Check console for details.');
+        }
     } catch (error) {
+        console.error('Error details:', error);
         alert('Error updating client: ' + error.message);
     }
 }
