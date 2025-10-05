@@ -724,6 +724,11 @@ const API_URL = 'https://mind-stream-delta.vercel.app/api';
 let authToken = localStorage.getItem('authToken');
 let currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
 let isLoginMode = true;
+let allClients = [];
+let allAppointments = [];
+let currentDate = new Date();
+const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 // Auth Functions
 function showAuth() {
@@ -847,9 +852,9 @@ async function loadClients() {
     container.innerHTML = '<div class="loading">Loading clients...</div>';
     
     try {
-        const clients = await apiCall('/clients');
+        allClients = await apiCall('/clients');
         
-        if (clients.length === 0) {
+        if (allClients.length === 0) {
             container.innerHTML = '<div class="empty-state"><p>No clients yet. Click "New Client" to add one.</p></div>';
             return;
         }
@@ -857,7 +862,7 @@ async function loadClients() {
         container.innerHTML = '<div class="client-list"></div>';
         const list = container.querySelector('.client-list');
         
-        clients.forEach(client => {
+        allClients.forEach(client => {
             const card = document.createElement('div');
             card.className = 'client-card';
             card.innerHTML = `
@@ -906,40 +911,173 @@ async function createClient(e) {
 
 // Appointment Functions
 async function loadAppointments() {
-    const container = document.getElementById('appointmentsList');
-    container.innerHTML = '<div class="loading">Loading appointments...</div>';
-    
     try {
-        const appointments = await apiCall('/appointments');
-        
-        if (appointments.length === 0) {
-            container.innerHTML = '<div class="empty-state"><p>No appointments scheduled</p></div>';
-            return;
-        }
-        
-        container.innerHTML = '<div class="client-list"></div>';
-        const list = container.querySelector('.client-list');
-        
-        appointments.forEach(apt => {
-            const card = document.createElement('div');
-            card.className = 'client-card';
-            const date = new Date(apt.start_time).toLocaleDateString();
-            const time = new Date(apt.start_time).toLocaleTimeString();
-            card.innerHTML = `
-                <div class="client-info">
-                    <h3>${apt.client_name || 'Unknown Client'}</h3>
-                    <p>${date} at ${time}</p>
-                </div>
-            `;
-            list.appendChild(card);
-        });
+        allAppointments = await apiCall('/appointments');
+        renderCalendar();
     } catch (error) {
-        container.innerHTML = '<div class="empty-state"><p>Error loading appointments</p></div>';
+        console.error('Error loading appointments:', error);
     }
 }
 
 function openNewAppointmentModal() {
-    alert('Appointment creation coming soon! This will open a modal to schedule a new appointment.');
+    // Populate client dropdown
+    const clientSelect = document.getElementById('appointmentClient');
+    clientSelect.innerHTML = '<option value="">Select a client...</option>';
+    
+    allClients.forEach(client => {
+        const option = document.createElement('option');
+        option.value = client.id;
+        option.textContent = client.name;
+        clientSelect.appendChild(option);
+    });
+    
+    // Set default date to today
+    document.getElementById('appointmentDate').valueAsDate = new Date();
+    
+    document.getElementById('appointmentModal').classList.add('active');
+}
+
+function closeAppointmentModal() {
+    document.getElementById('appointmentModal').classList.remove('active');
+    document.getElementById('appointmentForm').reset();
+}
+
+async function createAppointment(e) {
+    e.preventDefault();
+    
+    const date = document.getElementById('appointmentDate').value;
+    const startTime = document.getElementById('appointmentStartTime').value;
+    const duration = parseInt(document.getElementById('appointmentDuration').value);
+    
+    // Create start and end datetime
+    const startDateTime = new Date(`${date}T${startTime}`);
+    const endDateTime = new Date(startDateTime.getTime() + duration * 60000);
+    
+    const appointment = {
+        client_id: parseInt(document.getElementById('appointmentClient').value),
+        start_time: startDateTime.toISOString(),
+        end_time: endDateTime.toISOString(),
+        type: document.getElementById('appointmentType').value,
+        notes: document.getElementById('appointmentNotes').value
+    };
+    
+    try {
+        await apiCall('/appointments', {
+            method: 'POST',
+            body: JSON.stringify(appointment)
+        });
+        
+        closeAppointmentModal();
+        loadAppointments();
+    } catch (error) {
+        alert('Error creating appointment');
+    }
+}
+
+// Calendar Functions
+function renderCalendar() {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    
+    // Update header
+    document.getElementById('calendarMonth').textContent = `${monthNames[month]} ${year}`;
+    
+    // Get first day of month and number of days
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startingDayOfWeek = firstDay.getDay();
+    
+    // Get previous month info for overflow
+    const prevMonthLastDay = new Date(year, month, 0).getDate();
+    
+    const grid = document.getElementById('calendarGrid');
+    grid.innerHTML = '';
+    
+    // Add day headers
+    dayNames.forEach(day => {
+        const header = document.createElement('div');
+        header.className = 'calendar-day-header';
+        header.textContent = day;
+        grid.appendChild(header);
+    });
+    
+    // Add previous month overflow days
+    for (let i = startingDayOfWeek - 1; i >= 0; i--) {
+        const day = document.createElement('div');
+        day.className = 'calendar-day other-month';
+        day.innerHTML = `<div class="calendar-day-number">${prevMonthLastDay - i}</div>`;
+        grid.appendChild(day);
+    }
+    
+    // Add current month days
+    const today = new Date();
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dayEl = document.createElement('div');
+        dayEl.className = 'calendar-day';
+        
+        const currentDayDate = new Date(year, month, day);
+        
+        // Check if today
+        if (currentDayDate.toDateString() === today.toDateString()) {
+            dayEl.classList.add('today');
+        }
+        
+        dayEl.innerHTML = `<div class="calendar-day-number">${day}</div>`;
+        
+        // Add appointments for this day
+        const dayAppointments = allAppointments.filter(apt => {
+            const aptDate = new Date(apt.start_time);
+            return aptDate.getFullYear() === year && 
+                   aptDate.getMonth() === month && 
+                   aptDate.getDate() === day;
+        });
+        
+        dayAppointments.forEach(apt => {
+            const aptEl = document.createElement('div');
+            aptEl.className = 'calendar-appointment';
+            const time = new Date(apt.start_time).toLocaleTimeString('en-US', { 
+                hour: 'numeric', 
+                minute: '2-digit' 
+            });
+            aptEl.textContent = `${time} ${apt.client_name || 'Appointment'}`;
+            dayEl.appendChild(aptEl);
+        });
+        
+        // Click to create appointment on this day
+        dayEl.onclick = () => {
+            const dateStr = currentDayDate.toISOString().split('T')[0];
+            document.getElementById('appointmentDate').value = dateStr;
+            openNewAppointmentModal();
+        };
+        
+        grid.appendChild(dayEl);
+    }
+    
+    // Add next month overflow days
+    const totalCells = grid.children.length - 7; // Subtract headers
+    const remainingCells = 42 - totalCells - 7; // 6 weeks * 7 days - headers
+    for (let day = 1; day <= remainingCells; day++) {
+        const dayEl = document.createElement('div');
+        dayEl.className = 'calendar-day other-month';
+        dayEl.innerHTML = `<div class="calendar-day-number">${day}</div>`;
+        grid.appendChild(dayEl);
+    }
+}
+
+function previousMonth() {
+    currentDate.setMonth(currentDate.getMonth() - 1);
+    renderCalendar();
+}
+
+function nextMonth() {
+    currentDate.setMonth(currentDate.getMonth() + 1);
+    renderCalendar();
+}
+
+function today() {
+    currentDate = new Date();
+    renderCalendar();
 }
 
 // Invoice Functions
@@ -1035,6 +1173,7 @@ document.getElementById('toggleLink').addEventListener('click', (e) => {
     toggleAuthMode();
 });
 document.getElementById('clientForm').addEventListener('submit', createClient);
+document.getElementById('appointmentForm').addEventListener('submit', createAppointment);
 
 // Initialize
 if (authToken) {
