@@ -2134,7 +2134,13 @@ function closeEditAppointmentModal() {
 async function saveEditedAppointment(e) {
     e.preventDefault();
     
-    if (!currentViewingAppointment) return;
+    console.log('Save edited appointment called');
+    console.log('Current viewing appointment:', currentViewingAppointment);
+    
+    if (!currentViewingAppointment) {
+        alert('Error: No appointment selected for editing');
+        return;
+    }
     
     const date = document.getElementById('editAppointmentDate').value;
     const startTime = document.getElementById('editAppointmentStartTime').value;
@@ -2152,17 +2158,22 @@ async function saveEditedAppointment(e) {
         notes: document.getElementById('editAppointmentNotes').value
     };
     
+    console.log('Updated appointment data:', updatedData);
+    
     try {
-        await apiCall(`/appointments/${currentViewingAppointment.id}`, {
+        const result = await apiCall(`/appointments/${currentViewingAppointment.id}`, {
             method: 'PUT',
             body: JSON.stringify(updatedData)
         });
+        
+        console.log('API response:', result);
         
         closeEditAppointmentModal();
         currentViewingAppointment = null;
         await loadAppointments();
         alert('Appointment updated successfully!');
     } catch (error) {
+        console.error('Error updating appointment:', error);
         alert('Error updating appointment: ' + error.message);
     }
 }
