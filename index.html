@@ -729,14 +729,52 @@
             </div>
         </div>
 
-        <!-- Clients Section -->
+        <!-- ENHANCED CLIENTS SECTION -->
         <div class="content-section" id="clientsSection">
-            <h1 class="section-title">Clients</h1>
-            <p class="section-text">Manage your client information</p>
+            <h1 class="section-title">Client Management</h1>
+            <p class="section-text">Manage your client information and relationships</p>
             
-            <button class="btn-primary" onclick="openNewClientModal()">+ New Client</button>
+            <!-- Summary Cards -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
+                <div class="card">
+                    <div style="font-size: 14px; color: #6b7280; margin-bottom: 8px;">Total Clients</div>
+                    <div style="font-size: 32px; font-weight: 700; color: #1f2937;" id="totalClientsCount">0</div>
+                </div>
+                <div class="card">
+                    <div style="font-size: 14px; color: #6b7280; margin-bottom: 8px;">Active</div>
+                    <div style="font-size: 32px; font-weight: 700; color: #10b981;" id="activeClientsCount">0</div>
+                </div>
+                <div class="card">
+                    <div style="font-size: 14px; color: #6b7280; margin-bottom: 8px;">New This Month</div>
+                    <div style="font-size: 32px; font-weight: 700; color: #667eea;" id="newClientsCount">0</div>
+                </div>
+            </div>
             
-            <div id="clientsList" class="loading">Loading clients...</div>
+            <div class="card">
+                <!-- Header with Add Button and Search -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 16px;">
+                    <h2 style="font-size: 20px; font-weight: 600;">All Clients</h2>
+                    <button class="btn-primary" onclick="openNewClientModal()">+ New Client</button>
+                </div>
+                
+                <!-- Search and Filters -->
+                <div style="display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;">
+                    <input 
+                        type="text" 
+                        id="clientSearch" 
+                        placeholder="Search clients..." 
+                        onkeyup="searchClients(this.value)"
+                        style="flex: 1; min-width: 250px; padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 8px;"
+                    >
+                    <select id="statusFilter" onchange="filterClients()" style="padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 8px; background: white;">
+                        <option value="">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+                
+                <div id="clientsList" class="loading">Loading clients...</div>
+            </div>
         </div>
 
         <!-- Billing Section -->
@@ -774,9 +812,9 @@
     </div>
 </div>
 
-<!-- New Client Modal -->
+<!-- ENHANCED NEW CLIENT MODAL -->
 <div id="clientModal" class="modal">
-    <div class="modal-content">
+    <div class="modal-content" style="max-width: 700px;">
         <div class="modal-header">
             <h2>New Client</h2>
             <button class="close-btn" onclick="closeClientModal()">×</button>
@@ -784,23 +822,125 @@
         
         <form id="clientForm">
             <div class="form-group">
-                <label>Name</label>
+                <label>Full Name *</label>
                 <input type="text" id="clientName" required style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
             </div>
             
-            <div class="form-group">
-                <label>Email</label>
-                <input type="email" id="clientEmail" style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="clientEmail" style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
+                </div>
+                
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="tel" id="clientPhone" style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
+                </div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div class="form-group">
+                    <label>Date of Birth</label>
+                    <input type="date" id="clientDOB" style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
+                </div>
+                
+                <div class="form-group">
+                    <label>Insurance</label>
+                    <input type="text" id="clientInsurance" placeholder="e.g., Anthem" style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
+                </div>
             </div>
             
             <div class="form-group">
-                <label>Phone</label>
-                <input type="tel" id="clientPhone" style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
+                <label>Address</label>
+                <input type="text" id="clientAddress" placeholder="123 Main St, City, State 12345" style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
+            </div>
+            
+            <div style="border-top: 1px solid #e5e7eb; padding-top: 20px; margin-top: 20px;">
+                <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 16px;">Emergency Contact</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" id="clientEmergencyName" style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
+                    </div>
+                    <div class="form-group">
+                        <label>Phone</label>
+                        <input type="tel" id="clientEmergencyPhone" style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Notes</label>
+                <textarea id="clientNotes" rows="3" placeholder="Additional notes..." style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;"></textarea>
             </div>
             
             <div class="modal-footer">
                 <button type="button" class="btn-secondary" onclick="closeClientModal()">Cancel</button>
                 <button type="submit" class="btn-primary">Create Client</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- EDIT CLIENT MODAL (NEW) -->
+<div id="editClientModal" class="modal">
+    <div class="modal-content" style="max-width: 700px;">
+        <div class="modal-header">
+            <h2>Edit Client</h2>
+            <button class="close-btn" onclick="closeEditClientModal()">×</button>
+        </div>
+        
+        <form id="editClientForm">
+            <div class="form-group">
+                <label>Full Name *</label>
+                <input type="text" id="editClientName" required style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="editClientEmail" style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
+                </div>
+                
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="tel" id="editClientPhone" style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
+                </div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+                <div class="form-group">
+                    <label>Date of Birth</label>
+                    <input type="date" id="editClientDOB" style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
+                </div>
+                
+                <div class="form-group">
+                    <label>Insurance</label>
+                    <input type="text" id="editClientInsurance" style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
+                </div>
+                
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="editClientStatus" style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Address</label>
+                <input type="text" id="editClientAddress" style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
+            </div>
+            
+            <div class="form-group">
+                <label>Notes</label>
+                <textarea id="editClientNotes" rows="4" style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;"></textarea>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeEditClientModal()">Cancel</button>
+                <button type="submit" class="btn-primary">Save Changes</button>
             </div>
         </form>
     </div>
@@ -875,9 +1015,13 @@
         
         <div class="profile-header">
             <div class="profile-avatar-large" id="profileAvatar">C</div>
-            <div>
+            <div style="flex: 1;">
                 <h2 id="profileName">Client Name</h2>
                 <p style="color: #6b7280;" id="profileContact">contact info</p>
+            </div>
+            <div style="display: flex; gap: 12px;">
+                <button class="btn-secondary" onclick="editClientProfile()">Edit Profile</button>
+                <button class="btn-secondary" style="background: #fee2e2; color: #991b1b;" onclick="deleteClientProfile()">Delete</button>
             </div>
         </div>
         
@@ -912,7 +1056,7 @@
             </div>
             <div class="info-item" style="grid-column: 1 / -1; margin-top: 16px;">
                 <div class="info-label">Notes</div>
-                <div class="info-value" id="profileNotes">-</div>
+                <div class="info-value" id="profileNotes" style="white-space: pre-wrap;">-</div>
             </div>
         </div>
         
@@ -1052,6 +1196,8 @@ let authToken = localStorage.getItem('authToken');
 let currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
 let isLoginMode = true;
 let allClients = [];
+let filteredClients = [];
+let currentEditingClient = null;
 let allAppointments = [];
 let currentDate = new Date();
 const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -1173,37 +1319,119 @@ async function apiCall(endpoint, options = {}) {
     return response.json();
 }
 
-// Client Functions
+// ==================== ENHANCED CLIENT FUNCTIONS ====================
+
+// Enhanced Load Clients
 async function loadClients() {
     const container = document.getElementById('clientsList');
     container.innerHTML = '<div class="loading">Loading clients...</div>';
     
     try {
         allClients = await apiCall('/clients');
+        filteredClients = [...allClients];
+        
+        // Update summary cards
+        updateClientSummary();
         
         if (allClients.length === 0) {
             container.innerHTML = '<div class="empty-state"><p>No clients yet. Click "New Client" to add one.</p></div>';
             return;
         }
         
-        container.innerHTML = '<div class="client-list"></div>';
-        const list = container.querySelector('.client-list');
-        
-        allClients.forEach(client => {
-            const card = document.createElement('div');
-            card.className = 'client-card';
-            card.onclick = () => openClientProfile(client.id);
-            card.innerHTML = `
-                <div class="client-info">
-                    <h3>${client.name}</h3>
-                    <p>${client.email || 'No email'} • ${client.phone || 'No phone'}</p>
-                </div>
-            `;
-            list.appendChild(card);
-        });
+        renderClients();
     } catch (error) {
         container.innerHTML = '<div class="empty-state"><p>Error loading clients</p></div>';
     }
+}
+
+// Update Summary Cards
+function updateClientSummary() {
+    document.getElementById('totalClientsCount').textContent = allClients.length;
+    document.getElementById('activeClientsCount').textContent = allClients.filter(c => c.status === 'active' || !c.status).length;
+    
+    // New clients this month
+    const thisMonth = new Date();
+    thisMonth.setDate(1);
+    thisMonth.setHours(0,0,0,0);
+    const newThisMonth = allClients.filter(c => {
+        const created = new Date(c.created_at);
+        return created >= thisMonth;
+    }).length;
+    document.getElementById('newClientsCount').textContent = newThisMonth;
+}
+
+// Render Clients List
+function renderClients() {
+    const container = document.getElementById('clientsList');
+    
+    if (filteredClients.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>No clients match your search</p></div>';
+        return;
+    }
+    
+    container.innerHTML = '<div class="client-list"></div>';
+    const list = container.querySelector('.client-list');
+    
+    filteredClients.forEach(client => {
+        const card = document.createElement('div');
+        card.className = 'client-card';
+        card.onclick = () => openClientProfile(client.id);
+        
+        const statusColor = (client.status === 'inactive') ? '#fee2e2' : '#dcfce7';
+        const statusTextColor = (client.status === 'inactive') ? '#991b1b' : '#166534';
+        
+        card.innerHTML = `
+            <div class="client-info">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                    <h3 style="margin: 0;">${client.name}</h3>
+                    <span style="padding: 4px 12px; background: ${statusColor}; color: ${statusTextColor}; border-radius: 12px; font-size: 12px; font-weight: 500; text-transform: capitalize;">
+                        ${client.status || 'Active'}
+                    </span>
+                </div>
+                <p style="margin: 0;">${client.email || 'No email'} ${client.phone ? '• ' + client.phone : ''}</p>
+                ${client.insurance ? `<p style="margin: 4px 0 0 0; font-size: 13px; color: #6b7280;">Insurance: ${client.insurance}</p>` : ''}
+            </div>
+        `;
+        list.appendChild(card);
+    });
+}
+
+// Search Clients
+function searchClients(query) {
+    query = query.toLowerCase();
+    const statusFilter = document.getElementById('statusFilter').value;
+    
+    filteredClients = allClients.filter(client => {
+        const matchesSearch = !query || 
+            client.name.toLowerCase().includes(query) ||
+            (client.email && client.email.toLowerCase().includes(query)) ||
+            (client.phone && client.phone.includes(query)) ||
+            (client.insurance && client.insurance.toLowerCase().includes(query));
+        
+        const matchesStatus = !statusFilter || client.status === statusFilter || (!client.status && statusFilter === 'active');
+        
+        return matchesSearch && matchesStatus;
+    });
+    
+    renderClients();
+}
+
+// Filter Clients
+function filterClients() {
+    const statusFilter = document.getElementById('statusFilter').value;
+    const searchQuery = document.getElementById('clientSearch').value.toLowerCase();
+    
+    filteredClients = allClients.filter(client => {
+        const matchesStatus = !statusFilter || client.status === statusFilter || (!client.status && statusFilter === 'active');
+        const matchesSearch = !searchQuery || 
+            client.name.toLowerCase().includes(searchQuery) ||
+            (client.email && client.email.toLowerCase().includes(searchQuery)) ||
+            (client.phone && client.phone.includes(searchQuery));
+        
+        return matchesStatus && matchesSearch;
+    });
+    
+    renderClients();
 }
 
 function openNewClientModal() {
@@ -1215,13 +1443,28 @@ function closeClientModal() {
     document.getElementById('clientForm').reset();
 }
 
+// Enhanced Create Client
 async function createClient(e) {
     e.preventDefault();
+    
+    let notes = document.getElementById('clientNotes').value || '';
+    
+    // Add emergency contact to notes if provided
+    const emergencyName = document.getElementById('clientEmergencyName').value;
+    const emergencyPhone = document.getElementById('clientEmergencyPhone').value;
+    
+    if (emergencyName || emergencyPhone) {
+        notes = `Emergency Contact: ${emergencyName || 'N/A'} - ${emergencyPhone || 'N/A'}\n\n${notes}`;
+    }
     
     const client = {
         name: document.getElementById('clientName').value,
         email: document.getElementById('clientEmail').value,
-        phone: document.getElementById('clientPhone').value
+        phone: document.getElementById('clientPhone').value,
+        dob: document.getElementById('clientDOB').value,
+        address: document.getElementById('clientAddress').value,
+        insurance: document.getElementById('clientInsurance').value,
+        notes: notes
     };
     
     try {
@@ -1237,7 +1480,82 @@ async function createClient(e) {
     }
 }
 
-// Appointment Functions
+// Edit Client Profile
+function editClientProfile() {
+    if (!currentEditingClient) return;
+    
+    // Populate edit form
+    document.getElementById('editClientName').value = currentEditingClient.name;
+    document.getElementById('editClientEmail').value = currentEditingClient.email || '';
+    document.getElementById('editClientPhone').value = currentEditingClient.phone || '';
+    document.getElementById('editClientDOB').value = currentEditingClient.dob || '';
+    document.getElementById('editClientAddress').value = currentEditingClient.address || '';
+    document.getElementById('editClientInsurance').value = currentEditingClient.insurance || '';
+    document.getElementById('editClientStatus').value = currentEditingClient.status || 'active';
+    document.getElementById('editClientNotes').value = currentEditingClient.notes || '';
+    
+    closeClientProfile();
+    document.getElementById('editClientModal').classList.add('active');
+}
+
+function closeEditClientModal() {
+    document.getElementById('editClientModal').classList.remove('active');
+}
+
+// Save Client Changes
+async function saveClientChanges(e) {
+    e.preventDefault();
+    
+    if (!currentEditingClient) return;
+    
+    const updatedData = {
+        name: document.getElementById('editClientName').value,
+        email: document.getElementById('editClientEmail').value,
+        phone: document.getElementById('editClientPhone').value,
+        dob: document.getElementById('editClientDOB').value,
+        address: document.getElementById('editClientAddress').value,
+        insurance: document.getElementById('editClientInsurance').value,
+        status: document.getElementById('editClientStatus').value,
+        notes: document.getElementById('editClientNotes').value
+    };
+    
+    try {
+        await apiCall(`/clients/${currentEditingClient.id}`, {
+            method: 'PUT',
+            body: JSON.stringify(updatedData)
+        });
+        
+        closeEditClientModal();
+        loadClients();
+        alert('Client updated successfully!');
+    } catch (error) {
+        alert('Error updating client');
+    }
+}
+
+// Delete Client Profile
+async function deleteClientProfile() {
+    if (!currentEditingClient) return;
+    
+    if (!confirm(`Are you sure you want to delete ${currentEditingClient.name}? This action cannot be undone.`)) {
+        return;
+    }
+    
+    try {
+        await apiCall(`/clients/${currentEditingClient.id}`, {
+            method: 'DELETE'
+        });
+        
+        closeClientProfile();
+        loadClients();
+        alert('Client deleted successfully');
+    } catch (error) {
+        alert('Error deleting client');
+    }
+}
+
+// ==================== APPOINTMENT FUNCTIONS ====================
+
 async function loadAppointments() {
     try {
         allAppointments = await apiCall('/appointments');
@@ -1535,7 +1853,7 @@ function copyNote() {
     const note = document.getElementById('noteOutput').textContent;
     navigator.clipboard.writeText(note).then(() => {
         const btn = document.getElementById('copyNoteBtn');
-        btn.textContent = '✓ Copied!';
+        btn.textContent = 'Copied!';
         setTimeout(() => btn.textContent = 'Copy Note', 2000);
     });
 }
@@ -1553,6 +1871,8 @@ function showSection(section) {
 async function openClientProfile(clientId) {
     const client = allClients.find(c => c.id === clientId);
     if (!client) return;
+    
+    currentEditingClient = client;
     
     // Set basic info
     document.getElementById('profileName').textContent = client.name;
@@ -1578,6 +1898,7 @@ async function openClientProfile(clientId) {
 
 function closeClientProfile() {
     document.getElementById('clientProfileModal').classList.remove('active');
+    currentEditingClient = null;
 }
 
 function switchProfileTab(tab) {
@@ -1667,6 +1988,7 @@ document.getElementById('toggleLink').addEventListener('click', (e) => {
     toggleAuthMode();
 });
 document.getElementById('clientForm').addEventListener('submit', createClient);
+document.getElementById('editClientForm').addEventListener('submit', saveClientChanges);
 document.getElementById('appointmentForm').addEventListener('submit', createAppointment);
 
 // Initialize
