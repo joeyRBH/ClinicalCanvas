@@ -2165,17 +2165,32 @@ async function saveEditedAppointment(e) {
         start_time: startDateTime.toISOString(),
         end_time: endDateTime.toISOString(),
         type: document.getElementById('editAppointmentType').value,
-        notes: document.getElementById('editAppointmentNotes').value
+        notes: document.getElementById('editAppointmentNotes').value,
+        status: currentViewingAppointment.status || 'scheduled' // Preserve existing status
     };
     
+    console.log('Appointment ID:', currentViewingAppointment.id);
     console.log('Updated appointment data:', updatedData);
     
     try {
-        const result = await apiCall(`/appointments/${currentViewingAppointment.id}`, {
+        const response = await fetch(`${API_URL}/appointments/${currentViewingAppointment.id}`, {
             method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authToken}`
+            },
             body: JSON.stringify(updatedData)
         });
         
+        console.log('Response status:', response.status);
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error('Error response:', errorData);
+            throw new Error(errorData.error || 'Failed to update appointment');
+        }
+        
+        const result = await response.json();
         console.log('API response:', result);
         
         closeEditAppointmentModal();
