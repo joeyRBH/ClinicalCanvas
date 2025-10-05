@@ -2166,7 +2166,8 @@ async function saveEditedAppointment(e) {
         end_time: endDateTime.toISOString(),
         type: document.getElementById('editAppointmentType').value,
         notes: document.getElementById('editAppointmentNotes').value,
-        status: currentViewingAppointment.status || 'scheduled' // Preserve existing status
+        status: currentViewingAppointment.status || 'scheduled', // Preserve existing status
+        location: currentViewingAppointment.location || null // Preserve existing location
     };
     
     console.log('Appointment ID:', currentViewingAppointment.id);
