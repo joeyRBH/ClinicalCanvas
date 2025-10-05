@@ -1175,7 +1175,12 @@
             </div>
             <div class="info-item" style="grid-column: 1 / -1;">
                 <div class="info-label">Status</div>
-                <div class="info-value" id="detailStatus">-</div>
+                <select id="detailStatus" style="width: 100%; padding: 8px; border: 1px solid #e5e7eb; border-radius: 6px;">
+                    <option value="scheduled">Scheduled</option>
+                    <option value="completed">Completed</option>
+                    <option value="cancelled">Cancelled</option>
+                    <option value="no-show">No Show</option>
+                </select>
             </div>
             <div class="info-item" style="grid-column: 1 / -1;">
                 <div class="info-label">Notes</div>
@@ -1184,9 +1189,70 @@
         </div>
         
         <div class="modal-footer" style="margin-top: 24px;">
+            <button type="button" class="btn-secondary" style="background: #fee2e2; color: #991b1b;" onclick="deleteAppointment()">Delete</button>
             <button type="button" class="btn-secondary" onclick="closeAppointmentDetail()">Close</button>
-            <button type="button" class="btn-primary" onclick="alert('Edit functionality coming soon!')">Edit Appointment</button>
+            <button type="button" class="btn-primary" onclick="openEditAppointment()">Edit</button>
+            <button type="button" class="btn-primary" onclick="updateAppointmentStatus()">Update Status</button>
         </div>
+    </div>
+</div>
+
+<!-- Edit Appointment Modal -->
+<div id="editAppointmentModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Edit Appointment</h2>
+            <button class="close-btn" onclick="closeEditAppointmentModal()">×</button>
+        </div>
+        
+        <form id="editAppointmentForm">
+            <div class="form-group">
+                <label>Client</label>
+                <select id="editAppointmentClient" required>
+                    <option value="">Select a client...</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Date</label>
+                <input type="date" id="editAppointmentDate" required style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
+            </div>
+            
+            <div class="form-group">
+                <label>Start Time</label>
+                <input type="time" id="editAppointmentStartTime" required style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
+            </div>
+            
+            <div class="form-group">
+                <label>Duration (minutes)</label>
+                <select id="editAppointmentDuration" required>
+                    <option value="30">30 minutes</option>
+                    <option value="45">45 minutes</option>
+                    <option value="60">60 minutes</option>
+                    <option value="90">90 minutes</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Type</label>
+                <select id="editAppointmentType" required>
+                    <option value="session">Therapy Session</option>
+                    <option value="initial">Initial Consultation</option>
+                    <option value="followup">Follow-up</option>
+                    <option value="assessment">Assessment</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Notes (optional)</label>
+                <textarea id="editAppointmentNotes" style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px; min-height: 80px;"></textarea>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeEditAppointmentModal()">Cancel</button>
+                <button type="submit" class="btn-primary">Save Changes</button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -1198,6 +1264,7 @@ let isLoginMode = true;
 let allClients = [];
 let filteredClients = [];
 let currentEditingClient = null;
+let currentViewingAppointment = null;
 let allAppointments = [];
 let currentDate = new Date();
 const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -1987,13 +2054,15 @@ function saveIntakeForm() {
 
 // Appointment Detail Functions
 function openAppointmentDetail(appointment) {
+    currentViewingAppointment = appointment;
+    
     document.getElementById('detailClient').textContent = appointment.client_name || 'Unknown Client';
     document.getElementById('detailType').textContent = appointment.type || 'Session';
     
     const date = new Date(appointment.start_time);
     document.getElementById('detailDate').textContent = date.toLocaleDateString();
     document.getElementById('detailTime').textContent = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) + ' - ' + new Date(appointment.end_time).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-    document.getElementById('detailStatus').textContent = appointment.status || 'Scheduled';
+    document.getElementById('detailStatus').value = appointment.status || 'scheduled';
     document.getElementById('detailNotes').textContent = appointment.notes || 'No notes';
     
     document.getElementById('appointmentDetailModal').classList.add('active');
@@ -2001,6 +2070,123 @@ function openAppointmentDetail(appointment) {
 
 function closeAppointmentDetail() {
     document.getElementById('appointmentDetailModal').classList.remove('active');
+    currentViewingAppointment = null;
+}
+
+// Update Appointment Status
+async function updateAppointmentStatus() {
+    if (!currentViewingAppointment) return;
+    
+    const newStatus = document.getElementById('detailStatus').value;
+    
+    try {
+        await apiCall(`/appointments/${currentViewingAppointment.id}`, {
+            method: 'PUT',
+            body: JSON.stringify({ status: newStatus })
+        });
+        
+        alert('Appointment status updated!');
+        closeAppointmentDetail();
+        await loadAppointments();
+    } catch (error) {
+        alert('Error updating appointment status: ' + error.message);
+    }
+}
+
+// Open Edit Appointment Modal
+function openEditAppointment() {
+    if (!currentViewingAppointment) return;
+    
+    // Populate client dropdown
+    const clientSelect = document.getElementById('editAppointmentClient');
+    clientSelect.innerHTML = '<option value="">Select a client...</option>';
+    
+    allClients.forEach(client => {
+        const option = document.createElement('option');
+        option.value = client.id;
+        option.textContent = client.name;
+        if (client.id === currentViewingAppointment.client_id) {
+            option.selected = true;
+        }
+        clientSelect.appendChild(option);
+    });
+    
+    // Populate form fields
+    const startDate = new Date(currentViewingAppointment.start_time);
+    const endDate = new Date(currentViewingAppointment.end_time);
+    const duration = Math.round((endDate - startDate) / 60000); // Convert to minutes
+    
+    document.getElementById('editAppointmentDate').value = startDate.toISOString().split('T')[0];
+    document.getElementById('editAppointmentStartTime').value = startDate.toTimeString().slice(0, 5);
+    document.getElementById('editAppointmentDuration').value = duration;
+    document.getElementById('editAppointmentType').value = currentViewingAppointment.type || 'session';
+    document.getElementById('editAppointmentNotes').value = currentViewingAppointment.notes || '';
+    
+    closeAppointmentDetail();
+    document.getElementById('editAppointmentModal').classList.add('active');
+}
+
+function closeEditAppointmentModal() {
+    document.getElementById('editAppointmentModal').classList.remove('active');
+}
+
+// Save Edited Appointment
+async function saveEditedAppointment(e) {
+    e.preventDefault();
+    
+    if (!currentViewingAppointment) return;
+    
+    const date = document.getElementById('editAppointmentDate').value;
+    const startTime = document.getElementById('editAppointmentStartTime').value;
+    const duration = parseInt(document.getElementById('editAppointmentDuration').value);
+    
+    // Create start and end datetime
+    const startDateTime = new Date(`${date}T${startTime}`);
+    const endDateTime = new Date(startDateTime.getTime() + duration * 60000);
+    
+    const updatedData = {
+        client_id: parseInt(document.getElementById('editAppointmentClient').value),
+        start_time: startDateTime.toISOString(),
+        end_time: endDateTime.toISOString(),
+        type: document.getElementById('editAppointmentType').value,
+        notes: document.getElementById('editAppointmentNotes').value
+    };
+    
+    try {
+        await apiCall(`/appointments/${currentViewingAppointment.id}`, {
+            method: 'PUT',
+            body: JSON.stringify(updatedData)
+        });
+        
+        closeEditAppointmentModal();
+        currentViewingAppointment = null;
+        await loadAppointments();
+        alert('Appointment updated successfully!');
+    } catch (error) {
+        alert('Error updating appointment: ' + error.message);
+    }
+}
+
+// Delete Appointment
+async function deleteAppointment() {
+    if (!currentViewingAppointment) return;
+    
+    if (!confirm('Are you sure you want to delete this appointment? This action cannot be undone.')) {
+        return;
+    }
+    
+    try {
+        await apiCall(`/appointments/${currentViewingAppointment.id}`, {
+            method: 'DELETE'
+        });
+        
+        alert('Appointment deleted successfully!');
+        closeAppointmentDetail();
+        currentViewingAppointment = null;
+        await loadAppointments();
+    } catch (error) {
+        alert('Error deleting appointment: ' + error.message);
+    }
 }
 
 // Event Listeners
@@ -2012,6 +2198,7 @@ document.getElementById('toggleLink').addEventListener('click', (e) => {
 document.getElementById('clientForm').addEventListener('submit', createClient);
 document.getElementById('editClientForm').addEventListener('submit', saveClientChanges);
 document.getElementById('appointmentForm').addEventListener('submit', createAppointment);
+document.getElementById('editAppointmentForm').addEventListener('submit', saveEditedAppointment);
 
 // Initialize
 if (authToken) {
