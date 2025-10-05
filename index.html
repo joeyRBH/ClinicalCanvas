@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -754,7 +752,7 @@
         <!-- Notes Section -->
         <div class="content-section" id="notesSection">
             <h1 class="section-title">AI Clinical Notes</h1>
-            <p class="section-text">Generate professional clinical documentation</p>
+            <p class="section-text">Generate professional clinical documentation with Claude AI</p>
             
             <div class="card">
                 <div class="form-group">
@@ -767,7 +765,7 @@
                     <textarea id="noteContent" placeholder="Brief session summary..." style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px; min-height: 120px;"></textarea>
                 </div>
                 
-                <button class="btn-primary" onclick="generateNote()">Generate Clinical Note</button>
+                <button class="btn-primary" onclick="generateNote()">Generate Clinical Note with AI</button>
                 
                 <div id="noteOutput" style="margin-top: 24px; padding: 20px; background: #f9fafb; border-radius: 8px; white-space: pre-wrap; display: none;"></div>
                 <button id="copyNoteBtn" class="btn-secondary" onclick="copyNote()" style="margin-top: 12px; display: none;">Copy Note</button>
@@ -1450,8 +1448,8 @@ function openNewInvoiceModal() {
     alert('Invoice creation coming soon!');
 }
 
-// Notes Functions
-function generateNote() {
+// Notes Functions - WITH CLAUDE AI INTEGRATION
+async function generateNote() {
     const clientName = document.getElementById('noteClientName').value;
     const content = document.getElementById('noteContent').value;
     
@@ -1463,23 +1461,74 @@ function generateNote() {
     const output = document.getElementById('noteOutput');
     const copyBtn = document.getElementById('copyNoteBtn');
     
-    output.textContent = 'Generating clinical note...';
+    output.textContent = 'Generating clinical note with Claude AI...';
     output.style.display = 'block';
+    copyBtn.style.display = 'none';
     
-    setTimeout(() => {
-        let note = `CLINICAL PROGRESS NOTE\n\n`;
-        note += `Client: ${clientName}\n`;
-        note += `Date: ${new Date().toLocaleDateString()}\n`;
-        note += `Session Type: Individual Therapy\n\n`;
-        note += `Presenting Concerns:\n${content}\n\n`;
-        note += `Clinical Observations:\nClient appeared engaged and cooperative during session.\n\n`;
-        note += `Interventions:\n- Cognitive behavioral techniques\n- Mindfulness exercises\n\n`;
-        note += `Progress:\nClient showed good insight and participation.\n\n`;
-        note += `Plan:\nContinue weekly sessions. Monitor progress on current goals.`;
+    try {
+        const response = await fetch("https://api.anthropic.com/v1/messages", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                model: "claude-sonnet-4-20250514",
+                max_tokens: 2000,
+                messages: [{
+                    role: "user",
+                    content: `You are a professional mental health clinician writing a clinical progress note. 
+
+Generate a comprehensive, professional clinical progress note based on the following information:
+
+Client Name: ${clientName}
+Date: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+Session Summary: ${content}
+
+Please structure the note with these sections:
+1. Client Information (name, date)
+2. Session Type (e.g., Individual Therapy, 60 minutes)
+3. Presenting Concerns (based on the session summary provided)
+4. Clinical Observations (mental status, mood, affect, engagement)
+5. Interventions (therapeutic techniques used)
+6. Client Response to Treatment
+7. Progress Toward Goals
+8. Plan for Next Session
+
+Write in a professional, objective tone appropriate for clinical documentation. Be specific but maintain client confidentiality. The note should be thorough enough for insurance documentation and clinical records.
+
+DO NOT include any disclaimers about being an AI or needing human review. Write the note as if you are the treating clinician.`
+                }]
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error('API request failed: ' + response.status);
+        }
+        
+        const data = await response.json();
+        const clinicalNote = data.content[0].text;
+        
+        output.textContent = clinicalNote;
+        copyBtn.style.display = 'block';
+        
+    } catch (error) {
+        console.error('Error generating note:', error);
+        
+        // Fallback to basic template if API fails
+        let note = 'CLINICAL PROGRESS NOTE\n\n';
+        note += 'Client: ' + clientName + '\n';
+        note += 'Date: ' + new Date().toLocaleDateString() + '\n';
+        note += 'Session Type: Individual Therapy\n\n';
+        note += 'Presenting Concerns:\n' + content + '\n\n';
+        note += 'Clinical Observations:\nClient appeared engaged and cooperative during session.\n\n';
+        note += 'Interventions:\n- Cognitive behavioral techniques\n- Mindfulness exercises\n\n';
+        note += 'Progress:\nClient showed good insight and participation.\n\n';
+        note += 'Plan:\nContinue weekly sessions. Monitor progress on current goals.\n\n';
+        note += '[Note: AI generation unavailable - using basic template]';
         
         output.textContent = note;
         copyBtn.style.display = 'block';
-    }, 1500);
+    }
 }
 
 function copyNote() {
