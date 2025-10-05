@@ -2032,6 +2032,25 @@ async function generateNote() {
     output.style.display = 'block';
     copyBtn.style.display = 'none';
     
+    const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    
+    const promptText = "You are a professional mental health clinician writing a clinical progress note. " +
+        "\n\nGenerate a comprehensive, professional clinical progress note based on the following information:" +
+        "\n\nClient Name: " + clientName +
+        "\nDate: " + today +
+        "\nSession Summary: " + content +
+        "\n\nPlease structure the note with these sections:" +
+        "\n1. Client Information (name, date)" +
+        "\n2. Session Type (e.g., Individual Therapy, 60 minutes)" +
+        "\n3. Presenting Concerns (based on the session summary provided)" +
+        "\n4. Clinical Observations (mental status, mood, affect, engagement)" +
+        "\n5. Interventions (therapeutic techniques used)" +
+        "\n6. Client Response to Treatment" +
+        "\n7. Progress Toward Goals" +
+        "\n8. Plan for Next Session" +
+        "\n\nWrite in a professional, objective tone appropriate for clinical documentation. Be specific but maintain client confidentiality. The note should be thorough enough for insurance documentation and clinical records." +
+        "\n\nDO NOT include any disclaimers about being an AI or needing human review. Write the note as if you are the treating clinician.";
+    
     try {
         const response = await fetch("https://api.anthropic.com/v1/messages", {
             method: "POST",
@@ -2043,27 +2062,7 @@ async function generateNote() {
                 max_tokens: 2000,
                 messages: [{
                     role: "user",
-                    content: `You are a professional mental health clinician writing a clinical progress note. 
-
-Generate a comprehensive, professional clinical progress note based on the following information:
-
-Client Name: ${clientName}
-Date: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-Session Summary: ${content}
-
-Please structure the note with these sections:
-1. Client Information (name, date)
-2. Session Type (e.g., Individual Therapy, 60 minutes)
-3. Presenting Concerns (based on the session summary provided)
-4. Clinical Observations (mental status, mood, affect, engagement)
-5. Interventions (therapeutic techniques used)
-6. Client Response to Treatment
-7. Progress Toward Goals
-8. Plan for Next Session
-
-Write in a professional, objective tone appropriate for clinical documentation. Be specific but maintain client confidentiality. The note should be thorough enough for insurance documentation and clinical records.
-
-DO NOT include any disclaimers about being an AI or needing human review. Write the note as if you are the treating clinician.`
+                    content: promptText
                 }]
             })
         });
