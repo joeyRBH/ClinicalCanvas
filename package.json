@@ -1,19 +1,28 @@
 {
   "name": "clinicalcanvas-backend",
   "version": "1.0.0",
-  "description": "Backend API for ClinicalCanvas practice management",
+  "description": "Backend API for ClinicalCanvas practice management platform",
   "main": "api/index.js",
   "scripts": {
     "start": "node api/index.js",
-    "dev": "nodemon api/index.js"
+    "dev": "nodemon api/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "keywords": [
+    "ehr",
+    "practice-management",
+    "healthcare",
+    "api"
+  ],
+  "author": "",
+  "license": "MIT",
   "dependencies": {
     "express": "^4.18.2",
     "cors": "^2.8.5",
     "jsonwebtoken": "^9.0.2",
     "bcryptjs": "^2.4.3",
     "dotenv": "^16.3.1",
-    "@vercel/postgres": "^0.5.1"
+    "@neondatabase/serverless": "^0.9.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
@@ -22,4 +31,3 @@
     "node": ">=18.0.0"
   }
 }
-
