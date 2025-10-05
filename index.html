@@ -23,7 +23,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
             padding: 20px;
         }
 
@@ -69,13 +69,13 @@
 
         .form-group input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #3b82f6;
         }
 
         .auth-btn {
             width: 100%;
             padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
             color: white;
             border: none;
             border-radius: 8px;
@@ -87,7 +87,7 @@
 
         .auth-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
         }
 
         .auth-toggle {
@@ -97,7 +97,7 @@
         }
 
         .auth-toggle a {
-            color: #667eea;
+            color: #3b82f6;
             text-decoration: none;
             font-weight: 600;
         }
@@ -133,7 +133,7 @@
             padding: 0 24px 24px;
             font-size: 24px;
             font-weight: 700;
-            color: #667eea;
+            color: #3b82f6;
             border-bottom: 1px solid #e5e7eb;
         }
 
@@ -153,13 +153,13 @@
 
         .nav-item:hover {
             background: #f9fafb;
-            color: #667eea;
+            color: #3b82f6;
         }
 
         .nav-item.active {
-            background: #f0f4ff;
-            color: #667eea;
-            border-left-color: #667eea;
+            background: #eff6ff;
+            color: #3b82f6;
+            border-left-color: #3b82f6;
             font-weight: 600;
         }
 
@@ -188,7 +188,7 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -239,7 +239,7 @@
 
         .btn-primary {
             padding: 12px 24px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
             color: white;
             border: none;
             border-radius: 8px;
@@ -291,8 +291,8 @@
         }
 
         .client-card:hover {
-            border-color: #667eea;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+            border-color: #3b82f6;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
         }
 
         .client-info h3 {
@@ -432,7 +432,7 @@
 
         .calendar-day:hover {
             background: #f9fafb;
-            border-color: #667eea;
+            border-color: #3b82f6;
         }
 
         .calendar-day.other-month {
@@ -441,8 +441,8 @@
         }
 
         .calendar-day.today {
-            background: #f0f4ff;
-            border-color: #667eea;
+            background: #eff6ff;
+            border-color: #3b82f6;
         }
 
         .calendar-day-number {
@@ -451,7 +451,7 @@
         }
 
         .calendar-appointment {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
             color: white;
             padding: 4px 8px;
             border-radius: 4px;
@@ -1097,6 +1097,7 @@ async function createClient(e) {
 }
 
 function openClientProfile(client) {
+    // Store the client before opening modal
     currentEditingClient = client;
     
     document.getElementById('editClientName').value = client.name;
@@ -1113,6 +1114,7 @@ function openClientProfile(client) {
 
 function closeEditClientModal() {
     document.getElementById('editClientModal').classList.remove('active');
+    // Don't clear currentEditingClient here
 }
 
 async function saveClientChanges(e) {
