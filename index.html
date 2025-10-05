@@ -272,13 +272,6 @@
             color: #6b7280;
         }
 
-        .empty-state svg {
-            width: 80px;
-            height: 80px;
-            margin-bottom: 16px;
-            opacity: 0.3;
-        }
-
         /* Client List */
         .client-list {
             display: grid;
@@ -374,152 +367,6 @@
             cursor: pointer;
         }
 
-        /* Client Profile */
-        .profile-header {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            padding-bottom: 24px;
-            border-bottom: 1px solid #e5e7eb;
-            margin-bottom: 24px;
-        }
-
-        .profile-avatar-large {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 32px;
-            font-weight: 700;
-        }
-
-        .profile-tabs {
-            display: flex;
-            gap: 24px;
-            border-bottom: 2px solid #e5e7eb;
-            margin-bottom: 24px;
-        }
-
-        .profile-tab {
-            padding: 12px 0;
-            cursor: pointer;
-            color: #6b7280;
-            font-weight: 600;
-            border-bottom: 2px solid transparent;
-            margin-bottom: -2px;
-            transition: all 0.2s;
-        }
-
-        .profile-tab:hover {
-            color: #667eea;
-        }
-
-        .profile-tab.active {
-            color: #667eea;
-            border-bottom-color: #667eea;
-        }
-
-        .profile-section {
-            display: none;
-        }
-
-        .profile-section.active {
-            display: block;
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .info-item {
-            padding: 16px;
-            background: #f9fafb;
-            border-radius: 8px;
-        }
-
-        .info-label {
-            font-size: 12px;
-            color: #6b7280;
-            text-transform: uppercase;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .info-value {
-            font-size: 16px;
-            color: #1f2937;
-        }
-
-        .session-item {
-            padding: 16px;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            margin-bottom: 12px;
-        }
-
-        .session-date {
-            font-weight: 600;
-            color: #1f2937;
-            margin-bottom: 4px;
-        }
-
-        .session-type {
-            font-size: 14px;
-            color: #6b7280;
-        }
-
-        .intake-form {
-            max-width: 800px;
-        }
-
-        .form-section {
-            margin-bottom: 32px;
-        }
-
-        .form-section h3 {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 16px;
-            color: #1f2937;
-        }
-
-        textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            font-family: inherit;
-            resize: vertical;
-        }
-
-        .checkbox-group {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .checkbox-item input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-        }
-
-        .large-modal .modal-content {
-            max-width: 900px;
-        }
-
         /* Calendar */
         .calendar-header {
             display: flex;
@@ -581,7 +428,6 @@
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.2s;
-            position: relative;
         }
 
         .calendar-day:hover {
@@ -624,6 +470,41 @@
             font-size: 16px;
             background: white;
         }
+
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .info-item {
+            padding: 16px;
+            background: #f9fafb;
+            border-radius: 8px;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 16px;
+            color: #1f2937;
+        }
     </style>
 </head>
 <body>
@@ -636,7 +517,7 @@
         
         <div id="errorMessage" class="error-message"></div>
 
-        <form id="authForm">
+        <form id="authForm" onsubmit="handleAuth(event)">
             <div class="form-group" id="nameGroup" style="display:none;">
                 <label>Full Name</label>
                 <input type="text" id="nameInput" placeholder="Dr. Jane Smith">
@@ -657,7 +538,7 @@
 
         <div class="auth-toggle">
             <span id="toggleText">Don't have an account?</span>
-            <a href="#" id="toggleLink">Sign up</a>
+            <a href="#" id="toggleLink" onclick="toggleAuthMode(event)">Sign up</a>
         </div>
     </div>
 </div>
@@ -678,18 +559,6 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
                 </svg>
                 Clients
-            </div>
-            <div class="nav-item" onclick="showSection('billing')">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
-                </svg>
-                Billing
-            </div>
-            <div class="nav-item" onclick="showSection('notes')">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                </svg>
-                AI Notes
             </div>
         </div>
 
@@ -723,18 +592,15 @@
                     </div>
                 </div>
                 
-                <div class="calendar-grid" id="calendarGrid">
-                    <!-- Calendar will be rendered here -->
-                </div>
+                <div class="calendar-grid" id="calendarGrid"></div>
             </div>
         </div>
 
-        <!-- ENHANCED CLIENTS SECTION -->
+        <!-- Clients Section -->
         <div class="content-section" id="clientsSection">
             <h1 class="section-title">Client Management</h1>
             <p class="section-text">Manage your client information and relationships</p>
             
-            <!-- Summary Cards -->
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
                 <div class="card">
                     <div style="font-size: 14px; color: #6b7280; margin-bottom: 8px;">Total Clients</div>
@@ -744,29 +610,23 @@
                     <div style="font-size: 14px; color: #6b7280; margin-bottom: 8px;">Active</div>
                     <div style="font-size: 32px; font-weight: 700; color: #10b981;" id="activeClientsCount">0</div>
                 </div>
-                <div class="card">
-                    <div style="font-size: 14px; color: #6b7280; margin-bottom: 8px;">New This Month</div>
-                    <div style="font-size: 32px; font-weight: 700; color: #667eea;" id="newClientsCount">0</div>
-                </div>
             </div>
             
             <div class="card">
-                <!-- Header with Add Button and Search -->
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <h2 style="font-size: 20px; font-weight: 600;">All Clients</h2>
                     <button class="btn-primary" onclick="openNewClientModal()">+ New Client</button>
                 </div>
                 
-                <!-- Search and Filters -->
-                <div style="display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;">
+                <div style="display: flex; gap: 12px; margin-bottom: 20px;">
                     <input 
                         type="text" 
                         id="clientSearch" 
                         placeholder="Search clients..." 
                         onkeyup="searchClients(this.value)"
-                        style="flex: 1; min-width: 250px; padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 8px;"
+                        style="flex: 1; padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 8px;"
                     >
-                    <select id="statusFilter" onchange="filterClients()" style="padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 8px; background: white;">
+                    <select id="statusFilter" onchange="filterClients()" style="padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
                         <option value="">All Status</option>
                         <option value="active">Active</option>
                         <option value="inactive">Inactive</option>
@@ -776,43 +636,10 @@
                 <div id="clientsList" class="loading">Loading clients...</div>
             </div>
         </div>
-
-        <!-- Billing Section -->
-        <div class="content-section" id="billingSection">
-            <h1 class="section-title">Billing & Payments</h1>
-            <p class="section-text">Manage invoices and payments</p>
-            
-            <button class="btn-primary" onclick="openNewInvoiceModal()">+ New Invoice</button>
-            
-            <div id="invoicesList" class="loading">Loading invoices...</div>
-        </div>
-
-        <!-- Notes Section -->
-        <div class="content-section" id="notesSection">
-            <h1 class="section-title">AI Clinical Notes</h1>
-            <p class="section-text">Generate professional clinical documentation with Claude AI</p>
-            
-            <div class="card">
-                <div class="form-group">
-                    <label>Client Name</label>
-                    <input type="text" id="noteClientName" placeholder="Enter client name" style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
-                </div>
-                
-                <div class="form-group">
-                    <label>Session Notes</label>
-                    <textarea id="noteContent" placeholder="Brief session summary..." style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px; min-height: 120px;"></textarea>
-                </div>
-                
-                <button class="btn-primary" onclick="generateNote()">Generate Clinical Note with AI</button>
-                
-                <div id="noteOutput" style="margin-top: 24px; padding: 20px; background: #f9fafb; border-radius: 8px; white-space: pre-wrap; display: none;"></div>
-                <button id="copyNoteBtn" class="btn-secondary" onclick="copyNote()" style="margin-top: 12px; display: none;">Copy Note</button>
-            </div>
-        </div>
     </div>
 </div>
 
-<!-- ENHANCED NEW CLIENT MODAL -->
+<!-- New Client Modal -->
 <div id="clientModal" class="modal">
     <div class="modal-content" style="max-width: 700px;">
         <div class="modal-header">
@@ -820,7 +647,7 @@
             <button class="close-btn" onclick="closeClientModal()">×</button>
         </div>
         
-        <form id="clientForm">
+        <form id="clientForm" onsubmit="createClient(event)">
             <div class="form-group">
                 <label>Full Name *</label>
                 <input type="text" id="clientName" required style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
@@ -846,32 +673,18 @@
                 
                 <div class="form-group">
                     <label>Insurance</label>
-                    <input type="text" id="clientInsurance" placeholder="e.g., Anthem" style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
+                    <input type="text" id="clientInsurance" style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
                 </div>
             </div>
             
             <div class="form-group">
                 <label>Address</label>
-                <input type="text" id="clientAddress" placeholder="123 Main St, City, State 12345" style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
-            </div>
-            
-            <div style="border-top: 1px solid #e5e7eb; padding-top: 20px; margin-top: 20px;">
-                <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 16px;">Emergency Contact</h3>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-                    <div class="form-group">
-                        <label>Name</label>
-                        <input type="text" id="clientEmergencyName" style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
-                    </div>
-                    <div class="form-group">
-                        <label>Phone</label>
-                        <input type="tel" id="clientEmergencyPhone" style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
-                    </div>
-                </div>
+                <input type="text" id="clientAddress" style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
             </div>
             
             <div class="form-group">
                 <label>Notes</label>
-                <textarea id="clientNotes" rows="3" placeholder="Additional notes..." style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;"></textarea>
+                <textarea id="clientNotes" rows="3" style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;"></textarea>
             </div>
             
             <div class="modal-footer">
@@ -882,7 +695,7 @@
     </div>
 </div>
 
-<!-- EDIT CLIENT MODAL (NEW) -->
+<!-- Edit Client Modal -->
 <div id="editClientModal" class="modal">
     <div class="modal-content" style="max-width: 700px;">
         <div class="modal-header">
@@ -890,7 +703,7 @@
             <button class="close-btn" onclick="closeEditClientModal()">×</button>
         </div>
         
-        <form id="editClientForm">
+        <form id="editClientForm" onsubmit="saveClientChanges(event)">
             <div class="form-group">
                 <label>Full Name *</label>
                 <input type="text" id="editClientName" required style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
@@ -954,12 +767,10 @@
             <button class="close-btn" onclick="closeAppointmentModal()">×</button>
         </div>
         
-        <form id="appointmentForm">
+        <form id="appointmentForm" onsubmit="createAppointment(event)">
             <div class="form-group">
                 <label>Client</label>
-                <select id="appointmentClient" required>
-                    <option value="">Select a client...</option>
-                </select>
+                <select id="appointmentClient" required></select>
             </div>
             
             <div class="form-group">
@@ -1005,149 +816,6 @@
     </div>
 </div>
 
-<!-- Client Profile Modal -->
-<div id="clientProfileModal" class="modal large-modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>Client Profile</h2>
-            <button class="close-btn" onclick="closeClientProfile()">×</button>
-        </div>
-        
-        <div class="profile-header">
-            <div class="profile-avatar-large" id="profileAvatar">C</div>
-            <div style="flex: 1;">
-                <h2 id="profileName">Client Name</h2>
-                <p style="color: #6b7280;" id="profileContact">contact info</p>
-            </div>
-            <div style="display: flex; gap: 12px;">
-                <button class="btn-secondary" onclick="editClientProfile()">Edit Profile</button>
-                <button class="btn-secondary" style="background: #fee2e2; color: #991b1b;" onclick="deleteClientProfile()">Delete</button>
-            </div>
-        </div>
-        
-        <div class="profile-tabs">
-            <div class="profile-tab active" onclick="switchProfileTab('info')">Information</div>
-            <div class="profile-tab" onclick="switchProfileTab('sessions')">Sessions</div>
-            <div class="profile-tab" onclick="switchProfileTab('intake')">Intake Document</div>
-        </div>
-        
-        <div id="profileInfoSection" class="profile-section active">
-            <div class="info-grid">
-                <div class="info-item">
-                    <div class="info-label">Email</div>
-                    <div class="info-value" id="profileEmail">-</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">Phone</div>
-                    <div class="info-value" id="profilePhone">-</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">Date of Birth</div>
-                    <div class="info-value" id="profileDOB">-</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">Insurance</div>
-                    <div class="info-value" id="profileInsurance">-</div>
-                </div>
-            </div>
-            <div class="info-item" style="grid-column: 1 / -1;">
-                <div class="info-label">Address</div>
-                <div class="info-value" id="profileAddress">-</div>
-            </div>
-            <div class="info-item" style="grid-column: 1 / -1; margin-top: 16px;">
-                <div class="info-label">Notes</div>
-                <div class="info-value" id="profileNotes" style="white-space: pre-wrap;">-</div>
-            </div>
-        </div>
-        
-        <div id="profileSessionsSection" class="profile-section">
-            <div id="sessionsList">
-                <div class="empty-state"><p>No sessions yet</p></div>
-            </div>
-        </div>
-        
-        <div id="profileIntakeSection" class="profile-section">
-            <div class="intake-form">
-                <div class="form-section">
-                    <h3>Personal Information</h3>
-                    <div class="form-group">
-                        <label>Emergency Contact Name</label>
-                        <input type="text" id="intakeEmergencyName" style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
-                    </div>
-                    <div class="form-group">
-                        <label>Emergency Contact Phone</label>
-                        <input type="tel" id="intakeEmergencyPhone" style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
-                    </div>
-                </div>
-                
-                <div class="form-section">
-                    <h3>Presenting Concerns</h3>
-                    <div class="form-group">
-                        <label>What brings you to therapy today?</label>
-                        <textarea id="intakeConcerns" rows="4" placeholder="Describe your current concerns..."></textarea>
-                    </div>
-                </div>
-                
-                <div class="form-section">
-                    <h3>Previous Treatment</h3>
-                    <div class="form-group">
-                        <label>Have you received therapy or counseling before?</label>
-                        <select id="intakePreviousTherapy" style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
-                            <option value="">Select...</option>
-                            <option value="yes">Yes</option>
-                            <option value="no">No</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>If yes, please describe</label>
-                        <textarea id="intakePreviousDetails" rows="3"></textarea>
-                    </div>
-                </div>
-                
-                <div class="form-section">
-                    <h3>Current Symptoms (check all that apply)</h3>
-                    <div class="checkbox-group">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="symptomAnxiety" value="anxiety">
-                            <label for="symptomAnxiety">Anxiety</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="symptomDepression" value="depression">
-                            <label for="symptomDepression">Depression</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="symptomSleep" value="sleep">
-                            <label for="symptomSleep">Sleep difficulties</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="symptomStress" value="stress">
-                            <label for="symptomStress">Stress</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="symptomTrauma" value="trauma">
-                            <label for="symptomTrauma">Trauma</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="symptomRelationship" value="relationship">
-                            <label for="symptomRelationship">Relationship issues</label>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="form-section">
-                    <h3>Goals for Therapy</h3>
-                    <div class="form-group">
-                        <label>What do you hope to achieve through therapy?</label>
-                        <textarea id="intakeGoals" rows="4"></textarea>
-                    </div>
-                </div>
-                
-                <button type="button" class="btn-primary" onclick="saveIntakeForm()">Save Intake Document</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 <!-- Appointment Detail Modal -->
 <div id="appointmentDetailModal" class="modal">
     <div class="modal-content">
@@ -1175,7 +843,12 @@
             </div>
             <div class="info-item" style="grid-column: 1 / -1;">
                 <div class="info-label">Status</div>
-                <div class="info-value" id="detailStatus">-</div>
+                <select id="detailStatus" style="width: 100%; padding: 8px; border: 1px solid #e5e7eb; border-radius: 6px;">
+                    <option value="scheduled">Scheduled</option>
+                    <option value="completed">Completed</option>
+                    <option value="cancelled">Cancelled</option>
+                    <option value="no-show">No Show</option>
+                </select>
             </div>
             <div class="info-item" style="grid-column: 1 / -1;">
                 <div class="info-label">Notes</div>
@@ -1184,8 +857,9 @@
         </div>
         
         <div class="modal-footer" style="margin-top: 24px;">
+            <button type="button" class="btn-secondary" style="background: #fee2e2; color: #991b1b;" onclick="deleteAppointment()">Delete</button>
             <button type="button" class="btn-secondary" onclick="closeAppointmentDetail()">Close</button>
-            <button type="button" class="btn-primary" onclick="alert('Edit functionality coming soon!')">Edit Appointment</button>
+            <button type="button" class="btn-primary" onclick="updateAppointmentStatus()">Update Status</button>
         </div>
     </div>
 </div>
@@ -1198,6 +872,7 @@ let isLoginMode = true;
 let allClients = [];
 let filteredClients = [];
 let currentEditingClient = null;
+let currentViewingAppointment = null;
 let allAppointments = [];
 let currentDate = new Date();
 const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -1213,18 +888,16 @@ function showApp() {
     document.getElementById('authContainer').style.display = 'none';
     document.getElementById('appContainer').style.display = 'block';
     
-    // Set user info
     document.getElementById('userName').textContent = currentUser.name || 'User';
     document.getElementById('userEmail').textContent = currentUser.email || '';
     document.getElementById('userAvatar').textContent = (currentUser.name || 'U')[0].toUpperCase();
     
-    // Load initial data
     loadClients();
     loadAppointments();
-    loadInvoices();
 }
 
-function toggleAuthMode() {
+function toggleAuthMode(e) {
+    e.preventDefault();
     isLoginMode = !isLoginMode;
     
     if (isLoginMode) {
@@ -1268,7 +941,6 @@ async function handleAuth(e) {
             return;
         }
         
-        // Save token and user
         authToken = data.token;
         currentUser = data.user;
         localStorage.setItem('authToken', authToken);
@@ -1303,7 +975,7 @@ async function apiCall(endpoint, options = {}) {
     };
     
     if (authToken) {
-        headers['Authorization'] = `Bearer ${authToken}`;
+        headers['Authorization'] = 'Bearer ' + authToken;
     }
     
     const response = await fetch(API_URL + endpoint, {
@@ -1319,9 +991,7 @@ async function apiCall(endpoint, options = {}) {
     return response.json();
 }
 
-// ==================== ENHANCED CLIENT FUNCTIONS ====================
-
-// Enhanced Load Clients
+// Client Functions
 async function loadClients() {
     const container = document.getElementById('clientsList');
     container.innerHTML = '<div class="loading">Loading clients...</div>';
@@ -1330,8 +1000,8 @@ async function loadClients() {
         allClients = await apiCall('/clients');
         filteredClients = [...allClients];
         
-        // Update summary cards
-        updateClientSummary();
+        document.getElementById('totalClientsCount').textContent = allClients.length;
+        document.getElementById('activeClientsCount').textContent = allClients.filter(c => c.status === 'active' || !c.status).length;
         
         if (allClients.length === 0) {
             container.innerHTML = '<div class="empty-state"><p>No clients yet. Click "New Client" to add one.</p></div>';
@@ -1344,23 +1014,6 @@ async function loadClients() {
     }
 }
 
-// Update Summary Cards
-function updateClientSummary() {
-    document.getElementById('totalClientsCount').textContent = allClients.length;
-    document.getElementById('activeClientsCount').textContent = allClients.filter(c => c.status === 'active' || !c.status).length;
-    
-    // New clients this month
-    const thisMonth = new Date();
-    thisMonth.setDate(1);
-    thisMonth.setHours(0,0,0,0);
-    const newThisMonth = allClients.filter(c => {
-        const created = new Date(c.created_at);
-        return created >= thisMonth;
-    }).length;
-    document.getElementById('newClientsCount').textContent = newThisMonth;
-}
-
-// Render Clients List
 function renderClients() {
     const container = document.getElementById('clientsList');
     
@@ -1375,28 +1028,16 @@ function renderClients() {
     filteredClients.forEach(client => {
         const card = document.createElement('div');
         card.className = 'client-card';
-        card.onclick = () => openClientProfile(client.id);
+        card.onclick = () => openClientProfile(client);
         
         const statusColor = (client.status === 'inactive') ? '#fee2e2' : '#dcfce7';
         const statusTextColor = (client.status === 'inactive') ? '#991b1b' : '#166534';
         
-        card.innerHTML = `
-            <div class="client-info">
-                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
-                    <h3 style="margin: 0;">${client.name}</h3>
-                    <span style="padding: 4px 12px; background: ${statusColor}; color: ${statusTextColor}; border-radius: 12px; font-size: 12px; font-weight: 500; text-transform: capitalize;">
-                        ${client.status || 'Active'}
-                    </span>
-                </div>
-                <p style="margin: 0;">${client.email || 'No email'} ${client.phone ? '• ' + client.phone : ''}</p>
-                ${client.insurance ? `<p style="margin: 4px 0 0 0; font-size: 13px; color: #6b7280;">Insurance: ${client.insurance}</p>` : ''}
-            </div>
-        `;
+        card.innerHTML = '<div class="client-info"><div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;"><h3 style="margin: 0;">' + client.name + '</h3><span style="padding: 4px 12px; background: ' + statusColor + '; color: ' + statusTextColor + '; border-radius: 12px; font-size: 12px; font-weight: 500; text-transform: capitalize;">' + (client.status || 'Active') + '</span></div><p style="margin: 0;">' + (client.email || 'No email') + (client.phone ? ' • ' + client.phone : '') + '</p></div>';
         list.appendChild(card);
     });
 }
 
-// Search Clients
 function searchClients(query) {
     query = query.toLowerCase();
     const statusFilter = document.getElementById('statusFilter').value;
@@ -1405,8 +1046,7 @@ function searchClients(query) {
         const matchesSearch = !query || 
             client.name.toLowerCase().includes(query) ||
             (client.email && client.email.toLowerCase().includes(query)) ||
-            (client.phone && client.phone.includes(query)) ||
-            (client.insurance && client.insurance.toLowerCase().includes(query));
+            (client.phone && client.phone.includes(query));
         
         const matchesStatus = !statusFilter || client.status === statusFilter || (!client.status && statusFilter === 'active');
         
@@ -1416,22 +1056,8 @@ function searchClients(query) {
     renderClients();
 }
 
-// Filter Clients
 function filterClients() {
-    const statusFilter = document.getElementById('statusFilter').value;
-    const searchQuery = document.getElementById('clientSearch').value.toLowerCase();
-    
-    filteredClients = allClients.filter(client => {
-        const matchesStatus = !statusFilter || client.status === statusFilter || (!client.status && statusFilter === 'active');
-        const matchesSearch = !searchQuery || 
-            client.name.toLowerCase().includes(searchQuery) ||
-            (client.email && client.email.toLowerCase().includes(searchQuery)) ||
-            (client.phone && client.phone.includes(searchQuery));
-        
-        return matchesStatus && matchesSearch;
-    });
-    
-    renderClients();
+    searchClients(document.getElementById('clientSearch').value);
 }
 
 function openNewClientModal() {
@@ -1443,28 +1069,17 @@ function closeClientModal() {
     document.getElementById('clientForm').reset();
 }
 
-// Enhanced Create Client
 async function createClient(e) {
     e.preventDefault();
-    
-    let notes = document.getElementById('clientNotes').value || '';
-    
-    // Add emergency contact to notes if provided
-    const emergencyName = document.getElementById('clientEmergencyName').value;
-    const emergencyPhone = document.getElementById('clientEmergencyPhone').value;
-    
-    if (emergencyName || emergencyPhone) {
-        notes = `Emergency Contact: ${emergencyName || 'N/A'} - ${emergencyPhone || 'N/A'}\n\n${notes}`;
-    }
     
     const client = {
         name: document.getElementById('clientName').value,
         email: document.getElementById('clientEmail').value,
         phone: document.getElementById('clientPhone').value,
-        dob: document.getElementById('clientDOB').value,
+        dob: document.getElementById('clientDOB').value || null,
         address: document.getElementById('clientAddress').value,
         insurance: document.getElementById('clientInsurance').value,
-        notes: notes
+        notes: document.getElementById('clientNotes').value
     };
     
     try {
@@ -1475,51 +1090,36 @@ async function createClient(e) {
         
         closeClientModal();
         loadClients();
+        alert('Client created successfully!');
     } catch (error) {
         alert('Error creating client');
     }
 }
 
-// Edit Client Profile - FIXED VERSION
-function editClientProfile() {
-    if (!currentEditingClient) return;
+function openClientProfile(client) {
+    currentEditingClient = client;
     
-    // Store reference before any modal changes
-    const clientToEdit = currentEditingClient;
+    document.getElementById('editClientName').value = client.name;
+    document.getElementById('editClientEmail').value = client.email || '';
+    document.getElementById('editClientPhone').value = client.phone || '';
+    document.getElementById('editClientDOB').value = client.dob || '';
+    document.getElementById('editClientAddress').value = client.address || '';
+    document.getElementById('editClientInsurance').value = client.insurance || '';
+    document.getElementById('editClientStatus').value = client.status || 'active';
+    document.getElementById('editClientNotes').value = client.notes || '';
     
-    // Populate edit form
-    document.getElementById('editClientName').value = clientToEdit.name;
-    document.getElementById('editClientEmail').value = clientToEdit.email || '';
-    document.getElementById('editClientPhone').value = clientToEdit.phone || '';
-    document.getElementById('editClientDOB').value = clientToEdit.dob || '';
-    document.getElementById('editClientAddress').value = clientToEdit.address || '';
-    document.getElementById('editClientInsurance').value = clientToEdit.insurance || '';
-    document.getElementById('editClientStatus').value = clientToEdit.status || 'active';
-    document.getElementById('editClientNotes').value = clientToEdit.notes || '';
-    
-    // Close profile modal
-    document.getElementById('clientProfileModal').classList.remove('active');
-    
-    // Keep the client reference active for saving
-    currentEditingClient = clientToEdit;
-    
-    // Open edit modal
     document.getElementById('editClientModal').classList.add('active');
 }
 
 function closeEditClientModal() {
     document.getElementById('editClientModal').classList.remove('active');
-    // Don't clear currentEditingClient here - save function will handle it
 }
 
-// Save Client Changes
 async function saveClientChanges(e) {
     e.preventDefault();
     
-    console.log('Save function called, currentEditingClient:', currentEditingClient);
-    
     if (!currentEditingClient) {
-        alert('Error: No client selected for editing');
+        alert('Error: No client selected');
         return;
     }
     
@@ -1527,57 +1127,29 @@ async function saveClientChanges(e) {
         name: document.getElementById('editClientName').value,
         email: document.getElementById('editClientEmail').value,
         phone: document.getElementById('editClientPhone').value,
-        dob: document.getElementById('editClientDOB').value || null, // Convert empty string to null
+        dob: document.getElementById('editClientDOB').value || null,
         address: document.getElementById('editClientAddress').value,
         insurance: document.getElementById('editClientInsurance').value,
         status: document.getElementById('editClientStatus').value,
         notes: document.getElementById('editClientNotes').value
     };
     
-    console.log('Saving client ID:', currentEditingClient.id);
-    console.log('Updated data being sent:', updatedData);
-    
     try {
-        const result = await apiCall(`/clients/${currentEditingClient.id}`, {
+        await apiCall('/clients/' + currentEditingClient.id, {
             method: 'PUT',
             body: JSON.stringify(updatedData)
         });
         
-        console.log('API response:', result);
-        
         closeEditClientModal();
-        currentEditingClient = null; // Clear after successful save
+        currentEditingClient = null;
         await loadClients();
         alert('Client updated successfully!');
     } catch (error) {
-        console.error('Error details:', error);
         alert('Error updating client: ' + error.message);
     }
 }
 
-// Delete Client Profile
-async function deleteClientProfile() {
-    if (!currentEditingClient) return;
-    
-    if (!confirm(`Are you sure you want to delete ${currentEditingClient.name}? This action cannot be undone.`)) {
-        return;
-    }
-    
-    try {
-        await apiCall(`/clients/${currentEditingClient.id}`, {
-            method: 'DELETE'
-        });
-        
-        closeClientProfile();
-        loadClients();
-        alert('Client deleted successfully');
-    } catch (error) {
-        alert('Error deleting client');
-    }
-}
-
-// ==================== APPOINTMENT FUNCTIONS ====================
-
+// Appointment Functions
 async function loadAppointments() {
     try {
         allAppointments = await apiCall('/appointments');
@@ -1588,7 +1160,6 @@ async function loadAppointments() {
 }
 
 function openNewAppointmentModal() {
-    // Populate client dropdown
     const clientSelect = document.getElementById('appointmentClient');
     clientSelect.innerHTML = '<option value="">Select a client...</option>';
     
@@ -1599,9 +1170,7 @@ function openNewAppointmentModal() {
         clientSelect.appendChild(option);
     });
     
-    // Set default date to today
     document.getElementById('appointmentDate').valueAsDate = new Date();
-    
     document.getElementById('appointmentModal').classList.add('active');
 }
 
@@ -1617,8 +1186,7 @@ async function createAppointment(e) {
     const startTime = document.getElementById('appointmentStartTime').value;
     const duration = parseInt(document.getElementById('appointmentDuration').value);
     
-    // Create start and end datetime
-    const startDateTime = new Date(`${date}T${startTime}`);
+    const startDateTime = new Date(date + 'T' + startTime);
     const endDateTime = new Date(startDateTime.getTime() + duration * 60000);
     
     const appointment = {
@@ -1637,32 +1205,27 @@ async function createAppointment(e) {
         
         closeAppointmentModal();
         loadAppointments();
+        alert('Appointment created!');
     } catch (error) {
         alert('Error creating appointment');
     }
 }
 
-// Calendar Functions
 function renderCalendar() {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
     
-    // Update header
-    document.getElementById('calendarMonth').textContent = `${monthNames[month]} ${year}`;
+    document.getElementById('calendarMonth').textContent = monthNames[month] + ' ' + year;
     
-    // Get first day of month and number of days
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
     const startingDayOfWeek = firstDay.getDay();
-    
-    // Get previous month info for overflow
     const prevMonthLastDay = new Date(year, month, 0).getDate();
     
     const grid = document.getElementById('calendarGrid');
     grid.innerHTML = '';
     
-    // Add day headers
     dayNames.forEach(day => {
         const header = document.createElement('div');
         header.className = 'calendar-day-header';
@@ -1670,15 +1233,13 @@ function renderCalendar() {
         grid.appendChild(header);
     });
     
-    // Add previous month overflow days
     for (let i = startingDayOfWeek - 1; i >= 0; i--) {
         const day = document.createElement('div');
         day.className = 'calendar-day other-month';
-        day.innerHTML = `<div class="calendar-day-number">${prevMonthLastDay - i}</div>`;
+        day.innerHTML = '<div class="calendar-day-number">' + (prevMonthLastDay - i) + '</div>';
         grid.appendChild(day);
     }
     
-    // Add current month days
     const today = new Date();
     for (let day = 1; day <= daysInMonth; day++) {
         const dayEl = document.createElement('div');
@@ -1686,14 +1247,12 @@ function renderCalendar() {
         
         const currentDayDate = new Date(year, month, day);
         
-        // Check if today
         if (currentDayDate.toDateString() === today.toDateString()) {
             dayEl.classList.add('today');
         }
         
-        dayEl.innerHTML = `<div class="calendar-day-number">${day}</div>`;
+        dayEl.innerHTML = '<div class="calendar-day-number">' + day + '</div>';
         
-        // Add appointments for this day
         const dayAppointments = allAppointments.filter(apt => {
             const aptDate = new Date(apt.start_time);
             return aptDate.getFullYear() === year && 
@@ -1708,7 +1267,7 @@ function renderCalendar() {
                 hour: 'numeric', 
                 minute: '2-digit' 
             });
-            aptEl.textContent = `${time} ${apt.client_name || 'Appointment'}`;
+            aptEl.textContent = time + ' ' + (apt.client_name || 'Appointment');
             aptEl.onclick = (e) => {
                 e.stopPropagation();
                 openAppointmentDetail(apt);
@@ -1716,7 +1275,6 @@ function renderCalendar() {
             dayEl.appendChild(aptEl);
         });
         
-        // Click to create appointment on this day
         dayEl.onclick = () => {
             const dateStr = currentDayDate.toISOString().split('T')[0];
             document.getElementById('appointmentDate').value = dateStr;
@@ -1726,13 +1284,12 @@ function renderCalendar() {
         grid.appendChild(dayEl);
     }
     
-    // Add next month overflow days
-    const totalCells = grid.children.length - 7; // Subtract headers
-    const remainingCells = 42 - totalCells - 7; // 6 weeks * 7 days - headers
+    const totalCells = grid.children.length - 7;
+    const remainingCells = 42 - totalCells - 7;
     for (let day = 1; day <= remainingCells; day++) {
         const dayEl = document.createElement('div');
         dayEl.className = 'calendar-day other-month';
-        dayEl.innerHTML = `<div class="calendar-day-number">${day}</div>`;
+        dayEl.innerHTML = '<div class="calendar-day-number">' + day + '</div>';
         grid.appendChild(dayEl);
     }
 }
@@ -1752,132 +1309,64 @@ function today() {
     renderCalendar();
 }
 
-// Invoice Functions
-async function loadInvoices() {
-    const container = document.getElementById('invoicesList');
-    container.innerHTML = '<div class="loading">Loading invoices...</div>';
+function openAppointmentDetail(appointment) {
+    currentViewingAppointment = appointment;
+    
+    document.getElementById('detailClient').textContent = appointment.client_name || 'Unknown Client';
+    document.getElementById('detailType').textContent = appointment.type || 'Session';
+    
+    const date = new Date(appointment.start_time);
+    document.getElementById('detailDate').textContent = date.toLocaleDateString();
+    document.getElementById('detailTime').textContent = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) + ' - ' + new Date(appointment.end_time).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+    document.getElementById('detailStatus').value = appointment.status || 'scheduled';
+    document.getElementById('detailNotes').textContent = appointment.notes || 'No notes';
+    
+    document.getElementById('appointmentDetailModal').classList.add('active');
+}
+
+function closeAppointmentDetail() {
+    document.getElementById('appointmentDetailModal').classList.remove('active');
+    currentViewingAppointment = null;
+}
+
+async function updateAppointmentStatus() {
+    if (!currentViewingAppointment) return;
+    
+    const newStatus = document.getElementById('detailStatus').value;
     
     try {
-        const invoices = await apiCall('/invoices');
-        
-        if (invoices.length === 0) {
-            container.innerHTML = '<div class="empty-state"><p>No invoices yet</p></div>';
-            return;
-        }
-        
-        container.innerHTML = '<div class="client-list"></div>';
-        const list = container.querySelector('.client-list');
-        
-        invoices.forEach(inv => {
-            const card = document.createElement('div');
-            card.className = 'client-card';
-            card.innerHTML = `
-                <div class="client-info">
-                    <h3>${inv.client_name || 'Unknown Client'}</h3>
-                    <p>$${inv.amount} • ${inv.status}</p>
-                </div>
-            `;
-            list.appendChild(card);
+        await apiCall('/appointments/' + currentViewingAppointment.id, {
+            method: 'PUT',
+            body: JSON.stringify({ status: newStatus })
         });
+        
+        alert('Appointment status updated!');
+        closeAppointmentDetail();
+        await loadAppointments();
     } catch (error) {
-        container.innerHTML = '<div class="empty-state"><p>Error loading invoices</p></div>';
+        alert('Error updating appointment status');
     }
 }
 
-function openNewInvoiceModal() {
-    alert('Invoice creation coming soon!');
-}
-
-// Notes Functions - WITH CLAUDE AI INTEGRATION
-async function generateNote() {
-    const clientName = document.getElementById('noteClientName').value;
-    const content = document.getElementById('noteContent').value;
+async function deleteAppointment() {
+    if (!currentViewingAppointment) return;
     
-    if (!clientName || !content) {
-        alert('Please fill in client name and session notes');
+    if (!confirm('Are you sure you want to delete this appointment?')) {
         return;
     }
     
-    const output = document.getElementById('noteOutput');
-    const copyBtn = document.getElementById('copyNoteBtn');
-    
-    output.textContent = 'Generating clinical note with Claude AI...';
-    output.style.display = 'block';
-    copyBtn.style.display = 'none';
-    
     try {
-        const response = await fetch("https://api.anthropic.com/v1/messages", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                model: "claude-sonnet-4-20250514",
-                max_tokens: 2000,
-                messages: [{
-                    role: "user",
-                    content: `You are a professional mental health clinician writing a clinical progress note. 
-
-Generate a comprehensive, professional clinical progress note based on the following information:
-
-Client Name: ${clientName}
-Date: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-Session Summary: ${content}
-
-Please structure the note with these sections:
-1. Client Information (name, date)
-2. Session Type (e.g., Individual Therapy, 60 minutes)
-3. Presenting Concerns (based on the session summary provided)
-4. Clinical Observations (mental status, mood, affect, engagement)
-5. Interventions (therapeutic techniques used)
-6. Client Response to Treatment
-7. Progress Toward Goals
-8. Plan for Next Session
-
-Write in a professional, objective tone appropriate for clinical documentation. Be specific but maintain client confidentiality. The note should be thorough enough for insurance documentation and clinical records.
-
-DO NOT include any disclaimers about being an AI or needing human review. Write the note as if you are the treating clinician.`
-                }]
-            })
+        await apiCall('/appointments/' + currentViewingAppointment.id, {
+            method: 'DELETE'
         });
         
-        if (!response.ok) {
-            throw new Error('API request failed: ' + response.status);
-        }
-        
-        const data = await response.json();
-        const clinicalNote = data.content[0].text;
-        
-        output.textContent = clinicalNote;
-        copyBtn.style.display = 'block';
-        
+        alert('Appointment deleted!');
+        closeAppointmentDetail();
+        currentViewingAppointment = null;
+        await loadAppointments();
     } catch (error) {
-        console.error('Error generating note:', error);
-        
-        // Fallback to basic template if API fails
-        let note = 'CLINICAL PROGRESS NOTE\n\n';
-        note += 'Client: ' + clientName + '\n';
-        note += 'Date: ' + new Date().toLocaleDateString() + '\n';
-        note += 'Session Type: Individual Therapy\n\n';
-        note += 'Presenting Concerns:\n' + content + '\n\n';
-        note += 'Clinical Observations:\nClient appeared engaged and cooperative during session.\n\n';
-        note += 'Interventions:\n- Cognitive behavioral techniques\n- Mindfulness exercises\n\n';
-        note += 'Progress:\nClient showed good insight and participation.\n\n';
-        note += 'Plan:\nContinue weekly sessions. Monitor progress on current goals.\n\n';
-        note += '[Note: AI generation unavailable - using basic template]';
-        
-        output.textContent = note;
-        copyBtn.style.display = 'block';
+        alert('Error deleting appointment');
     }
-}
-
-function copyNote() {
-    const note = document.getElementById('noteOutput').textContent;
-    navigator.clipboard.writeText(note).then(() => {
-        const btn = document.getElementById('copyNoteBtn');
-        btn.textContent = 'Copied!';
-        setTimeout(() => btn.textContent = 'Copy Note', 2000);
-    });
 }
 
 // Navigation
@@ -1888,130 +1377,6 @@ function showSection(section) {
     document.getElementById(section + 'Section').classList.add('active');
     event.currentTarget.classList.add('active');
 }
-
-// Client Profile Functions
-async function openClientProfile(clientId) {
-    const client = allClients.find(c => c.id === clientId);
-    if (!client) return;
-    
-    currentEditingClient = client;
-    
-    // Set basic info
-    document.getElementById('profileName').textContent = client.name;
-    document.getElementById('profileContact').textContent = `${client.email || 'No email'} • ${client.phone || 'No phone'}`;
-    document.getElementById('profileAvatar').textContent = client.name[0].toUpperCase();
-    
-    // Set detailed info
-    document.getElementById('profileEmail').textContent = client.email || '-';
-    document.getElementById('profilePhone').textContent = client.phone || '-';
-    document.getElementById('profileDOB').textContent = client.dob ? new Date(client.dob).toLocaleDateString() : '-';
-    document.getElementById('profileInsurance').textContent = client.insurance || '-';
-    document.getElementById('profileAddress').textContent = client.address || '-';
-    document.getElementById('profileNotes').textContent = client.notes || '-';
-    
-    // Load sessions for this client
-    loadClientSessions(clientId);
-    
-    // Reset to first tab
-    switchProfileTab('info');
-    
-    document.getElementById('clientProfileModal').classList.add('active');
-}
-
-function closeClientProfile() {
-    document.getElementById('clientProfileModal').classList.remove('active');
-    // Don't clear currentEditingClient here - let closeEditClientModal handle it
-}
-
-function switchProfileTab(tab) {
-    document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.profile-section').forEach(s => s.classList.remove('active'));
-    
-    const tabs = document.querySelectorAll('.profile-tab');
-    if (tab === 'info') tabs[0].classList.add('active');
-    if (tab === 'sessions') tabs[1].classList.add('active');
-    if (tab === 'intake') tabs[2].classList.add('active');
-    
-    document.getElementById(`profile${tab.charAt(0).toUpperCase() + tab.slice(1)}Section`).classList.add('active');
-}
-
-async function loadClientSessions(clientId) {
-    const container = document.getElementById('sessionsList');
-    
-    const clientSessions = allAppointments.filter(apt => apt.client_id === clientId);
-    
-    if (clientSessions.length === 0) {
-        container.innerHTML = '<div class="empty-state"><p>No sessions yet</p></div>';
-        return;
-    }
-    
-    container.innerHTML = '';
-    clientSessions.sort((a, b) => new Date(b.start_time) - new Date(a.start_time));
-    
-    clientSessions.forEach(session => {
-        const sessionEl = document.createElement('div');
-        sessionEl.className = 'session-item';
-        const date = new Date(session.start_time);
-        sessionEl.innerHTML = `
-            <div class="session-date">${date.toLocaleDateString()} at ${date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}</div>
-            <div class="session-type">${session.type || 'Session'} ${session.status ? '• ' + session.status : ''}</div>
-        `;
-        sessionEl.onclick = () => openAppointmentDetail(session);
-        sessionEl.style.cursor = 'pointer';
-        container.appendChild(sessionEl);
-    });
-}
-
-function saveIntakeForm() {
-    const symptoms = [];
-    ['anxiety', 'depression', 'sleep', 'stress', 'trauma', 'relationship'].forEach(symptom => {
-        if (document.getElementById(`symptom${symptom.charAt(0).toUpperCase() + symptom.slice(1)}`).checked) {
-            symptoms.push(symptom);
-        }
-    });
-    
-    const intakeData = {
-        emergencyName: document.getElementById('intakeEmergencyName').value,
-        emergencyPhone: document.getElementById('intakeEmergencyPhone').value,
-        concerns: document.getElementById('intakeConcerns').value,
-        previousTherapy: document.getElementById('intakePreviousTherapy').value,
-        previousDetails: document.getElementById('intakePreviousDetails').value,
-        symptoms: symptoms,
-        goals: document.getElementById('intakeGoals').value
-    };
-    
-    // In a real app, this would save to the database
-    console.log('Intake form data:', intakeData);
-    alert('Intake document saved successfully!');
-}
-
-// Appointment Detail Functions
-function openAppointmentDetail(appointment) {
-    document.getElementById('detailClient').textContent = appointment.client_name || 'Unknown Client';
-    document.getElementById('detailType').textContent = appointment.type || 'Session';
-    
-    const date = new Date(appointment.start_time);
-    document.getElementById('detailDate').textContent = date.toLocaleDateString();
-    document.getElementById('detailTime').textContent = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) + ' - ' + new Date(appointment.end_time).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-    document.getElementById('detailStatus').textContent = appointment.status || 'Scheduled';
-    document.getElementById('detailNotes').textContent = appointment.notes || 'No notes';
-    
-    document.getElementById('appointmentDetailModal').classList.add('active');
-}
-
-function closeAppointmentDetail() {
-    document.getElementById('appointmentDetailModal').classList.remove('active');
-}
-
-// Event Listeners
-document.getElementById('authForm').addEventListener('submit', handleAuth);
-document.getElementById('toggleLink').addEventListener('click', (e) => {
-    e.preventDefault();
-    toggleAuthMode();
-});
-document.getElementById('clientForm').addEventListener('submit', createClient);
-document.getElementById('editClientForm').addEventListener('submit', saveClientChanges);
-document.getElementById('appointmentForm').addEventListener('submit', createAppointment);
 
 // Initialize
 if (authToken) {
