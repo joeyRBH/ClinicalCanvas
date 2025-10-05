@@ -373,6 +373,111 @@
             font-weight: 600;
             cursor: pointer;
         }
+
+        /* Calendar */
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .calendar-nav button {
+            padding: 8px 16px;
+            background: #f3f4f6;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .calendar-nav button:hover {
+            background: #e5e7eb;
+        }
+
+        .calendar-month {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .calendar-day-header {
+            text-align: center;
+            font-weight: 600;
+            color: #6b7280;
+            padding: 12px;
+            font-size: 14px;
+        }
+
+        .calendar-day {
+            min-height: 100px;
+            padding: 8px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .calendar-day:hover {
+            background: #f9fafb;
+            border-color: #667eea;
+        }
+
+        .calendar-day.other-month {
+            color: #d1d5db;
+            background: #f9fafb;
+        }
+
+        .calendar-day.today {
+            background: #f0f4ff;
+            border-color: #667eea;
+        }
+
+        .calendar-day-number {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .calendar-appointment {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            margin-top: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            background: white;
+        }
     </style>
 </head>
 <body>
@@ -462,7 +567,20 @@
             
             <button class="btn-primary" onclick="openNewAppointmentModal()">+ New Appointment</button>
             
-            <div id="appointmentsList" class="loading">Loading appointments...</div>
+            <div style="margin-top: 24px;">
+                <div class="calendar-header">
+                    <div class="calendar-month" id="calendarMonth">Month Year</div>
+                    <div class="calendar-nav">
+                        <button onclick="previousMonth()">← Previous</button>
+                        <button onclick="today()">Today</button>
+                        <button onclick="nextMonth()">Next →</button>
+                    </div>
+                </div>
+                
+                <div class="calendar-grid" id="calendarGrid">
+                    <!-- Calendar will be rendered here -->
+                </div>
+            </div>
         </div>
 
         <!-- Clients Section -->
@@ -537,6 +655,65 @@
             <div class="modal-footer">
                 <button type="button" class="btn-secondary" onclick="closeClientModal()">Cancel</button>
                 <button type="submit" class="btn-primary">Create Client</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- New Appointment Modal -->
+<div id="appointmentModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>New Appointment</h2>
+            <button class="close-btn" onclick="closeAppointmentModal()">×</button>
+        </div>
+        
+        <form id="appointmentForm">
+            <div class="form-group">
+                <label>Client</label>
+                <select id="appointmentClient" required>
+                    <option value="">Select a client...</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Date</label>
+                <input type="date" id="appointmentDate" required style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
+            </div>
+            
+            <div class="form-group">
+                <label>Start Time</label>
+                <input type="time" id="appointmentStartTime" required style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
+            </div>
+            
+            <div class="form-group">
+                <label>Duration (minutes)</label>
+                <select id="appointmentDuration" required>
+                    <option value="30">30 minutes</option>
+                    <option value="45">45 minutes</option>
+                    <option value="60" selected>60 minutes</option>
+                    <option value="90">90 minutes</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Type</label>
+                <select id="appointmentType" required>
+                    <option value="session">Therapy Session</option>
+                    <option value="initial">Initial Consultation</option>
+                    <option value="followup">Follow-up</option>
+                    <option value="assessment">Assessment</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Notes (optional)</label>
+                <textarea id="appointmentNotes" style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px; min-height: 80px;"></textarea>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeAppointmentModal()">Cancel</button>
+                <button type="submit" class="btn-primary">Create Appointment</button>
             </div>
         </form>
     </div>
