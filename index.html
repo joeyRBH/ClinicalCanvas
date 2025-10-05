@@ -1509,8 +1509,7 @@ function editClientProfile() {
 
 function closeEditClientModal() {
     document.getElementById('editClientModal').classList.remove('active');
-    // Clear the editing reference when closing edit modal
-    currentEditingClient = null;
+    // Don't clear currentEditingClient here - save function will handle it
 }
 
 // Save Client Changes
