@@ -2386,18 +2386,35 @@ async function deleteAppointment() {
 }
 
 // Event Listeners
-document.getElementById('authForm').addEventListener('submit', handleAuth);
-document.getElementById('toggleLink').addEventListener('click', (e) => {
-    e.preventDefault();
-    toggleAuthMode();
-});
-document.getElementById('clientForm').addEventListener('submit', createClient);
-document.getElementById('editClientForm').addEventListener('submit', saveClientChanges);
-document.getElementById('appointmentForm').addEventListener('submit', createAppointment);
-document.getElementById('editAppointmentForm').addEventListener('submit', saveEditedAppointment);
-document.getElementById('invoiceForm').addEventListener('submit', createInvoice);
+function initializeEventListeners() {
+    const authForm = document.getElementById('authForm');
+    const toggleLink = document.getElementById('toggleLink');
+    const clientForm = document.getElementById('clientForm');
+    const editClientForm = document.getElementById('editClientForm');
+    const appointmentForm = document.getElementById('appointmentForm');
+    const editAppointmentForm = document.getElementById('editAppointmentForm');
+    const invoiceForm = document.getElementById('invoiceForm');
+    
+    if (authForm) authForm.addEventListener('submit', handleAuth);
+    if (toggleLink) toggleLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        toggleAuthMode();
+    });
+    if (clientForm) clientForm.addEventListener('submit', createClient);
+    if (editClientForm) editClientForm.addEventListener('submit', saveClientChanges);
+    if (appointmentForm) appointmentForm.addEventListener('submit', createAppointment);
+    if (editAppointmentForm) editAppointmentForm.addEventListener('submit', saveEditedAppointment);
+    if (invoiceForm) invoiceForm.addEventListener('submit', createInvoice);
+}
 
-// Initialize
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeEventListeners);
+} else {
+    initializeEventListeners();
+}
+
+// Initialize app
 if (authToken) {
     showApp();
 } else {
