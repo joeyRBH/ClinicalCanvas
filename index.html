@@ -1506,7 +1506,13 @@ function closeEditClientModal() {
 async function saveClientChanges(e) {
     e.preventDefault();
     
-    if (!currentEditingClient) return;
+    console.log('Save button clicked');
+    console.log('Current editing client:', currentEditingClient);
+    
+    if (!currentEditingClient) {
+        alert('Error: No client selected for editing');
+        return;
+    }
     
     const updatedData = {
         name: document.getElementById('editClientName').value,
@@ -1519,17 +1525,22 @@ async function saveClientChanges(e) {
         notes: document.getElementById('editClientNotes').value
     };
     
+    console.log('Updated data:', updatedData);
+    
     try {
-        await apiCall(`/clients/${currentEditingClient.id}`, {
+        const result = await apiCall(`/clients/${currentEditingClient.id}`, {
             method: 'PUT',
             body: JSON.stringify(updatedData)
         });
         
+        console.log('Update result:', result);
+        
         closeEditClientModal();
-        loadClients();
+        await loadClients();
         alert('Client updated successfully!');
     } catch (error) {
-        alert('Error updating client');
+        console.error('Error updating client:', error);
+        alert('Error updating client: ' + error.message);
     }
 }
 
