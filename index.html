@@ -1516,6 +1516,8 @@ function closeEditClientModal() {
 async function saveClientChanges(e) {
     e.preventDefault();
     
+    console.log('Save function called, currentEditingClient:', currentEditingClient);
+    
     if (!currentEditingClient) {
         alert('Error: No client selected for editing');
         return;
@@ -1525,7 +1527,7 @@ async function saveClientChanges(e) {
         name: document.getElementById('editClientName').value,
         email: document.getElementById('editClientEmail').value,
         phone: document.getElementById('editClientPhone').value,
-        dob: document.getElementById('editClientDOB').value,
+        dob: document.getElementById('editClientDOB').value || null, // Convert empty string to null
         address: document.getElementById('editClientAddress').value,
         insurance: document.getElementById('editClientInsurance').value,
         status: document.getElementById('editClientStatus').value,
@@ -1544,17 +1546,9 @@ async function saveClientChanges(e) {
         console.log('API response:', result);
         
         closeEditClientModal();
+        currentEditingClient = null; // Clear after successful save
         await loadClients();
-        
-        // Verify the update by checking if the client data changed
-        const updatedClient = allClients.find(c => c.id === currentEditingClient.id);
-        console.log('Client after refresh:', updatedClient);
-        
-        if (updatedClient && updatedClient.name === updatedData.name) {
-            alert('Client updated successfully!');
-        } else {
-            alert('Warning: Client may not have been updated. Check console for details.');
-        }
+        alert('Client updated successfully!');
     } catch (error) {
         console.error('Error details:', error);
         alert('Error updating client: ' + error.message);
