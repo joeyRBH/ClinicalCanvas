@@ -505,6 +505,80 @@
             font-size: 16px;
             color: #1f2937;
         }
+
+        /* Document Styles */
+        .doc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .doc-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .doc-card:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        }
+
+        .doc-card.selected {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+
+        .doc-card h4 {
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: #1f2937;
+        }
+
+        .doc-card p {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th {
+            background: #f9fafb;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .table td {
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
     </style>
 </head>
 <body>
@@ -559,6 +633,12 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
                 </svg>
                 Clients
+            </div>
+            <div class="nav-item" onclick="showSection('documents')">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                Documents
             </div>
         </div>
 
@@ -636,10 +716,28 @@
                 <div id="clientsList" class="loading">Loading clients...</div>
             </div>
         </div>
+
+        <!-- Documents Section -->
+        <div class="content-section" id="documentsSection">
+            <h1 class="section-title">Clinical Documents</h1>
+            <p class="section-text">Manage client forms and documentation</p>
+
+            <button class="btn-primary" onclick="openAssignModal()">Assign Documents to Client</button>
+
+            <div class="card" style="margin-top: 24px;">
+                <h2 style="font-size: 20px; font-weight: 600; margin-bottom: 16px;">Document Library</h2>
+                <div id="documentLibrary"></div>
+            </div>
+
+            <div class="card">
+                <h2 style="font-size: 20px; font-weight: 600; margin-bottom: 16px;">Assigned Documents</h2>
+                <div id="assignedDocsList"></div>
+            </div>
+        </div>
     </div>
 </div>
 
-<!-- New Client Modal -->
+<!-- Existing modals... -->
 <div id="clientModal" class="modal">
     <div class="modal-content" style="max-width: 700px;">
         <div class="modal-header">
@@ -695,7 +793,6 @@
     </div>
 </div>
 
-<!-- Edit Client Modal -->
 <div id="editClientModal" class="modal">
     <div class="modal-content" style="max-width: 700px;">
         <div class="modal-header">
@@ -759,7 +856,6 @@
     </div>
 </div>
 
-<!-- New Appointment Modal -->
 <div id="appointmentModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -816,7 +912,6 @@
     </div>
 </div>
 
-<!-- Appointment Detail Modal -->
 <div id="appointmentDetailModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -864,6 +959,31 @@
     </div>
 </div>
 
+<!-- Assign Documents Modal -->
+<div id="assignModal" class="modal">
+    <div class="modal-content" style="max-width: 600px;">
+        <div class="modal-header">
+            <h2>Assign Documents</h2>
+            <button class="close-btn" onclick="closeAssignModal()">×</button>
+        </div>
+        
+        <div class="form-group">
+            <label>Select Client</label>
+            <select id="assignClientSelect"></select>
+        </div>
+
+        <div style="margin-top: 20px;">
+            <label style="display: block; margin-bottom: 12px; font-weight: 600;">Select Documents</label>
+            <div id="docSelectList" class="doc-grid"></div>
+        </div>
+        
+        <div class="modal-footer">
+            <button type="button" class="btn-secondary" onclick="closeAssignModal()">Cancel</button>
+            <button type="button" class="btn-primary" onclick="assignDocuments()">Assign Selected</button>
+        </div>
+    </div>
+</div>
+
 <script>
 const API_URL = 'https://mind-stream-delta.vercel.app/api';
 let authToken = localStorage.getItem('authToken');
@@ -878,7 +998,24 @@ let currentDate = new Date();
 const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-// Auth Functions
+// Document Templates
+const documentTemplates = [
+    { id: 1, name: 'Adult ADHD Self-Report Scale (ASRS-v1.1)', category: 'Assessment' },
+    { id: 2, name: 'Adverse Childhood Experience (ACE) Questionnaire', category: 'Assessment' },
+    { id: 3, name: 'Alcohol Use Disorders Identification Test (AUDIT)', category: 'Assessment' },
+    { id: 4, name: 'DAST-10 Drug Abuse Screening', category: 'Assessment' },
+    { id: 5, name: 'Individual Intake Questionnaire', category: 'Intake' },
+    { id: 6, name: 'Biopsychosocial Assessment', category: 'Assessment' },
+    { id: 7, name: 'Informed Consent for Psychotherapy', category: 'Consent' },
+    { id: 8, name: 'Notice of Privacy Practices', category: 'HIPAA' },
+    { id: 9, name: 'Authorization for Disclosure of Information', category: 'HIPAA' },
+    { id: 10, name: 'Consent for Use of AI Tools', category: 'Consent' }
+];
+
+let assignedDocs = JSON.parse(localStorage.getItem('assignedDocs') || '[]');
+let selectedDocs = new Set();
+
+// Auth Functions (keep existing)
 function showAuth() {
     document.getElementById('authContainer').style.display = 'flex';
     document.getElementById('appContainer').style.display = 'none';
@@ -894,6 +1031,8 @@ function showApp() {
     
     loadClients();
     loadAppointments();
+    renderDocumentLibrary();
+    renderAssignedDocs();
 }
 
 function toggleAuthMode(e) {
@@ -967,7 +1106,6 @@ function logout() {
     showAuth();
 }
 
-// API Helper
 async function apiCall(endpoint, options = {}) {
     const headers = {
         'Content-Type': 'application/json',
@@ -991,7 +1129,7 @@ async function apiCall(endpoint, options = {}) {
     return response.json();
 }
 
-// Client Functions
+// (Keep all existing client and appointment functions unchanged)
 async function loadClients() {
     const container = document.getElementById('clientsList');
     container.innerHTML = '<div class="loading">Loading clients...</div>';
@@ -1097,7 +1235,6 @@ async function createClient(e) {
 }
 
 function openClientProfile(client) {
-    // Store the client before opening modal
     currentEditingClient = client;
     
     document.getElementById('editClientName').value = client.name;
@@ -1114,7 +1251,6 @@ function openClientProfile(client) {
 
 function closeEditClientModal() {
     document.getElementById('editClientModal').classList.remove('active');
-    // Don't clear currentEditingClient here
 }
 
 async function saveClientChanges(e) {
@@ -1151,7 +1287,6 @@ async function saveClientChanges(e) {
     }
 }
 
-// Appointment Functions
 async function loadAppointments() {
     try {
         allAppointments = await apiCall('/appointments');
@@ -1371,13 +1506,147 @@ async function deleteAppointment() {
     }
 }
 
-// Navigation
 function showSection(section) {
     document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     
     document.getElementById(section + 'Section').classList.add('active');
     event.currentTarget.classList.add('active');
+}
+
+// DOCUMENT FUNCTIONS
+function renderDocumentLibrary() {
+    const container = document.getElementById('documentLibrary');
+    const categories = [...new Set(documentTemplates.map(d => d.category))];
+    
+    let html = '';
+    categories.forEach(cat => {
+        const docs = documentTemplates.filter(d => d.category === cat);
+        html += `<div style="margin-bottom: 24px;">
+            <h4 style="color: #3b82f6; margin-bottom: 12px; font-size: 14px; text-transform: uppercase; font-weight: 600;">${cat}</h4>
+            <div class="doc-grid">
+                ${docs.map(doc => `
+                    <div class="doc-card">
+                        <h4>${doc.name}</h4>
+                        <p>${doc.category}</p>
+                    </div>
+                `).join('')}
+            </div>
+        </div>`;
+    });
+    
+    container.innerHTML = html;
+}
+
+function openAssignModal() {
+    if (allClients.length === 0) {
+        alert('Please add clients first');
+        return;
+    }
+    
+    const select = document.getElementById('assignClientSelect');
+    select.innerHTML = '<option value="">Select a client...</option>';
+    allClients.forEach(c => {
+        select.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+    });
+    
+    const list = document.getElementById('docSelectList');
+    list.innerHTML = documentTemplates.map(doc => `
+        <div class="doc-card" onclick="toggleDocSelect(${doc.id})">
+            <h4>${doc.name}</h4>
+            <p>${doc.category}</p>
+        </div>
+    `).join('');
+    
+    selectedDocs.clear();
+    document.getElementById('assignModal').classList.add('active');
+}
+
+function closeAssignModal() {
+    document.getElementById('assignModal').classList.remove('active');
+    selectedDocs.clear();
+}
+
+function toggleDocSelect(docId) {
+    if (selectedDocs.has(docId)) {
+        selectedDocs.delete(docId);
+    } else {
+        selectedDocs.add(docId);
+    }
+    
+    const cards = document.getElementById('docSelectList').children;
+    Array.from(cards).forEach((card, i) => {
+        const template = documentTemplates[i];
+        if (selectedDocs.has(template.id)) {
+            card.classList.add('selected');
+        } else {
+            card.classList.remove('selected');
+        }
+    });
+}
+
+function assignDocuments() {
+    const clientId = parseInt(document.getElementById('assignClientSelect').value);
+    
+    if (!clientId) {
+        alert('Please select a client');
+        return;
+    }
+    
+    if (selectedDocs.size === 0) {
+        alert('Please select at least one document');
+        return;
+    }
+    
+    const client = allClients.find(c => c.id === clientId);
+    selectedDocs.forEach(docId => {
+        assignedDocs.push({
+            id: Date.now() + Math.random(),
+            clientId,
+            clientName: client.name,
+            docId,
+            docName: documentTemplates.find(d => d.id === docId).name,
+            assignedDate: new Date().toISOString(),
+            status: 'pending'
+        });
+    });
+    
+    localStorage.setItem('assignedDocs', JSON.stringify(assignedDocs));
+    renderAssignedDocs();
+    closeAssignModal();
+    alert(`${selectedDocs.size} document(s) assigned to ${client.name}`);
+}
+
+function renderAssignedDocs() {
+    const container = document.getElementById('assignedDocsList');
+    
+    if (assignedDocs.length === 0) {
+        container.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 20px;">No documents assigned yet</p>';
+        return;
+    }
+    
+    container.innerHTML = `
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Client</th>
+                    <th>Document</th>
+                    <th>Assigned Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${assignedDocs.map(doc => `
+                    <tr>
+                        <td>${doc.clientName}</td>
+                        <td>${doc.docName}</td>
+                        <td>${new Date(doc.assignedDate).toLocaleDateString()}</td>
+                        <td><span class="badge badge-${doc.status === 'completed' ? 'success' : 'warning'}">${doc.status}</span></td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
 }
 
 // Initialize
