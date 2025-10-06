@@ -17,7 +17,6 @@
             color: #1f2937;
         }
 
-        /* Auth Page Styles */
         .auth-container {
             min-height: 100vh;
             display: flex;
@@ -112,7 +111,6 @@
             display: none;
         }
 
-        /* Main App Styles */
         .app-container {
             display: none;
         }
@@ -272,7 +270,6 @@
             color: #6b7280;
         }
 
-        /* Client List */
         .client-list {
             display: grid;
             gap: 16px;
@@ -305,7 +302,6 @@
             font-size: 14px;
         }
 
-        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -367,7 +363,6 @@
             cursor: pointer;
         }
 
-        /* Calendar */
         .calendar-header {
             display: flex;
             justify-content: space-between;
@@ -506,7 +501,6 @@
             color: #1f2937;
         }
 
-        /* Document Styles */
         .doc-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -583,7 +577,6 @@
 </head>
 <body>
 
-<!-- Auth Page -->
 <div id="authContainer" class="auth-container">
     <div class="auth-box">
         <h1 id="authTitle">Welcome Back</h1>
@@ -617,7 +610,6 @@
     </div>
 </div>
 
-<!-- Main App -->
 <div id="appContainer" class="app-container">
     <div class="sidebar">
         <div class="logo">ClinicalCanvas</div>
@@ -655,7 +647,6 @@
     </div>
 
     <div class="main-content">
-        <!-- Calendar Section -->
         <div class="content-section active" id="calendarSection">
             <h1 class="section-title">Calendar</h1>
             <p class="section-text">Manage your appointments and schedule</p>
@@ -676,7 +667,6 @@
             </div>
         </div>
 
-        <!-- Clients Section -->
         <div class="content-section" id="clientsSection">
             <h1 class="section-title">Client Management</h1>
             <p class="section-text">Manage your client information and relationships</p>
@@ -717,7 +707,6 @@
             </div>
         </div>
 
-        <!-- Documents Section -->
         <div class="content-section" id="documentsSection">
             <h1 class="section-title">Clinical Documents</h1>
             <p class="section-text">Manage client forms and documentation</p>
@@ -737,7 +726,6 @@
     </div>
 </div>
 
-<!-- Existing modals... -->
 <div id="clientModal" class="modal">
     <div class="modal-content" style="max-width: 700px;">
         <div class="modal-header">
@@ -959,7 +947,6 @@
     </div>
 </div>
 
-<!-- Assign Documents Modal -->
 <div id="assignModal" class="modal">
     <div class="modal-content" style="max-width: 600px;">
         <div class="modal-header">
@@ -998,7 +985,6 @@ let currentDate = new Date();
 const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-// Document Templates
 const documentTemplates = [
     { id: 1, name: 'Adult ADHD Self-Report Scale (ASRS-v1.1)', category: 'Assessment' },
     { id: 2, name: 'Adverse Childhood Experience (ACE) Questionnaire', category: 'Assessment' },
@@ -1015,7 +1001,6 @@ const documentTemplates = [
 let assignedDocs = JSON.parse(localStorage.getItem('assignedDocs') || '[]');
 let selectedDocs = new Set();
 
-// Auth Functions (keep existing)
 function showAuth() {
     document.getElementById('authContainer').style.display = 'flex';
     document.getElementById('appContainer').style.display = 'none';
@@ -1129,7 +1114,6 @@ async function apiCall(endpoint, options = {}) {
     return response.json();
 }
 
-// (Keep all existing client and appointment functions unchanged)
 async function loadClients() {
     const container = document.getElementById('clientsList');
     container.innerHTML = '<div class="loading">Loading clients...</div>';
@@ -1514,7 +1498,6 @@ function showSection(section) {
     event.currentTarget.classList.add('active');
 }
 
-// DOCUMENT FUNCTIONS
 function renderDocumentLibrary() {
     const container = document.getElementById('documentLibrary');
     const categories = [...new Set(documentTemplates.map(d => d.category))];
@@ -1544,6 +1527,8 @@ function openAssignModal() {
         return;
     }
     
+    selectedDocs.clear();
+    
     const select = document.getElementById('assignClientSelect');
     select.innerHTML = '<option value="">Select a client...</option>';
     allClients.forEach(c => {
@@ -1572,28 +1557,6 @@ function openAssignModal() {
         list.appendChild(card);
     });
     
-    selectedDocs.clear();
-    document.getElementById('assignModal').classList.add('active');
-} 0) {
-        alert('Please add clients first');
-        return;
-    }
-    
-    const select = document.getElementById('assignClientSelect');
-    select.innerHTML = '<option value="">Select a client...</option>';
-    allClients.forEach(c => {
-        select.innerHTML += `<option value="${c.id}">${c.name}</option>`;
-    });
-    
-    const list = document.getElementById('docSelectList');
-    list.innerHTML = documentTemplates.map(doc => `
-        <div class="doc-card" data-doc-id="${doc.id}" onclick="toggleDocSelect(${doc.id})">
-            <h4>${doc.name}</h4>
-            <p>${doc.category}</p>
-        </div>
-    `).join('');
-    
-    selectedDocs.clear();
     document.getElementById('assignModal').classList.add('active');
 }
 
@@ -1602,40 +1565,7 @@ function closeAssignModal() {
     selectedDocs.clear();
 }
 
-function toggleDocSelect(docId) {
-    console.log('Toggle called for docId:', docId);
-    console.log('Current selectedDocs:', selectedDocs);
-    
-    if (selectedDocs.has(docId)) {
-        selectedDocs.delete(docId);
-        console.log('Removed docId:', docId);
-    } else {
-        selectedDocs.add(docId);
-        console.log('Added docId:', docId);
-    }
-    
-    console.log('Updated selectedDocs:', selectedDocs);
-    
-    // Update the visual selection
-    const card = document.querySelector(`[data-doc-id="${docId}"]`);
-    if (card) {
-        if (selectedDocs.has(docId)) {
-            card.classList.add('selected');
-            console.log('Card selected visually');
-        } else {
-            card.classList.remove('selected');
-            console.log('Card deselected visually');
-        }
-    } else {
-        console.log('ERROR: Card not found for docId:', docId);
-    }
-}
-
 function assignDocuments() {
-    console.log('Assign clicked');
-    console.log('selectedDocs.size:', selectedDocs.size);
-    console.log('selectedDocs contents:', selectedDocs);
-    
     const clientId = parseInt(document.getElementById('assignClientSelect').value);
     
     if (!clientId) {
@@ -1699,7 +1629,6 @@ function renderAssignedDocs() {
     `;
 }
 
-// Initialize
 if (authToken) {
     showApp();
 } else {
