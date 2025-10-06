@@ -1,3 +1,1101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClinicalCanvas EHR</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-box {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-box h1 {
+            color: #667eea;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 28px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #374151;
+            font-weight: 500;
+        }
+
+        .input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:not(.btn-primary) {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .btn:not(.btn-primary):hover {
+            background: #e5e7eb;
+        }
+
+        .app-container {
+            display: none;
+            min-height: 100vh;
+            background: #f9fafb;
+        }
+
+        .header {
+            background: white;
+            padding: 20px 40px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 24px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .content {
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: #6b7280;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab-btn:hover {
+            color: #667eea;
+        }
+
+        .tab-btn.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th {
+            text-align: left;
+            padding: 12px;
+            background: #f9fafb;
+            color: #374151;
+            font-weight: 600;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .table td {
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+            color: #6b7280;
+        }
+
+        .table tr:hover {
+            background: #f9fafb;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .badge-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .stat-card h3 {
+            color: #6b7280;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .stat-card .value {
+            color: #1f2937;
+            font-size: 32px;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-container">
+        <div class="login-box">
+            <h1>🏥 ClinicalCanvas EHR</h1>
+            <form id="loginForm" onsubmit="login(event)">
+                <div class="input-group">
+                    <label>Username</label>
+                    <input type="text" id="username" class="input" required>
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="password" class="input" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+            <p style="margin-top: 20px; text-align: center; color: #6b7280; font-size: 12px;">
+                Demo: admin/admin123 or john.doe@email.com/password123
+            </p>
+        </div>
+    </div>
+
+    <!-- App Container -->
+    <div id="appContainer" class="app-container">
+        <div class="header">
+            <h1>🏥 ClinicalCanvas EHR</h1>
+            <div class="user-info">
+                <span id="userDisplay"></span>
+                <button class="btn" onclick="logout()">Logout</button>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- Provider Tabs -->
+            <div id="providerTabs" class="tabs" style="display: none;">
+                <button class="tab-btn active" onclick="showTab('dashboard')">Dashboard</button>
+                <button class="tab-btn" onclick="showTab('clients')">Clients</button>
+                <button class="tab-btn" onclick="showTab('calendar')">Calendar</button>
+                <button class="tab-btn" onclick="showTab('documents')">Documents</button>
+            </div>
+
+            <!-- Client Portal Tabs -->
+            <div id="clientTabs" class="tabs" style="display: none;">
+                <button class="tab-btn active" onclick="showClientTab('portal')">My Portal</button>
+                <button class="tab-btn" onclick="showClientTab('appointments')">Appointments</button>
+                <button class="tab-btn" onclick="showClientTab('documents')">Documents</button>
+            </div>
+
+            <!-- Dashboard -->
+            <div id="dashboardContent" style="display: none;">
+                <div class="grid">
+                    <div class="stat-card">
+                        <h3>Total Clients</h3>
+                        <div class="value" id="totalClients">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Appointments Today</h3>
+                        <div class="value" id="appointmentsToday">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Pending Documents</h3>
+                        <div class="value" id="pendingDocs">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Clients -->
+            <div id="clientsContent" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="color: #1f2937;">Client Management</h2>
+                    <button class="btn btn-primary" onclick="openAddClient()">Add Client</button>
+                </div>
+                <div class="card">
+                    <div id="clientsList"></div>
+                </div>
+            </div>
+
+            <!-- Calendar -->
+            <div id="calendarContent" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="color: #1f2937;">Calendar</h2>
+                    <button class="btn btn-primary" onclick="openAddAppointment()">New Appointment</button>
+                </div>
+                <div class="card">
+                    <div id="appointmentsList"></div>
+                </div>
+            </div>
+
+            <!-- Documents -->
+            <div id="documentsContent" style="display: none;">
+                <h2 style="color: #1f2937; margin-bottom: 20px;">Clinical Documents</h2>
+                
+                <div class="card" style="margin-bottom: 20px;">
+                    <h3 style="margin-bottom: 15px;">Document Templates</h3>
+                    <div id="documentTemplatesList"></div>
+                </div>
+
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3>Assigned Documents</h3>
+                        <button class="btn btn-primary" onclick="openAssignModal()">Assign Documents</button>
+                    </div>
+                    <div id="assignedDocsList"></div>
+                </div>
+            </div>
+
+            <!-- Client Portal -->
+            <div id="clientInfo" style="display: none;">
+                <div class="card">
+                    <h2 style="margin-bottom: 20px;">Welcome to Your Portal</h2>
+                    <p style="color: #6b7280;">View your appointments and complete assigned documents using the tabs above.</p>
+                </div>
+            </div>
+
+            <div id="clientAppointments" style="display: none;">
+                <div class="card">
+                    <h2 style="margin-bottom: 20px;">My Appointments</h2>
+                    <div id="clientAppointmentsList"></div>
+                </div>
+            </div>
+
+            <div id="clientPortalContent" style="display: none;">
+                <div id="clientDocumentsContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Client Modal -->
+    <div id="clientModal" class="modal">
+        <div class="modal-content">
+            <h2 id="clientModalTitle" style="margin-bottom: 20px;">Add Client</h2>
+            <form id="clientForm" onsubmit="saveClient(event)">
+                <div class="input-group">
+                    <label>Name</label>
+                    <input type="text" id="clientName" class="input" required>
+                </div>
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" id="clientEmail" class="input" required>
+                </div>
+                <div class="input-group">
+                    <label>Phone</label>
+                    <input type="tel" id="clientPhone" class="input" required>
+                </div>
+                <div class="input-group">
+                    <label>Date of Birth</label>
+                    <input type="date" id="clientDob" class="input" required>
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                    <button type="button" class="btn" onclick="closeClientModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Appointment Modal -->
+    <div id="appointmentModal" class="modal">
+        <div class="modal-content">
+            <h2 id="appointmentModalTitle" style="margin-bottom: 20px;">New Appointment</h2>
+            <form id="appointmentForm" onsubmit="saveAppointment(event)">
+                <div class="input-group">
+                    <label>Client</label>
+                    <select id="appointmentClient" class="input" required>
+                        <option value="">Select a client...</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Date</label>
+                    <input type="date" id="appointmentDate" class="input" required>
+                </div>
+                <div class="input-group">
+                    <label>Time</label>
+                    <input type="time" id="appointmentTime" class="input" required>
+                </div>
+                <div class="input-group">
+                    <label>Duration (minutes)</label>
+                    <input type="number" id="appointmentDuration" class="input" value="60" required>
+                </div>
+                <div class="input-group">
+                    <label>Type</label>
+                    <select id="appointmentType" class="input" required>
+                        <option value="Initial Consultation">Initial Consultation</option>
+                        <option value="Follow-up">Follow-up</option>
+                        <option value="Therapy Session">Therapy Session</option>
+                        <option value="Medication Management">Medication Management</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Notes</label>
+                    <textarea id="appointmentNotes" class="input" rows="3"></textarea>
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                    <button type="button" class="btn" onclick="closeAppointmentModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Assign Documents Modal -->
+    <div id="assignModal" class="modal">
+        <div class="modal-content" style="max-width: 700px;">
+            <h2 style="margin-bottom: 20px;">Assign Documents</h2>
+            
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 500;">Select Client</label>
+                <select id="assignClientSelect" class="input">
+                    <option value="">Choose a client...</option>
+                </select>
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 10px; font-weight: 500;">Select Documents</label>
+                <div id="documentCheckboxList" style="max-height: 300px; overflow-y: auto; border: 1px solid #e5e7eb; border-radius: 8px; padding: 15px;">
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button class="btn" onclick="closeAssignModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="assignDocuments()">Assign Selected</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Document Form Modal (Client) -->
+    <div id="documentFormModal" class="modal">
+        <div class="modal-content" style="max-width: 700px; max-height: 90vh; overflow-y: auto;">
+            <h2 id="documentFormTitle" style="margin-bottom: 20px;"></h2>
+            
+            <div id="documentFormFields" style="margin-bottom: 30px;"></div>
+            
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 10px; font-weight: 500; color: #374151;">Your Signature</label>
+                <canvas id="signatureCanvas" width="600" height="200" style="border: 2px solid #e5e7eb; border-radius: 8px; cursor: crosshair; display: block; max-width: 100%;"></canvas>
+                <button class="btn" onclick="clearSignature()" style="margin-top: 10px;">Clear Signature</button>
+            </div>
+            
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button class="btn" onclick="closeDocumentForm()">Cancel</button>
+                <button id="documentFormSubmit" class="btn btn-primary">Submit Document</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Completed Document Modal -->
+    <div id="viewDocModal" class="modal">
+        <div class="modal-content" style="max-width: 700px; max-height: 90vh; overflow-y: auto;">
+            <h2 id="viewDocTitle" style="margin-bottom: 20px;"></h2>
+            <div id="viewDocContent"></div>
+            <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
+                <button class="btn" onclick="closeViewDocModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+// Mock Database
+let users = [
+    { id: 1, username: 'admin', password: 'admin123', role: 'provider', name: 'Dr. Smith' },
+    { id: 2, username: 'john.doe@email.com', password: 'password123', role: 'client', name: 'John Doe' }
+];
+
+let allClients = [
+    { id: 1, name: 'John Doe', email: 'john.doe@email.com', phone: '555-0101', dob: '1990-05-15' },
+    { id: 2, name: 'Jane Smith', email: 'jane.smith@email.com', phone: '555-0102', dob: '1985-08-22' }
+];
+
+let appointments = [
+    { id: 1, clientId: 1, clientName: 'John Doe', date: '2025-10-10', time: '10:00', duration: 60, type: 'Initial Consultation', notes: 'First session', location: 'Office A' },
+    { id: 2, clientId: 2, clientName: 'Jane Smith', date: '2025-10-10', time: '14:00', duration: 60, type: 'Follow-up', notes: '', location: 'Office B' }
+];
+
+let documentTemplates = [
+    { 
+        id: 1, 
+        name: 'Client Intake Form',
+        description: 'Initial client information and medical history',
+        fields: [
+            { id: 'fullName', label: 'Full Name', type: 'text' },
+            { id: 'address', label: 'Address', type: 'textarea' },
+            { id: 'emergencyContact', label: 'Emergency Contact', type: 'text' },
+            { id: 'emergencyPhone', label: 'Emergency Contact Phone', type: 'text' },
+            { id: 'medicalHistory', label: 'Medical History', type: 'textarea' },
+            { id: 'currentMedications', label: 'Current Medications', type: 'textarea' }
+        ]
+    },
+    { 
+        id: 2, 
+        name: 'Consent for Treatment',
+        description: 'Authorization for treatment services',
+        fields: [
+            { id: 'clientName', label: 'Client Name', type: 'text' },
+            { id: 'treatmentDate', label: 'Date', type: 'date' },
+            { id: 'consentStatement', label: 'I consent to treatment', type: 'checkbox' },
+            { id: 'privacyAcknowledgement', label: 'I acknowledge the privacy policy', type: 'checkbox' }
+        ]
+    },
+    { 
+        id: 3, 
+        name: 'Release of Information',
+        description: 'Authorization to share information',
+        fields: [
+            { id: 'clientName', label: 'Client Name', type: 'text' },
+            { id: 'releaseToName', label: 'Release Information To', type: 'text' },
+            { id: 'releaseToOrg', label: 'Organization', type: 'text' },
+            { id: 'purposeOfRelease', label: 'Purpose of Release', type: 'textarea' },
+            { id: 'expirationDate', label: 'Expiration Date', type: 'date' }
+        ]
+    },
+    { 
+        id: 4, 
+        name: 'Treatment Plan',
+        description: 'Collaborative treatment goals and objectives',
+        fields: [
+            { id: 'clientName', label: 'Client Name', type: 'text' },
+            { id: 'diagnosisCode', label: 'Diagnosis Code', type: 'text' },
+            { id: 'treatmentGoals', label: 'Treatment Goals', type: 'textarea' },
+            { id: 'interventions', label: 'Planned Interventions', type: 'textarea' },
+            { id: 'reviewDate', label: 'Next Review Date', type: 'date' }
+        ]
+    }
+];
+
+let assignedDocs = JSON.parse(localStorage.getItem('assignedDocs') || '[]');
+let selectedDocs = new Set();
+
+let authToken = localStorage.getItem('authToken');
+let userRole = localStorage.getItem('userRole');
+let currentUser = null;
+let editingClientId = null;
+let editingAppointmentId = null;
+
+// Auth Functions
+function login(e) {
+    e.preventDefault();
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    
+    const user = users.find(u => u.username === username && u.password === password);
+    
+    if (user) {
+        authToken = 'token_' + Date.now();
+        userRole = user.role;
+        currentUser = user;
+        localStorage.setItem('authToken', authToken);
+        localStorage.setItem('userRole', userRole);
+        localStorage.setItem('userId', user.id);
+        localStorage.setItem('userName', user.name);
+        showApp();
+    } else {
+        alert('Invalid credentials');
+    }
+}
+
+function logout() {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('userName');
+    authToken = null;
+    userRole = null;
+    currentUser = null;
+    showAuth();
+}
+
+function showAuth() {
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('appContainer').style.display = 'none';
+}
+
+function showApp() {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('appContainer').style.display = 'block';
+    document.getElementById('userDisplay').textContent = localStorage.getItem('userName');
+    
+    if (userRole === 'provider') {
+        document.getElementById('providerTabs').style.display = 'flex';
+        document.getElementById('clientTabs').style.display = 'none';
+        showTab('dashboard');
+    } else {
+        document.getElementById('providerTabs').style.display = 'none';
+        document.getElementById('clientTabs').style.display = 'flex';
+        showClientTab('portal');
+    }
+}
+
+// Tab Functions
+function showTab(tab) {
+    document.querySelectorAll('#providerTabs .tab-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    document.getElementById('dashboardContent').style.display = 'none';
+    document.getElementById('clientsContent').style.display = 'none';
+    document.getElementById('calendarContent').style.display = 'none';
+    document.getElementById('documentsContent').style.display = 'none';
+    
+    if (tab === 'dashboard') {
+        document.getElementById('dashboardContent').style.display = 'block';
+        updateDashboard();
+    } else if (tab === 'clients') {
+        document.getElementById('clientsContent').style.display = 'block';
+        renderClients();
+    } else if (tab === 'calendar') {
+        document.getElementById('calendarContent').style.display = 'block';
+        renderAppointments();
+    } else if (tab === 'documents') {
+        document.getElementById('documentsContent').style.display = 'block';
+        renderDocumentTemplates();
+        renderAssignedDocs();
+    }
+}
+
+function showClientTab(tab) {
+    document.querySelectorAll('#clientTabs .tab-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    document.getElementById('clientInfo').style.display = 'none';
+    document.getElementById('clientAppointments').style.display = 'none';
+    document.getElementById('clientPortalContent').style.display = 'none';
+    
+    if (tab === 'portal') {
+        document.getElementById('clientInfo').style.display = 'block';
+    } else if (tab === 'appointments') {
+        document.getElementById('clientAppointments').style.display = 'block';
+        loadClientAppointments();
+    } else if (tab === 'documents') {
+        document.getElementById('clientPortalContent').style.display = 'block';
+        showClientDocuments();
+    }
+}
+
+// Dashboard Functions
+function updateDashboard() {
+    document.getElementById('totalClients').textContent = allClients.length;
+    
+    const today = new Date().toISOString().split('T')[0];
+    const todayAppts = appointments.filter(a => a.date === today).length;
+    document.getElementById('appointmentsToday').textContent = todayAppts;
+    
+    const pending = assignedDocs.filter(d => d.status === 'pending').length;
+    document.getElementById('pendingDocs').textContent = pending;
+}
+
+// Client Management Functions
+function renderClients() {
+    const container = document.getElementById('clientsList');
+    
+    if (allClients.length === 0) {
+        container.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 20px;">No clients yet</p>';
+        return;
+    }
+    
+    container.innerHTML = `
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>DOB</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${allClients.map(client => `
+                    <tr>
+                        <td>${client.name}</td>
+                        <td>${client.email}</td>
+                        <td>${client.phone}</td>
+                        <td>${new Date(client.dob).toLocaleDateString()}</td>
+                        <td>
+                            <button class="btn" style="padding: 6px 12px; font-size: 12px; margin-right: 5px;" onclick="editClient(${client.id})">Edit</button>
+                            <button class="btn" style="padding: 6px 12px; font-size: 12px;" onclick="deleteClient(${client.id})">Delete</button>
+                        </td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
+}
+
+function openAddClient() {
+    editingClientId = null;
+    document.getElementById('clientModalTitle').textContent = 'Add Client';
+    document.getElementById('clientForm').reset();
+    document.getElementById('clientModal').classList.add('active');
+}
+
+function editClient(id) {
+    editingClientId = id;
+    const client = allClients.find(c => c.id === id);
+    
+    document.getElementById('clientModalTitle').textContent = 'Edit Client';
+    document.getElementById('clientName').value = client.name;
+    document.getElementById('clientEmail').value = client.email;
+    document.getElementById('clientPhone').value = client.phone;
+    document.getElementById('clientDob').value = client.dob;
+    
+    document.getElementById('clientModal').classList.add('active');
+}
+
+function closeClientModal() {
+    document.getElementById('clientModal').classList.remove('active');
+    editingClientId = null;
+}
+
+function saveClient(e) {
+    e.preventDefault();
+    
+    const clientData = {
+        name: document.getElementById('clientName').value,
+        email: document.getElementById('clientEmail').value,
+        phone: document.getElementById('clientPhone').value,
+        dob: document.getElementById('clientDob').value
+    };
+    
+    if (editingClientId) {
+        const index = allClients.findIndex(c => c.id === editingClientId);
+        allClients[index] = { ...allClients[index], ...clientData };
+    } else {
+        clientData.id = Date.now();
+        allClients.push(clientData);
+        
+        users.push({
+            id: Date.now() + 1,
+            username: clientData.email,
+            password: 'password123',
+            role: 'client',
+            name: clientData.name
+        });
+    }
+    
+    closeClientModal();
+    renderClients();
+    updateDashboard();
+}
+
+function deleteClient(id) {
+    if (confirm('Are you sure you want to delete this client?')) {
+        allClients = allClients.filter(c => c.id !== id);
+        renderClients();
+        updateDashboard();
+    }
+}
+
+// Calendar Functions
+function renderAppointments() {
+    const container = document.getElementById('appointmentsList');
+    
+    if (appointments.length === 0) {
+        container.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 20px;">No appointments scheduled</p>';
+        return;
+    }
+    
+    container.innerHTML = `
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Client</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Type</th>
+                    <th>Duration</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${appointments.map(apt => `
+                    <tr>
+                        <td>${apt.clientName}</td>
+                        <td>${new Date(apt.date).toLocaleDateString()}</td>
+                        <td>${apt.time}</td>
+                        <td><span class="badge badge-info">${apt.type}</span></td>
+                        <td>${apt.duration} min</td>
+                        <td>
+                            <button class="btn" style="padding: 6px 12px; font-size: 12px; margin-right: 5px;" onclick="editAppointment(${apt.id})">Edit</button>
+                            <button class="btn" style="padding: 6px 12px; font-size: 12px;" onclick="deleteAppointment(${apt.id})">Delete</button>
+                        </td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
+}
+
+function openAddAppointment() {
+    editingAppointmentId = null;
+    document.getElementById('appointmentModalTitle').textContent = 'New Appointment';
+    document.getElementById('appointmentForm').reset();
+    
+    const clientSelect = document.getElementById('appointmentClient');
+    clientSelect.innerHTML = '<option value="">Select a client...</option>' + 
+        allClients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+    
+    document.getElementById('appointmentModal').classList.add('active');
+}
+
+function editAppointment(id) {
+    editingAppointmentId = id;
+    const apt = appointments.find(a => a.id === id);
+    
+    document.getElementById('appointmentModalTitle').textContent = 'Edit Appointment';
+    
+    const clientSelect = document.getElementById('appointmentClient');
+    clientSelect.innerHTML = '<option value="">Select a client...</option>' + 
+        allClients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+    
+    document.getElementById('appointmentClient').value = apt.clientId;
+    document.getElementById('appointmentDate').value = apt.date;
+    document.getElementById('appointmentTime').value = apt.time;
+    document.getElementById('appointmentDuration').value = apt.duration;
+    document.getElementById('appointmentType').value = apt.type;
+    document.getElementById('appointmentNotes').value = apt.notes || '';
+    
+    document.getElementById('appointmentModal').classList.add('active');
+}
+
+function closeAppointmentModal() {
+    document.getElementById('appointmentModal').classList.remove('active');
+    editingAppointmentId = null;
+}
+
+function saveAppointment(e) {
+    e.preventDefault();
+    
+    const clientId = parseInt(document.getElementById('appointmentClient').value);
+    const client = allClients.find(c => c.id === clientId);
+    
+    const aptData = {
+        clientId,
+        clientName: client.name,
+        date: document.getElementById('appointmentDate').value,
+        time: document.getElementById('appointmentTime').value,
+        duration: parseInt(document.getElementById('appointmentDuration').value),
+        type: document.getElementById('appointmentType').value,
+        notes: document.getElementById('appointmentNotes').value,
+        location: 'Office A'
+    };
+    
+    if (editingAppointmentId) {
+        const index = appointments.findIndex(a => a.id === editingAppointmentId);
+        appointments[index] = { ...appointments[index], ...aptData };
+    } else {
+        aptData.id = Date.now();
+        appointments.push(aptData);
+    }
+    
+    closeAppointmentModal();
+    renderAppointments();
+    updateDashboard();
+}
+
+function deleteAppointment(id) {
+    if (confirm('Are you sure you want to delete this appointment?')) {
+        appointments = appointments.filter(a => a.id !== id);
+        renderAppointments();
+        updateDashboard();
+    }
+}
+
+function loadClientAppointments() {
+    const userId = parseInt(localStorage.getItem('userId'));
+    const userAppts = appointments.filter(a => a.clientId === userId);
+    
+    const container = document.getElementById('clientAppointmentsList');
+    
+    if (userAppts.length === 0) {
+        container.innerHTML = '<p style="color: #6b7280;">No appointments scheduled</p>';
+        return;
+    }
+    
+    container.innerHTML = `
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Type</th>
+                    <th>Duration</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${userAppts.map(apt => `
+                    <tr>
+                        <td>${new Date(apt.date).toLocaleDateString()}</td>
+                        <td>${apt.time}</td>
+                        <td><span class="badge badge-info">${apt.type}</span></td>
+                        <td>${apt.duration} min</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
+}
+
+// Document Functions
+function renderDocumentTemplates() {
+    const container = document.getElementById('documentTemplatesList');
+    
+    container.innerHTML = `
+        <div class="grid">
+            ${documentTemplates.map(template => `
+                <div class="card" style="margin: 0;">
+                    <h4 style="margin-bottom: 10px; color: #1f2937;">${template.name}</h4>
+                    <p style="color: #6b7280; font-size: 14px;">${template.description}</p>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+function openAssignModal() {
+    const clientSelect = document.getElementById('assignClientSelect');
+    clientSelect.innerHTML = '<option value="">Choose a client...</option>' + 
+        allClients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+    
+    selectedDocs.clear();
+    const list = document.getElementById('documentCheckboxList');
+    list.innerHTML = '';
+    
+    documentTemplates.forEach(template => {
+        const card = document.createElement('div');
+        card.style.cssText = 'padding: 12px; border-bottom: 1px solid #e5e7eb; cursor: pointer;';
+        card.innerHTML = `
+            <label style="display: flex; align-items: center; cursor: pointer;">
+                <input type="checkbox" value="${template.id}" style="margin-right: 10px;" onchange="toggleDocSelection(${template.id})">
+                <div>
+                    <div style="font-weight: 500; color: #1f2937;">${template.name}</div>
+                    <div style="font-size: 12px; color: #6b7280;">${template.description}</div>
+                </div>
+            </label>
+        `;
+        card.onclick = (e) => {
+            if (e.target.tagName !== 'INPUT') {
+                const checkbox = card.querySelector('input');
+                checkbox.checked = !checkbox.checked;
+                toggleDocSelection(template.id);
+            }
+        };
+        
+        list.appendChild(card);
+    });
+    
+    document.getElementById('assignModal').classList.add('active');
+}
+
+function toggleDocSelection(docId) {
+    if (selectedDocs.has(docId)) {
+        selectedDocs.delete(docId);
+    } else {
+        selectedDocs.add(docId);
+    }
+}
+
+function closeAssignModal() {
+    document.getElementById('assignModal').classList.remove('active');
+    selectedDocs.clear();
+}
+
+function assignDocuments() {
+    const clientId = parseInt(document.getElementById('assignClientSelect').value);
+    
+    if (!clientId) {
+        alert('Please select a client');
+        return;
+    }
+    
+    if (selectedDocs.size === 0) {
+        alert('Please select at least one document');
+        return;
+    }
+    
+    const client = allClients.find(c => c.id === clientId);
+    selectedDocs.forEach(docId => {
+        assignedDocs.push({
+            id: Date.now() + Math.random(),
+            clientId,
+            clientName: client.name,
+            docId,
+            docName: documentTemplates.find(d => d.id === docId).name,
+            assignedDate: new Date().toISOString(),
+            status: 'pending'
+        });
+    });
+    
+    localStorage.setItem('assignedDocs', JSON.stringify(assignedDocs));
+    renderAssignedDocs();
+    closeAssignModal();
+    updateDashboard();
+    alert(`${selectedDocs.size} document(s) assigned to ${client.name}`);
+}
+
+function renderAssignedDocs() {
+    const container = document.getElementById('assignedDocsList');
+    
+    if (assignedDocs.length === 0) {
+        container.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 20px;">No documents assigned yet</p>';
+        return;
+    }
+    
+    container.innerHTML = `
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Client</th>
+                    <th>Document</th>
+                    <th>Assigned Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${assignedDocs.map(doc => `
+                    <tr>
+                        <td>${doc.clientName}</td>
+                        <td>${doc.docName}</td>
+                        <td>${new Date(doc.assignedDate).toLocaleDateString()}</td>
+                        <td><span class="badge badge-${doc.status === 'completed' ? 'success' : 'warning'}">${doc.status}</span></td>
+                        <td>
+                            ${doc.status === 'completed' ? `<button class="btn" style="padding: 6px 12px; font-size: 12px;" onclick="viewCompletedDocument(${doc.id})">View</button>` : '-'}
+                        </td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
+}
+
 // Client portal document functions
 function showClientDocuments() {
     const clientDocs = assignedDocs.filter(doc => 
@@ -7,7 +1105,7 @@ function showClientDocuments() {
     const container = document.getElementById('clientDocumentsContainer');
     
     if (clientDocs.length === 0) {
-        container.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 40px;">No documents assigned</p>';
+        container.innerHTML = '<div class="card"><p style="color: #6b7280; text-align: center; padding: 40px;">No documents assigned</p></div>';
         return;
     }
     
@@ -17,9 +1115,9 @@ function showClientDocuments() {
             <p style="color: #6b7280; margin-bottom: 15px;">Assigned: ${new Date(doc.assignedDate).toLocaleDateString()}</p>
             <span class="badge badge-${doc.status === 'completed' ? 'success' : 'warning'}" style="margin-bottom: 15px; display: inline-block;">${doc.status}</span>
             ${doc.status === 'pending' ? `
-                <button class="btn btn-primary" onclick="openDocumentForm(${doc.id}, ${doc.docId})">Complete Document</button>
+                <br><button class="btn btn-primary" onclick="openDocumentForm(${doc.id}, ${doc.docId})">Complete Document</button>
             ` : `
-                <button class="btn" onclick="viewCompletedDocument(${doc.id})">View Completed</button>
+                <br><button class="btn" onclick="viewCompletedDocument(${doc.id})">View Completed</button>
             `}
         </div>
     `).join('');
@@ -163,19 +1261,23 @@ function clearSignature() {
 function submitDocument(assignedDocId, template) {
     // Collect form data
     const formData = {};
+    let isValid = true;
+    
     template.fields.forEach(field => {
         const element = document.getElementById(`field_${field.id}`);
         if (field.type === 'checkbox') {
             formData[field.id] = element.checked;
+            if (!element.checked) isValid = false;
         } else {
             formData[field.id] = element.value;
-        }
-        
-        if (!element.value && field.type !== 'checkbox') {
-            alert(`Please complete all fields`);
-            return;
+            if (!element.value) isValid = false;
         }
     });
+    
+    if (!isValid) {
+        alert('Please complete all fields');
+        return;
+    }
     
     // Get signature
     const canvas = document.getElementById('signatureCanvas');
@@ -247,6 +1349,7 @@ function closeViewDocModal() {
     document.getElementById('viewDocModal').classList.remove('active');
 }
 
+// Initialize
 if (authToken) {
     showApp();
     if (userRole === 'client') {
@@ -255,3 +1358,7 @@ if (authToken) {
 } else {
     showAuth();
 }
+</script>
+
+</body>
+</html>
