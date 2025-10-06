@@ -1551,6 +1551,41 @@ function openAssignModal() {
     });
     
     const list = document.getElementById('docSelectList');
+    list.innerHTML = '';
+    
+    documentTemplates.forEach(doc => {
+        const card = document.createElement('div');
+        card.className = 'doc-card';
+        card.setAttribute('data-doc-id', doc.id);
+        card.innerHTML = `<h4>${doc.name}</h4><p>${doc.category}</p>`;
+        
+        card.addEventListener('click', function() {
+            if (selectedDocs.has(doc.id)) {
+                selectedDocs.delete(doc.id);
+                card.classList.remove('selected');
+            } else {
+                selectedDocs.add(doc.id);
+                card.classList.add('selected');
+            }
+        });
+        
+        list.appendChild(card);
+    });
+    
+    selectedDocs.clear();
+    document.getElementById('assignModal').classList.add('active');
+} 0) {
+        alert('Please add clients first');
+        return;
+    }
+    
+    const select = document.getElementById('assignClientSelect');
+    select.innerHTML = '<option value="">Select a client...</option>';
+    allClients.forEach(c => {
+        select.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+    });
+    
+    const list = document.getElementById('docSelectList');
     list.innerHTML = documentTemplates.map(doc => `
         <div class="doc-card" data-doc-id="${doc.id}" onclick="toggleDocSelect(${doc.id})">
             <h4>${doc.name}</h4>
