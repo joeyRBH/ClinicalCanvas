@@ -1552,7 +1552,7 @@ function openAssignModal() {
     
     const list = document.getElementById('docSelectList');
     list.innerHTML = documentTemplates.map(doc => `
-        <div class="doc-card" onclick="toggleDocSelect(${doc.id})">
+        <div class="doc-card" data-doc-id="${doc.id}" onclick="toggleDocSelect(${doc.id})">
             <h4>${doc.name}</h4>
             <p>${doc.category}</p>
         </div>
@@ -1574,15 +1574,15 @@ function toggleDocSelect(docId) {
         selectedDocs.add(docId);
     }
     
-    const cards = document.getElementById('docSelectList').children;
-    Array.from(cards).forEach((card, i) => {
-        const template = documentTemplates[i];
-        if (selectedDocs.has(template.id)) {
+    // Update the visual selection
+    const card = document.querySelector(`[data-doc-id="${docId}"]`);
+    if (card) {
+        if (selectedDocs.has(docId)) {
             card.classList.add('selected');
         } else {
             card.classList.remove('selected');
         }
-    });
+    }
 }
 
 function assignDocuments() {
