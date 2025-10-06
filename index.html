@@ -1568,24 +1568,39 @@ function closeAssignModal() {
 }
 
 function toggleDocSelect(docId) {
+    console.log('Toggle called for docId:', docId);
+    console.log('Current selectedDocs:', selectedDocs);
+    
     if (selectedDocs.has(docId)) {
         selectedDocs.delete(docId);
+        console.log('Removed docId:', docId);
     } else {
         selectedDocs.add(docId);
+        console.log('Added docId:', docId);
     }
+    
+    console.log('Updated selectedDocs:', selectedDocs);
     
     // Update the visual selection
     const card = document.querySelector(`[data-doc-id="${docId}"]`);
     if (card) {
         if (selectedDocs.has(docId)) {
             card.classList.add('selected');
+            console.log('Card selected visually');
         } else {
             card.classList.remove('selected');
+            console.log('Card deselected visually');
         }
+    } else {
+        console.log('ERROR: Card not found for docId:', docId);
     }
 }
 
 function assignDocuments() {
+    console.log('Assign clicked');
+    console.log('selectedDocs.size:', selectedDocs.size);
+    console.log('selectedDocs contents:', selectedDocs);
+    
     const clientId = parseInt(document.getElementById('assignClientSelect').value);
     
     if (!clientId) {
