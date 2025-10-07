@@ -357,7 +357,8 @@
                 <button class="tab-btn active" onclick="showTab('dashboard')">Dashboard</button>
                 <button class="tab-btn" onclick="showTab('clients')">Clients</button>
                 <button class="tab-btn" onclick="showTab('calendar')">Calendar</button>
-                <button class="tab-btn" onclick="showTab('ainotes')">AI Notes</button>
+                <button class="tab-btn" onclick="showTab('ainotes')">Clinical Notes</button>
+                <button class="tab-btn" onclick="showTab('billing')">Billing</button>
                 <button class="tab-btn" onclick="showTab('documents')">Documents</button>
                 <button class="tab-btn" onclick="showTab('audit')">Audit Log</button>
             </div>
@@ -415,10 +416,10 @@
 
             <!-- AI Notes -->
             <div id="ainotesContent" style="display: none;">
-                <h2 style="color: #1f2937; margin-bottom: 20px;">AI Clinical Notes</h2>
+                <h2 style="color: #1f2937; margin-bottom: 20px;">Clinical Notes (DAP Format)</h2>
                 
                 <div class="card">
-                    <h3 style="margin-bottom: 20px;">Create New Note</h3>
+                    <h3 style="margin-bottom: 20px;">Create New Clinical Note</h3>
                     
                     <div class="input-group">
                         <label>Select Client</label>
@@ -438,7 +439,7 @@
                                 <span id="recordingTime">00:00</span>
                             </div>
                         </div>
-                        <p style="color: #6b7280; font-size: 12px;">Record your session notes verbally, then AI will convert to SOAP format</p>
+                        <p style="color: #6b7280; font-size: 12px;">Record your session notes verbally, then AI will convert to DAP format</p>
                     </div>
 
                     <div class="input-group">
@@ -446,14 +447,52 @@
                         <textarea id="manualNotes" class="input" rows="6" placeholder="Describe the session..."></textarea>
                     </div>
 
-                    <button class="btn btn-primary" onclick="generateSOAPNote()" id="generateBtn">
-                        ✨ Generate SOAP Note
+                    <button class="btn btn-primary" onclick="generateDAPNote()" id="generateBtn">
+                        ✨ Generate DAP Note
                     </button>
                 </div>
 
                 <div class="card" style="margin-top: 20px;">
-                    <h3 style="margin-bottom: 20px;">Recent Notes</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3>Clinical Notes by Client</h3>
+                        <select id="notesFilterClient" class="input" style="width: 250px;" onchange="renderAINotes()">
+                            <option value="">All Clients</option>
+                        </select>
+                    </div>
                     <div id="recentNotesList"></div>
+                </div>
+            </div>
+
+            <!-- Billing -->
+            <div id="billingContent" style="display: none;">
+                <h2 style="color: #1f2937; margin-bottom: 20px;">Billing & Invoicing</h2>
+                
+                <div class="grid" style="margin-bottom: 20px;">
+                    <div class="stat-card">
+                        <h3>Total Revenue</h3>
+                        <div class="value" style="color: #10b981;" id="totalRevenue">$0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Outstanding</h3>
+                        <div class="value" style="color: #f59e0b;" id="outstandingBalance">$0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>This Month</h3>
+                        <div class="value" id="monthRevenue">$0</div>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3>Invoices</h3>
+                        <button class="btn btn-primary" onclick="openCreateInvoice()">Create Invoice</button>
+                    </div>
+                    <div id="invoicesList"></div>
+                </div>
+
+                <div class="card">
+                    <h3 style="margin-bottom: 20px;">Payment History</h3>
+                    <div id="paymentsList"></div>
                 </div>
             </div>
 
@@ -595,11 +634,66 @@
     <!-- View SOAP Note Modal -->
     <div id="viewNoteModal" class="modal">
         <div class="modal-content" style="max-width: 700px; max-height: 90vh; overflow-y: auto;">
-            <h2 style="margin-bottom: 20px;">Clinical Note</h2>
+            <h2 style="margin-bottom: 20px;">Clinical Note (DAP Format)</h2>
             <div id="viewNoteContent"></div>
             <div style="display: flex; justify-content: flex-end; margin-top: 20px; gap: 10px;">
                 <button class="btn btn-danger" onclick="deleteNote()">Delete Note</button>
                 <button class="btn" onclick="closeViewNoteModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Invoice Modal -->
+    <div id="invoiceModal" class="modal">
+        <div class="modal-content" style="max-width: 700px;">
+            <h2 style="margin-bottom: 20px;">Create Invoice</h2>
+            <form id="invoiceForm" onsubmit="saveInvoice(event)">
+                <div class="input-group">
+                    <label>Client</label>
+                    <select id="invoiceClient" class="input" required>
+                        <option value="">Select a client...</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Invoice Date</label>
+                    <input type="date" id="invoiceDate" class="input" required>
+                </div>
+                <div class="input-group">
+                    <label>Due Date</label>
+                    <input type="date" id="invoiceDueDate" class="input" required>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 10px; font-weight: 500;">Line Items</label>
+                    <div id="invoiceLineItems">
+                        <div class="invoice-line-item" style="display: flex; gap: 10px; margin-bottom: 10px;">
+                            <input type="text" class="input item-description" placeholder="Description" style="flex: 2;" required>
+                            <input type="number" class="input item-quantity" placeholder="Qty" style="width: 80px;" value="1" min="1" required>
+                            <input type="number" class="input item-rate" placeholder="Rate" style="width: 120px;" step="0.01" min="0" required>
+                        </div>
+                    </div>
+                    <button type="button" class="btn" onclick="addInvoiceLineItem()">+ Add Line Item</button>
+                </div>
+                <div class="input-group">
+                    <label>Notes</label>
+                    <textarea id="invoiceNotes" class="input" rows="3"></textarea>
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                    <button type="button" class="btn" onclick="closeInvoiceModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Invoice</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Invoice Modal -->
+    <div id="viewInvoiceModal" class="modal">
+        <div class="modal-content" style="max-width: 700px; max-height: 90vh; overflow-y: auto;">
+            <h2 style="margin-bottom: 20px;">Invoice Details</h2>
+            <div id="viewInvoiceContent"></div>
+            <div style="display: flex; justify-content: flex-end; margin-top: 20px; gap: 10px;">
+                <button class="btn btn-danger" onclick="deleteInvoice()">Delete Invoice</button>
+                <button class="btn btn-success" onclick="markInvoicePaid()" id="markPaidBtn">Mark as Paid</button>
+                <button class="btn" onclick="closeViewInvoiceModal()">Close</button>
             </div>
         </div>
     </div>
@@ -731,6 +825,8 @@ let documentTemplates = [
 let assignedDocs = JSON.parse(localStorage.getItem('assignedDocs') || '[]');
 let clinicalNotes = JSON.parse(localStorage.getItem('clinicalNotes') || '[]');
 let auditLog = JSON.parse(localStorage.getItem('auditLog') || '[]');
+let invoices = JSON.parse(localStorage.getItem('invoices') || '[]');
+let payments = JSON.parse(localStorage.getItem('payments') || '[]');
 
 let selectedDocs = new Set();
 let authToken = localStorage.getItem('authToken');
@@ -739,6 +835,7 @@ let currentUser = null;
 let editingClientId = null;
 let editingAppointmentId = null;
 let currentNoteId = null;
+let currentInvoiceId = null;
 
 // Audio recording variables
 let mediaRecorder = null;
@@ -830,6 +927,7 @@ function showTab(tab) {
     document.getElementById('clientsContent').style.display = 'none';
     document.getElementById('calendarContent').style.display = 'none';
     document.getElementById('ainotesContent').style.display = 'none';
+    document.getElementById('billingContent').style.display = 'none';
     document.getElementById('documentsContent').style.display = 'none';
     document.getElementById('auditContent').style.display = 'none';
     
@@ -845,6 +943,9 @@ function showTab(tab) {
     } else if (tab === 'ainotes') {
         document.getElementById('ainotesContent').style.display = 'block';
         renderAINotes();
+    } else if (tab === 'billing') {
+        document.getElementById('billingContent').style.display = 'block';
+        renderBilling();
     } else if (tab === 'documents') {
         document.getElementById('documentsContent').style.display = 'block';
         renderDocumentTemplates();
@@ -1168,15 +1269,27 @@ function renderAINotes() {
     clientSelect.innerHTML = '<option value="">Choose a client...</option>' + 
         allClients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
     
+    // Populate filter select
+    const filterSelect = document.getElementById('notesFilterClient');
+    filterSelect.innerHTML = '<option value="">All Clients</option>' + 
+        allClients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+    
+    // Filter notes
+    const filterClientId = filterSelect.value;
+    let filteredNotes = clinicalNotes;
+    if (filterClientId) {
+        filteredNotes = clinicalNotes.filter(n => n.clientId === parseInt(filterClientId));
+    }
+    
     // Render recent notes
     const container = document.getElementById('recentNotesList');
     
-    if (clinicalNotes.length === 0) {
+    if (filteredNotes.length === 0) {
         container.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 20px;">No clinical notes yet</p>';
         return;
     }
     
-    container.innerHTML = clinicalNotes.slice(0, 10).map(note => `
+    container.innerHTML = filteredNotes.map(note => `
         <div class="card note-card" style="margin-bottom: 15px; cursor: pointer;" onclick="viewNote(${note.id})">
             <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
                 <div>
@@ -1186,7 +1299,7 @@ function renderAINotes() {
                 <span class="badge badge-info">${note.type || 'Session Note'}</span>
             </div>
             <p style="color: #6b7280; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                ${note.soap.subjective.substring(0, 100)}...
+                ${note.dap.data.substring(0, 100)}...
             </p>
         </div>
     `).join('');
@@ -1256,7 +1369,7 @@ function startRecordingTimer() {
     }, 1000);
 }
 
-async function generateSOAPNote() {
+async function generateDAPNote() {
     const clientId = parseInt(document.getElementById('noteClientSelect').value);
     const manualNotes = document.getElementById('manualNotes').value.trim();
     
@@ -1282,8 +1395,8 @@ async function generateSOAPNote() {
             sessionNotes = await transcribeAudio(recordedAudioBlob);
         }
         
-        // Generate SOAP note using Claude API
-        const soapNote = await generateSOAPFromNotes(sessionNotes);
+        // Generate DAP note using Claude API
+        const dapNote = await generateDAPFromNotes(sessionNotes);
         
         // Save the note
         const client = allClients.find(c => c.id === clientId);
@@ -1293,14 +1406,14 @@ async function generateSOAPNote() {
             clientName: client.name,
             createdAt: new Date().toISOString(),
             rawNotes: sessionNotes,
-            soap: soapNote,
+            dap: dapNote,
             type: 'Session Note'
         };
         
         clinicalNotes.unshift(note);
         localStorage.setItem('clinicalNotes', JSON.stringify(clinicalNotes));
         
-        logAudit('create', 'Clinical Note', `Created note for ${client.name}`);
+        logAudit('create', 'Clinical Note', `Created DAP note for ${client.name}`);
         
         // Clear form
         document.getElementById('noteClientSelect').value = '';
@@ -1314,14 +1427,14 @@ async function generateSOAPNote() {
         // Show the note
         viewNote(note.id);
         
-        alert('SOAP note generated successfully!');
+        alert('DAP note generated successfully!');
         
     } catch (error) {
         console.error('Error generating note:', error);
-        alert('Error generating SOAP note. Please try again.');
+        alert('Error generating DAP note. Please try again.');
     } finally {
         generateBtn.disabled = false;
-        generateBtn.textContent = '✨ Generate SOAP Note';
+        generateBtn.textContent = '✨ Generate DAP Note';
     }
 }
 
@@ -1330,7 +1443,7 @@ async function transcribeAudio(audioBlob) {
     return "Patient presented for follow-up session. Discussed recent stressors at work and family relationships. Patient reports improved sleep but continuing anxiety symptoms. We reviewed coping strategies and practiced breathing exercises. Patient engaged well in session.";
 }
 
-async function generateSOAPFromNotes(notes) {
+async function generateDAPFromNotes(notes) {
     try {
         const response = await fetch("https://api.anthropic.com/v1/messages", {
             method: "POST",
@@ -1343,18 +1456,22 @@ async function generateSOAPFromNotes(notes) {
                 messages: [
                     { 
                         role: "user", 
-                        content: `You are a clinical documentation assistant. Convert the following session notes into a structured SOAP (Subjective, Objective, Assessment, Plan) format for a clinical record.
+                        content: `You are a clinical documentation assistant. Convert the following session notes into a structured DAP (Data, Assessment, Plan) format for a clinical record.
 
 Session Notes:
 ${notes}
 
+DAP Format:
+- Data: Observable facts, client statements, and relevant session information
+- Assessment: Clinical impressions, interpretations, and professional judgment
+- Plan: Treatment goals, interventions, and next steps
+
 CRITICAL: Respond ONLY with valid JSON in this exact format. DO NOT include any markdown, backticks, or explanatory text:
 
 {
-  "subjective": "Patient's reported symptoms, feelings, and concerns in clinical language",
-  "objective": "Observable behaviors, mental status observations, and clinical findings",
-  "assessment": "Clinical assessment, diagnosis considerations, and progress evaluation",
-  "plan": "Treatment plan, interventions, follow-up, and next steps"
+  "data": "Observable behaviors, client statements, and factual information from the session",
+  "assessment": "Clinical impressions, diagnostic considerations, progress evaluation, and professional interpretation",
+  "plan": "Treatment goals, planned interventions, homework, follow-up schedule, and next steps"
 }
 
 Remember: Output ONLY the JSON object, nothing else.`
@@ -1369,17 +1486,16 @@ Remember: Output ONLY the JSON object, nothing else.`
         // Strip any markdown formatting
         responseText = responseText.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
         
-        const soapNote = JSON.parse(responseText);
-        return soapNote;
+        const dapNote = JSON.parse(responseText);
+        return dapNote;
         
     } catch (error) {
         console.error('Error calling Claude API:', error);
-        // Fallback SOAP note
+        // Fallback DAP note
         return {
-            subjective: notes,
-            objective: "Patient appeared engaged and cooperative during session.",
-            assessment: "Continue current treatment approach. Monitor progress.",
-            plan: "Schedule follow-up session in one week. Continue current interventions."
+            data: notes,
+            assessment: "Client appeared engaged and cooperative during session. Continue monitoring progress.",
+            plan: "Schedule follow-up session in one week. Continue current interventions and track progress on treatment goals."
         };
     }
 }
@@ -1388,7 +1504,7 @@ function viewNote(noteId) {
     currentNoteId = noteId;
     const note = clinicalNotes.find(n => n.id === noteId);
     
-    logAudit('view', 'Clinical Note', `Viewed note for ${note.clientName}`);
+    logAudit('view', 'Clinical Note', `Viewed DAP note for ${note.clientName}`);
     
     const modal = document.getElementById('viewNoteModal');
     document.getElementById('viewNoteContent').innerHTML = `
@@ -1403,23 +1519,18 @@ function viewNote(noteId) {
         </div>
         
         <div style="margin-bottom: 20px; padding: 15px; background: #f9fafb; border-radius: 8px;">
-            <strong style="color: #374151; display: block; margin-bottom: 10px;">S - Subjective</strong>
-            <p style="color: #6b7280; line-height: 1.6;">${note.soap.subjective}</p>
-        </div>
-        
-        <div style="margin-bottom: 20px; padding: 15px; background: #f9fafb; border-radius: 8px;">
-            <strong style="color: #374151; display: block; margin-bottom: 10px;">O - Objective</strong>
-            <p style="color: #6b7280; line-height: 1.6;">${note.soap.objective}</p>
+            <strong style="color: #374151; display: block; margin-bottom: 10px;">D - Data</strong>
+            <p style="color: #6b7280; line-height: 1.6; white-space: pre-wrap;">${note.dap.data}</p>
         </div>
         
         <div style="margin-bottom: 20px; padding: 15px; background: #f9fafb; border-radius: 8px;">
             <strong style="color: #374151; display: block; margin-bottom: 10px;">A - Assessment</strong>
-            <p style="color: #6b7280; line-height: 1.6;">${note.soap.assessment}</p>
+            <p style="color: #6b7280; line-height: 1.6; white-space: pre-wrap;">${note.dap.assessment}</p>
         </div>
         
         <div style="padding: 15px; background: #f9fafb; border-radius: 8px;">
             <strong style="color: #374151; display: block; margin-bottom: 10px;">P - Plan</strong>
-            <p style="color: #6b7280; line-height: 1.6;">${note.soap.plan}</p>
+            <p style="color: #6b7280; line-height: 1.6; white-space: pre-wrap;">${note.dap.plan}</p>
         </div>
     `;
     
@@ -1442,6 +1553,313 @@ function deleteNote() {
         closeViewNoteModal();
         renderAINotes();
         updateDashboard();
+    }
+}
+
+// Billing Functions
+function renderBilling() {
+    // Calculate totals
+    const totalRevenue = invoices.reduce((sum, inv) => sum + (inv.status === 'paid' ? inv.total : 0), 0);
+    const outstanding = invoices.reduce((sum, inv) => sum + (inv.status === 'unpaid' ? inv.total : 0), 0);
+    
+    const now = new Date();
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const monthRevenue = invoices.reduce((sum, inv) => {
+        const invDate = new Date(inv.date);
+        return sum + (inv.status === 'paid' && invDate >= monthStart ? inv.total : 0);
+    }, 0);
+    
+    document.getElementById('totalRevenue').textContent = `${totalRevenue.toFixed(2)}`;
+    document.getElementById('outstandingBalance').textContent = `${outstanding.toFixed(2)}`;
+    document.getElementById('monthRevenue').textContent = `${monthRevenue.toFixed(2)}`;
+    
+    // Render invoices
+    renderInvoicesList();
+    renderPaymentsList();
+}
+
+function renderInvoicesList() {
+    const container = document.getElementById('invoicesList');
+    
+    if (invoices.length === 0) {
+        container.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 20px;">No invoices yet</p>';
+        return;
+    }
+    
+    container.innerHTML = `
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Invoice #</th>
+                    <th>Client</th>
+                    <th>Date</th>
+                    <th>Due Date</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${invoices.map(inv => `
+                    <tr>
+                        <td>#${inv.id}</td>
+                        <td>${inv.clientName}</td>
+                        <td>${new Date(inv.date).toLocaleDateString()}</td>
+                        <td>${new Date(inv.dueDate).toLocaleDateString()}</td>
+                        <td>${inv.total.toFixed(2)}</td>
+                        <td><span class="badge badge-${inv.status === 'paid' ? 'success' : 'warning'}">${inv.status}</span></td>
+                        <td>
+                            <button class="btn" style="padding: 6px 12px; font-size: 12px;" onclick="viewInvoice(${inv.id})">View</button>
+                        </td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
+}
+
+function renderPaymentsList() {
+    const container = document.getElementById('paymentsList');
+    
+    if (payments.length === 0) {
+        container.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 20px;">No payments yet</p>';
+        return;
+    }
+    
+    container.innerHTML = `
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Client</th>
+                    <th>Invoice #</th>
+                    <th>Amount</th>
+                    <th>Method</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${payments.map(payment => `
+                    <tr>
+                        <td>${new Date(payment.date).toLocaleDateString()}</td>
+                        <td>${payment.clientName}</td>
+                        <td>#${payment.invoiceId}</td>
+                        <td>${payment.amount.toFixed(2)}</td>
+                        <td><span class="badge badge-info">${payment.method || 'Payment'}</span></td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
+}
+
+function openCreateInvoice() {
+    const clientSelect = document.getElementById('invoiceClient');
+    clientSelect.innerHTML = '<option value="">Select a client...</option>' + 
+        allClients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+    
+    // Set default dates
+    const today = new Date().toISOString().split('T')[0];
+    const dueDate = new Date();
+    dueDate.setDate(dueDate.getDate() + 30);
+    
+    document.getElementById('invoiceDate').value = today;
+    document.getElementById('invoiceDueDate').value = dueDate.toISOString().split('T')[0];
+    
+    // Reset line items
+    document.getElementById('invoiceLineItems').innerHTML = `
+        <div class="invoice-line-item" style="display: flex; gap: 10px; margin-bottom: 10px;">
+            <input type="text" class="input item-description" placeholder="Description" style="flex: 2;" required>
+            <input type="number" class="input item-quantity" placeholder="Qty" style="width: 80px;" value="1" min="1" required>
+            <input type="number" class="input item-rate" placeholder="Rate" style="width: 120px;" step="0.01" min="0" required>
+        </div>
+    `;
+    
+    document.getElementById('invoiceNotes').value = '';
+    document.getElementById('invoiceModal').classList.add('active');
+}
+
+function addInvoiceLineItem() {
+    const container = document.getElementById('invoiceLineItems');
+    const newItem = document.createElement('div');
+    newItem.className = 'invoice-line-item';
+    newItem.style.cssText = 'display: flex; gap: 10px; margin-bottom: 10px;';
+    newItem.innerHTML = `
+        <input type="text" class="input item-description" placeholder="Description" style="flex: 2;" required>
+        <input type="number" class="input item-quantity" placeholder="Qty" style="width: 80px;" value="1" min="1" required>
+        <input type="number" class="input item-rate" placeholder="Rate" style="width: 120px;" step="0.01" min="0" required>
+        <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()" style="padding: 6px 12px;">✕</button>
+    `;
+    container.appendChild(newItem);
+}
+
+function closeInvoiceModal() {
+    document.getElementById('invoiceModal').classList.remove('active');
+}
+
+function saveInvoice(e) {
+    e.preventDefault();
+    
+    const clientId = parseInt(document.getElementById('invoiceClient').value);
+    const client = allClients.find(c => c.id === clientId);
+    
+    // Collect line items
+    const lineItems = Array.from(document.querySelectorAll('.invoice-line-item')).map(item => {
+        const description = item.querySelector('.item-description').value;
+        const quantity = parseInt(item.querySelector('.item-quantity').value);
+        const rate = parseFloat(item.querySelector('.item-rate').value);
+        return {
+            description,
+            quantity,
+            rate,
+            amount: quantity * rate
+        };
+    });
+    
+    const total = lineItems.reduce((sum, item) => sum + item.amount, 0);
+    
+    const invoice = {
+        id: Date.now(),
+        clientId,
+        clientName: client.name,
+        date: document.getElementById('invoiceDate').value,
+        dueDate: document.getElementById('invoiceDueDate').value,
+        lineItems,
+        total,
+        status: 'unpaid',
+        notes: document.getElementById('invoiceNotes').value
+    };
+    
+    invoices.unshift(invoice);
+    localStorage.setItem('invoices', JSON.stringify(invoices));
+    
+    logAudit('create', 'Invoice', `Created invoice for ${client.name} - ${total.toFixed(2)}`);
+    
+    closeInvoiceModal();
+    renderBilling();
+    alert('Invoice created successfully!');
+}
+
+function viewInvoice(invoiceId) {
+    currentInvoiceId = invoiceId;
+    const invoice = invoices.find(inv => inv.id === invoiceId);
+    
+    logAudit('view', 'Invoice', `Viewed invoice #${invoice.id} for ${invoice.clientName}`);
+    
+    const modal = document.getElementById('viewInvoiceModal');
+    
+    // Update mark paid button visibility
+    const markPaidBtn = document.getElementById('markPaidBtn');
+    if (invoice.status === 'paid') {
+        markPaidBtn.style.display = 'none';
+    } else {
+        markPaidBtn.style.display = 'inline-block';
+    }
+    
+    document.getElementById('viewInvoiceContent').innerHTML = `
+        <div style="display: flex; justify-content: space-between; margin-bottom: 30px;">
+            <div>
+                <h3 style="color: #1f2937; margin-bottom: 10px;">Invoice #${invoice.id}</h3>
+                <p style="color: #6b7280;">Client: ${invoice.clientName}</p>
+            </div>
+            <div style="text-align: right;">
+                <span class="badge badge-${invoice.status === 'paid' ? 'success' : 'warning'}" style="font-size: 14px; padding: 8px 16px;">${invoice.status.toUpperCase()}</span>
+            </div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
+            <div>
+                <strong style="color: #374151; display: block; margin-bottom: 5px;">Invoice Date</strong>
+                <p style="color: #6b7280;">${new Date(invoice.date).toLocaleDateString()}</p>
+            </div>
+            <div>
+                <strong style="color: #374151; display: block; margin-bottom: 5px;">Due Date</strong>
+                <p style="color: #6b7280;">${new Date(invoice.dueDate).toLocaleDateString()}</p>
+            </div>
+        </div>
+        
+        <table class="table" style="margin-bottom: 20px;">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Qty</th>
+                    <th>Rate</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${invoice.lineItems.map(item => `
+                    <tr>
+                        <td>${item.description}</td>
+                        <td>${item.quantity}</td>
+                        <td>${item.rate.toFixed(2)}</td>
+                        <td>${item.amount.toFixed(2)}</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+        
+        <div style="text-align: right; padding: 20px; background: #f9fafb; border-radius: 8px;">
+            <h3 style="color: #1f2937;">Total: ${invoice.total.toFixed(2)}</h3>
+        </div>
+        
+        ${invoice.notes ? `
+            <div style="margin-top: 20px; padding: 15px; background: #f9fafb; border-radius: 8px;">
+                <strong style="color: #374151; display: block; margin-bottom: 5px;">Notes</strong>
+                <p style="color: #6b7280;">${invoice.notes}</p>
+            </div>
+        ` : ''}
+    `;
+    
+    modal.classList.add('active');
+}
+
+function closeViewInvoiceModal() {
+    document.getElementById('viewInvoiceModal').classList.remove('active');
+    currentInvoiceId = null;
+}
+
+function markInvoicePaid() {
+    if (confirm('Mark this invoice as paid?')) {
+        const invoice = invoices.find(inv => inv.id === currentInvoiceId);
+        const index = invoices.findIndex(inv => inv.id === currentInvoiceId);
+        
+        invoices[index].status = 'paid';
+        invoices[index].paidDate = new Date().toISOString();
+        
+        // Create payment record
+        const payment = {
+            id: Date.now(),
+            invoiceId: invoice.id,
+            clientId: invoice.clientId,
+            clientName: invoice.clientName,
+            amount: invoice.total,
+            date: new Date().toISOString(),
+            method: 'Payment'
+        };
+        
+        payments.unshift(payment);
+        
+        localStorage.setItem('invoices', JSON.stringify(invoices));
+        localStorage.setItem('payments', JSON.stringify(payments));
+        
+        logAudit('update', 'Invoice', `Marked invoice #${invoice.id} as paid - ${invoice.total.toFixed(2)}`);
+        
+        closeViewInvoiceModal();
+        renderBilling();
+        alert('Invoice marked as paid!');
+    }
+}
+
+function deleteInvoice() {
+    if (confirm('Are you sure you want to delete this invoice?')) {
+        const invoice = invoices.find(inv => inv.id === currentInvoiceId);
+        invoices = invoices.filter(inv => inv.id !== currentInvoiceId);
+        localStorage.setItem('invoices', JSON.stringify(invoices));
+        
+        logAudit('delete', 'Invoice', `Deleted invoice #${invoice.id} for ${invoice.clientName}`);
+        
+        closeViewInvoiceModal();
+        renderBilling();
     }
 }
 
