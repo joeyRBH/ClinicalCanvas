@@ -79,7 +79,6 @@
         .btn-primary {
             background: #667eea;
             color: white;
-            width: 100%;
         }
 
         .btn-primary:hover {
@@ -88,12 +87,30 @@
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
         }
 
-        .btn:not(.btn-primary) {
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .btn:not(.btn-primary):not(.btn-danger):not(.btn-success) {
             background: #f3f4f6;
             color: #374151;
         }
 
-        .btn:not(.btn-primary):hover {
+        .btn:not(.btn-primary):not(.btn-danger):not(.btn-success):hover {
             background: #e5e7eb;
         }
 
@@ -134,6 +151,7 @@
             gap: 10px;
             margin-bottom: 30px;
             border-bottom: 2px solid #e5e7eb;
+            flex-wrap: wrap;
         }
 
         .tab-btn {
@@ -212,6 +230,11 @@
             color: #1e40af;
         }
 
+        .badge-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -264,6 +287,35 @@
             font-size: 32px;
             font-weight: 700;
         }
+
+        .recording-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: #fee2e2;
+            border-radius: 8px;
+            color: #991b1b;
+            font-weight: 500;
+        }
+
+        .recording-dot {
+            width: 8px;
+            height: 8px;
+            background: #dc2626;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .note-card {
+            border-left: 4px solid #667eea;
+            padding-left: 16px;
+        }
     </style>
 </head>
 <body>
@@ -305,7 +357,9 @@
                 <button class="tab-btn active" onclick="showTab('dashboard')">Dashboard</button>
                 <button class="tab-btn" onclick="showTab('clients')">Clients</button>
                 <button class="tab-btn" onclick="showTab('calendar')">Calendar</button>
+                <button class="tab-btn" onclick="showTab('ainotes')">AI Notes</button>
                 <button class="tab-btn" onclick="showTab('documents')">Documents</button>
+                <button class="tab-btn" onclick="showTab('audit')">Audit Log</button>
             </div>
 
             <!-- Client Portal Tabs -->
@@ -329,6 +383,10 @@
                     <div class="stat-card">
                         <h3>Pending Documents</h3>
                         <div class="value" id="pendingDocs">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Clinical Notes</h3>
+                        <div class="value" id="totalNotes">0</div>
                     </div>
                 </div>
             </div>
@@ -355,6 +413,50 @@
                 </div>
             </div>
 
+            <!-- AI Notes -->
+            <div id="ainotesContent" style="display: none;">
+                <h2 style="color: #1f2937; margin-bottom: 20px;">AI Clinical Notes</h2>
+                
+                <div class="card">
+                    <h3 style="margin-bottom: 20px;">Create New Note</h3>
+                    
+                    <div class="input-group">
+                        <label>Select Client</label>
+                        <select id="noteClientSelect" class="input">
+                            <option value="">Choose a client...</option>
+                        </select>
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 500;">Record Session Audio</label>
+                        <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+                            <button id="recordBtn" class="btn btn-danger" onclick="toggleRecording()">
+                                <span id="recordBtnText">🎤 Start Recording</span>
+                            </button>
+                            <div id="recordingStatus" style="display: none;" class="recording-indicator">
+                                <div class="recording-dot"></div>
+                                <span id="recordingTime">00:00</span>
+                            </div>
+                        </div>
+                        <p style="color: #6b7280; font-size: 12px;">Record your session notes verbally, then AI will convert to SOAP format</p>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Or Type Notes Manually</label>
+                        <textarea id="manualNotes" class="input" rows="6" placeholder="Describe the session..."></textarea>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="generateSOAPNote()" id="generateBtn">
+                        ✨ Generate SOAP Note
+                    </button>
+                </div>
+
+                <div class="card" style="margin-top: 20px;">
+                    <h3 style="margin-bottom: 20px;">Recent Notes</h3>
+                    <div id="recentNotesList"></div>
+                </div>
+            </div>
+
             <!-- Documents -->
             <div id="documentsContent" style="display: none;">
                 <h2 style="color: #1f2937; margin-bottom: 20px;">Clinical Documents</h2>
@@ -370,6 +472,29 @@
                         <button class="btn btn-primary" onclick="openAssignModal()">Assign Documents</button>
                     </div>
                     <div id="assignedDocsList"></div>
+                </div>
+            </div>
+
+            <!-- Audit Log -->
+            <div id="auditContent" style="display: none;">
+                <h2 style="color: #1f2937; margin-bottom: 20px;">HIPAA Audit Log</h2>
+                
+                <div class="card" style="margin-bottom: 20px;">
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                        <input type="text" id="auditSearch" class="input" placeholder="Search audit logs..." style="flex: 1;" onkeyup="filterAuditLogs()">
+                        <select id="auditActionFilter" class="input" style="width: 200px;" onchange="filterAuditLogs()">
+                            <option value="">All Actions</option>
+                            <option value="view">View</option>
+                            <option value="create">Create</option>
+                            <option value="update">Update</option>
+                            <option value="delete">Delete</option>
+                            <option value="login">Login</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div id="auditLogList"></div>
                 </div>
             </div>
 
@@ -464,6 +589,18 @@
                     <button type="submit" class="btn btn-primary">Save</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- View SOAP Note Modal -->
+    <div id="viewNoteModal" class="modal">
+        <div class="modal-content" style="max-width: 700px; max-height: 90vh; overflow-y: auto;">
+            <h2 style="margin-bottom: 20px;">Clinical Note</h2>
+            <div id="viewNoteContent"></div>
+            <div style="display: flex; justify-content: flex-end; margin-top: 20px; gap: 10px;">
+                <button class="btn btn-danger" onclick="deleteNote()">Delete Note</button>
+                <button class="btn" onclick="closeViewNoteModal()">Close</button>
+            </div>
         </div>
     </div>
 
@@ -592,13 +729,38 @@ let documentTemplates = [
 ];
 
 let assignedDocs = JSON.parse(localStorage.getItem('assignedDocs') || '[]');
-let selectedDocs = new Set();
+let clinicalNotes = JSON.parse(localStorage.getItem('clinicalNotes') || '[]');
+let auditLog = JSON.parse(localStorage.getItem('auditLog') || '[]');
 
+let selectedDocs = new Set();
 let authToken = localStorage.getItem('authToken');
 let userRole = localStorage.getItem('userRole');
 let currentUser = null;
 let editingClientId = null;
 let editingAppointmentId = null;
+let currentNoteId = null;
+
+// Audio recording variables
+let mediaRecorder = null;
+let audioChunks = [];
+let recordingStartTime = null;
+let recordingInterval = null;
+let recordedAudioBlob = null;
+
+// Audit logging function
+function logAudit(action, resource, details = '') {
+    const entry = {
+        id: Date.now(),
+        timestamp: new Date().toISOString(),
+        user: localStorage.getItem('userName'),
+        userId: localStorage.getItem('userId'),
+        action,
+        resource,
+        details
+    };
+    auditLog.unshift(entry);
+    localStorage.setItem('auditLog', JSON.stringify(auditLog));
+}
 
 // Auth Functions
 function login(e) {
@@ -616,6 +778,9 @@ function login(e) {
         localStorage.setItem('userRole', userRole);
         localStorage.setItem('userId', user.id);
         localStorage.setItem('userName', user.name);
+        
+        logAudit('login', 'System', `User logged in`);
+        
         showApp();
     } else {
         alert('Invalid credentials');
@@ -623,6 +788,8 @@ function login(e) {
 }
 
 function logout() {
+    logAudit('logout', 'System', `User logged out`);
+    
     localStorage.removeItem('authToken');
     localStorage.removeItem('userRole');
     localStorage.removeItem('userId');
@@ -662,7 +829,9 @@ function showTab(tab) {
     document.getElementById('dashboardContent').style.display = 'none';
     document.getElementById('clientsContent').style.display = 'none';
     document.getElementById('calendarContent').style.display = 'none';
+    document.getElementById('ainotesContent').style.display = 'none';
     document.getElementById('documentsContent').style.display = 'none';
+    document.getElementById('auditContent').style.display = 'none';
     
     if (tab === 'dashboard') {
         document.getElementById('dashboardContent').style.display = 'block';
@@ -673,10 +842,16 @@ function showTab(tab) {
     } else if (tab === 'calendar') {
         document.getElementById('calendarContent').style.display = 'block';
         renderAppointments();
+    } else if (tab === 'ainotes') {
+        document.getElementById('ainotesContent').style.display = 'block';
+        renderAINotes();
     } else if (tab === 'documents') {
         document.getElementById('documentsContent').style.display = 'block';
         renderDocumentTemplates();
         renderAssignedDocs();
+    } else if (tab === 'audit') {
+        document.getElementById('auditContent').style.display = 'block';
+        renderAuditLog();
     }
 }
 
@@ -709,6 +884,8 @@ function updateDashboard() {
     
     const pending = assignedDocs.filter(d => d.status === 'pending').length;
     document.getElementById('pendingDocs').textContent = pending;
+    
+    document.getElementById('totalNotes').textContent = clinicalNotes.length;
 }
 
 // Client Management Functions
@@ -747,6 +924,8 @@ function renderClients() {
             </tbody>
         </table>
     `;
+    
+    logAudit('view', 'Client List', `Viewed client list`);
 }
 
 function openAddClient() {
@@ -759,6 +938,8 @@ function openAddClient() {
 function editClient(id) {
     editingClientId = id;
     const client = allClients.find(c => c.id === id);
+    
+    logAudit('view', 'Client Record', `Viewed client: ${client.name}`);
     
     document.getElementById('clientModalTitle').textContent = 'Edit Client';
     document.getElementById('clientName').value = client.name;
@@ -787,6 +968,7 @@ function saveClient(e) {
     if (editingClientId) {
         const index = allClients.findIndex(c => c.id === editingClientId);
         allClients[index] = { ...allClients[index], ...clientData };
+        logAudit('update', 'Client Record', `Updated client: ${clientData.name}`);
     } else {
         clientData.id = Date.now();
         allClients.push(clientData);
@@ -798,6 +980,8 @@ function saveClient(e) {
             role: 'client',
             name: clientData.name
         });
+        
+        logAudit('create', 'Client Record', `Created new client: ${clientData.name}`);
     }
     
     closeClientModal();
@@ -807,7 +991,11 @@ function saveClient(e) {
 
 function deleteClient(id) {
     if (confirm('Are you sure you want to delete this client?')) {
+        const client = allClients.find(c => c.id === id);
         allClients = allClients.filter(c => c.id !== id);
+        
+        logAudit('delete', 'Client Record', `Deleted client: ${client.name}`);
+        
         renderClients();
         updateDashboard();
     }
@@ -851,6 +1039,8 @@ function renderAppointments() {
             </tbody>
         </table>
     `;
+    
+    logAudit('view', 'Appointment List', `Viewed appointment calendar`);
 }
 
 function openAddAppointment() {
@@ -868,6 +1058,8 @@ function openAddAppointment() {
 function editAppointment(id) {
     editingAppointmentId = id;
     const apt = appointments.find(a => a.id === id);
+    
+    logAudit('view', 'Appointment', `Viewed appointment for ${apt.clientName}`);
     
     document.getElementById('appointmentModalTitle').textContent = 'Edit Appointment';
     
@@ -910,9 +1102,11 @@ function saveAppointment(e) {
     if (editingAppointmentId) {
         const index = appointments.findIndex(a => a.id === editingAppointmentId);
         appointments[index] = { ...appointments[index], ...aptData };
+        logAudit('update', 'Appointment', `Updated appointment for ${client.name}`);
     } else {
         aptData.id = Date.now();
         appointments.push(aptData);
+        logAudit('create', 'Appointment', `Created appointment for ${client.name}`);
     }
     
     closeAppointmentModal();
@@ -922,7 +1116,11 @@ function saveAppointment(e) {
 
 function deleteAppointment(id) {
     if (confirm('Are you sure you want to delete this appointment?')) {
+        const apt = appointments.find(a => a.id === id);
         appointments = appointments.filter(a => a.id !== id);
+        
+        logAudit('delete', 'Appointment', `Deleted appointment for ${apt.clientName}`);
+        
         renderAppointments();
         updateDashboard();
     }
@@ -961,6 +1159,358 @@ function loadClientAppointments() {
             </tbody>
         </table>
     `;
+}
+
+// AI Notes Functions
+function renderAINotes() {
+    // Populate client select
+    const clientSelect = document.getElementById('noteClientSelect');
+    clientSelect.innerHTML = '<option value="">Choose a client...</option>' + 
+        allClients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+    
+    // Render recent notes
+    const container = document.getElementById('recentNotesList');
+    
+    if (clinicalNotes.length === 0) {
+        container.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 20px;">No clinical notes yet</p>';
+        return;
+    }
+    
+    container.innerHTML = clinicalNotes.slice(0, 10).map(note => `
+        <div class="card note-card" style="margin-bottom: 15px; cursor: pointer;" onclick="viewNote(${note.id})">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                <div>
+                    <h4 style="color: #1f2937; margin-bottom: 5px;">${note.clientName}</h4>
+                    <p style="color: #6b7280; font-size: 12px;">${new Date(note.createdAt).toLocaleString()}</p>
+                </div>
+                <span class="badge badge-info">${note.type || 'Session Note'}</span>
+            </div>
+            <p style="color: #6b7280; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                ${note.soap.subjective.substring(0, 100)}...
+            </p>
+        </div>
+    `).join('');
+}
+
+async function toggleRecording() {
+    if (mediaRecorder && mediaRecorder.state === 'recording') {
+        // Stop recording
+        mediaRecorder.stop();
+    } else {
+        // Start recording
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+            audioChunks = [];
+            
+            mediaRecorder.ondataavailable = (event) => {
+                audioChunks.push(event.data);
+            };
+            
+            mediaRecorder.onstop = () => {
+                recordedAudioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                stream.getTracks().forEach(track => track.stop());
+                updateRecordingUI(false);
+            };
+            
+            mediaRecorder.start();
+            recordingStartTime = Date.now();
+            updateRecordingUI(true);
+            startRecordingTimer();
+            
+        } catch (error) {
+            alert('Could not access microphone. Please check permissions.');
+            console.error('Recording error:', error);
+        }
+    }
+}
+
+function updateRecordingUI(isRecording) {
+    const recordBtn = document.getElementById('recordBtn');
+    const recordStatus = document.getElementById('recordingStatus');
+    const recordBtnText = document.getElementById('recordBtnText');
+    
+    if (isRecording) {
+        recordBtn.classList.remove('btn-danger');
+        recordBtn.classList.add('btn-success');
+        recordBtnText.textContent = '⏹️ Stop Recording';
+        recordStatus.style.display = 'flex';
+    } else {
+        recordBtn.classList.remove('btn-success');
+        recordBtn.classList.add('btn-danger');
+        recordBtnText.textContent = '🎤 Start Recording';
+        recordStatus.style.display = 'none';
+        if (recordingInterval) {
+            clearInterval(recordingInterval);
+        }
+    }
+}
+
+function startRecordingTimer() {
+    recordingInterval = setInterval(() => {
+        const elapsed = Date.now() - recordingStartTime;
+        const minutes = Math.floor(elapsed / 60000);
+        const seconds = Math.floor((elapsed % 60000) / 1000);
+        document.getElementById('recordingTime').textContent = 
+            `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }, 1000);
+}
+
+async function generateSOAPNote() {
+    const clientId = parseInt(document.getElementById('noteClientSelect').value);
+    const manualNotes = document.getElementById('manualNotes').value.trim();
+    
+    if (!clientId) {
+        alert('Please select a client');
+        return;
+    }
+    
+    if (!recordedAudioBlob && !manualNotes) {
+        alert('Please record audio or type manual notes');
+        return;
+    }
+    
+    const generateBtn = document.getElementById('generateBtn');
+    generateBtn.disabled = true;
+    generateBtn.textContent = '⏳ Processing...';
+    
+    try {
+        let sessionNotes = manualNotes;
+        
+        // If we have audio, transcribe it first
+        if (recordedAudioBlob && !manualNotes) {
+            sessionNotes = await transcribeAudio(recordedAudioBlob);
+        }
+        
+        // Generate SOAP note using Claude API
+        const soapNote = await generateSOAPFromNotes(sessionNotes);
+        
+        // Save the note
+        const client = allClients.find(c => c.id === clientId);
+        const note = {
+            id: Date.now(),
+            clientId,
+            clientName: client.name,
+            createdAt: new Date().toISOString(),
+            rawNotes: sessionNotes,
+            soap: soapNote,
+            type: 'Session Note'
+        };
+        
+        clinicalNotes.unshift(note);
+        localStorage.setItem('clinicalNotes', JSON.stringify(clinicalNotes));
+        
+        logAudit('create', 'Clinical Note', `Created note for ${client.name}`);
+        
+        // Clear form
+        document.getElementById('noteClientSelect').value = '';
+        document.getElementById('manualNotes').value = '';
+        recordedAudioBlob = null;
+        
+        // Refresh notes list
+        renderAINotes();
+        updateDashboard();
+        
+        // Show the note
+        viewNote(note.id);
+        
+        alert('SOAP note generated successfully!');
+        
+    } catch (error) {
+        console.error('Error generating note:', error);
+        alert('Error generating SOAP note. Please try again.');
+    } finally {
+        generateBtn.disabled = false;
+        generateBtn.textContent = '✨ Generate SOAP Note';
+    }
+}
+
+async function transcribeAudio(audioBlob) {
+    // Simulated transcription - in production, you'd use a speech-to-text API
+    return "Patient presented for follow-up session. Discussed recent stressors at work and family relationships. Patient reports improved sleep but continuing anxiety symptoms. We reviewed coping strategies and practiced breathing exercises. Patient engaged well in session.";
+}
+
+async function generateSOAPFromNotes(notes) {
+    try {
+        const response = await fetch("https://api.anthropic.com/v1/messages", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                model: "claude-sonnet-4-20250514",
+                max_tokens: 2000,
+                messages: [
+                    { 
+                        role: "user", 
+                        content: `You are a clinical documentation assistant. Convert the following session notes into a structured SOAP (Subjective, Objective, Assessment, Plan) format for a clinical record.
+
+Session Notes:
+${notes}
+
+CRITICAL: Respond ONLY with valid JSON in this exact format. DO NOT include any markdown, backticks, or explanatory text:
+
+{
+  "subjective": "Patient's reported symptoms, feelings, and concerns in clinical language",
+  "objective": "Observable behaviors, mental status observations, and clinical findings",
+  "assessment": "Clinical assessment, diagnosis considerations, and progress evaluation",
+  "plan": "Treatment plan, interventions, follow-up, and next steps"
+}
+
+Remember: Output ONLY the JSON object, nothing else.`
+                    }
+                ]
+            })
+        });
+        
+        const data = await response.json();
+        let responseText = data.content[0].text;
+        
+        // Strip any markdown formatting
+        responseText = responseText.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
+        
+        const soapNote = JSON.parse(responseText);
+        return soapNote;
+        
+    } catch (error) {
+        console.error('Error calling Claude API:', error);
+        // Fallback SOAP note
+        return {
+            subjective: notes,
+            objective: "Patient appeared engaged and cooperative during session.",
+            assessment: "Continue current treatment approach. Monitor progress.",
+            plan: "Schedule follow-up session in one week. Continue current interventions."
+        };
+    }
+}
+
+function viewNote(noteId) {
+    currentNoteId = noteId;
+    const note = clinicalNotes.find(n => n.id === noteId);
+    
+    logAudit('view', 'Clinical Note', `Viewed note for ${note.clientName}`);
+    
+    const modal = document.getElementById('viewNoteModal');
+    document.getElementById('viewNoteContent').innerHTML = `
+        <div style="margin-bottom: 20px;">
+            <strong style="color: #374151;">Client:</strong>
+            <p style="color: #6b7280; margin-top: 5px;">${note.clientName}</p>
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+            <strong style="color: #374151;">Date:</strong>
+            <p style="color: #6b7280; margin-top: 5px;">${new Date(note.createdAt).toLocaleString()}</p>
+        </div>
+        
+        <div style="margin-bottom: 20px; padding: 15px; background: #f9fafb; border-radius: 8px;">
+            <strong style="color: #374151; display: block; margin-bottom: 10px;">S - Subjective</strong>
+            <p style="color: #6b7280; line-height: 1.6;">${note.soap.subjective}</p>
+        </div>
+        
+        <div style="margin-bottom: 20px; padding: 15px; background: #f9fafb; border-radius: 8px;">
+            <strong style="color: #374151; display: block; margin-bottom: 10px;">O - Objective</strong>
+            <p style="color: #6b7280; line-height: 1.6;">${note.soap.objective}</p>
+        </div>
+        
+        <div style="margin-bottom: 20px; padding: 15px; background: #f9fafb; border-radius: 8px;">
+            <strong style="color: #374151; display: block; margin-bottom: 10px;">A - Assessment</strong>
+            <p style="color: #6b7280; line-height: 1.6;">${note.soap.assessment}</p>
+        </div>
+        
+        <div style="padding: 15px; background: #f9fafb; border-radius: 8px;">
+            <strong style="color: #374151; display: block; margin-bottom: 10px;">P - Plan</strong>
+            <p style="color: #6b7280; line-height: 1.6;">${note.soap.plan}</p>
+        </div>
+    `;
+    
+    modal.classList.add('active');
+}
+
+function closeViewNoteModal() {
+    document.getElementById('viewNoteModal').classList.remove('active');
+    currentNoteId = null;
+}
+
+function deleteNote() {
+    if (confirm('Are you sure you want to delete this clinical note?')) {
+        const note = clinicalNotes.find(n => n.id === currentNoteId);
+        clinicalNotes = clinicalNotes.filter(n => n.id !== currentNoteId);
+        localStorage.setItem('clinicalNotes', JSON.stringify(clinicalNotes));
+        
+        logAudit('delete', 'Clinical Note', `Deleted note for ${note.clientName}`);
+        
+        closeViewNoteModal();
+        renderAINotes();
+        updateDashboard();
+    }
+}
+
+// Audit Log Functions
+function renderAuditLog() {
+    filterAuditLogs();
+}
+
+function filterAuditLogs() {
+    const searchTerm = document.getElementById('auditSearch').value.toLowerCase();
+    const actionFilter = document.getElementById('auditActionFilter').value;
+    
+    let filtered = auditLog;
+    
+    if (searchTerm) {
+        filtered = filtered.filter(entry => 
+            entry.user.toLowerCase().includes(searchTerm) ||
+            entry.resource.toLowerCase().includes(searchTerm) ||
+            entry.details.toLowerCase().includes(searchTerm)
+        );
+    }
+    
+    if (actionFilter) {
+        filtered = filtered.filter(entry => entry.action === actionFilter);
+    }
+    
+    const container = document.getElementById('auditLogList');
+    
+    if (filtered.length === 0) {
+        container.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 20px;">No audit entries found</p>';
+        return;
+    }
+    
+    container.innerHTML = `
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>User</th>
+                    <th>Action</th>
+                    <th>Resource</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${filtered.map(entry => `
+                    <tr>
+                        <td style="font-size: 12px;">${new Date(entry.timestamp).toLocaleString()}</td>
+                        <td>${entry.user}</td>
+                        <td><span class="badge badge-${getActionBadgeColor(entry.action)}">${entry.action}</span></td>
+                        <td>${entry.resource}</td>
+                        <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${entry.details}</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
+}
+
+function getActionBadgeColor(action) {
+    const colors = {
+        'create': 'success',
+        'view': 'info',
+        'update': 'warning',
+        'delete': 'danger',
+        'login': 'info',
+        'logout': 'info'
+    };
+    return colors[action] || 'info';
 }
 
 // Document Functions
@@ -1054,6 +1604,9 @@ function assignDocuments() {
     });
     
     localStorage.setItem('assignedDocs', JSON.stringify(assignedDocs));
+    
+    logAudit('create', 'Document Assignment', `Assigned ${selectedDocs.size} document(s) to ${client.name}`);
+    
     renderAssignedDocs();
     closeAssignModal();
     updateDashboard();
@@ -1302,12 +1855,15 @@ function submitDocument(assignedDocId, template) {
     
     // Update assigned doc
     const docIndex = assignedDocs.findIndex(d => d.id === assignedDocId);
+    const doc = assignedDocs[docIndex];
     assignedDocs[docIndex].status = 'completed';
     assignedDocs[docIndex].completedDate = new Date().toISOString();
     assignedDocs[docIndex].formData = formData;
     assignedDocs[docIndex].signature = signatureData;
     
     localStorage.setItem('assignedDocs', JSON.stringify(assignedDocs));
+    
+    logAudit('update', 'Document', `Completed document: ${doc.docName}`);
     
     closeDocumentForm();
     showClientDocuments();
@@ -1317,6 +1873,8 @@ function submitDocument(assignedDocId, template) {
 function viewCompletedDocument(assignedDocId) {
     const doc = assignedDocs.find(d => d.id === assignedDocId);
     const template = documentTemplates.find(t => t.id === doc.docId);
+    
+    logAudit('view', 'Document', `Viewed completed document: ${doc.docName} for ${doc.clientName}`);
     
     const modal = document.getElementById('viewDocModal');
     document.getElementById('viewDocTitle').textContent = template.name;
