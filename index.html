@@ -540,6 +540,26 @@
                         <h3>This Month</h3>
                         <div class="value" id="monthRevenue">$0</div>
                     </div>
+                    <div class="stat-card">
+                        <h3>Auto-Generated</h3>
+                        <div class="value" id="autoInvoiceCount">0</div>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3>Payment Processor Integration</h3>
+                        <button class="btn" onclick="openPaymentProcessorSettings()">⚙️ Settings</button>
+                    </div>
+                    <div id="paymentProcessorStatus"></div>
+                </div>
+
+                <div class="card" style="margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3>Session Rates</h3>
+                        <button class="btn" onclick="openSessionRatesSettings()">Edit Rates</button>
+                    </div>
+                    <div id="sessionRatesDisplay"></div>
                 </div>
 
                 <div class="card" style="margin-bottom: 20px;">
@@ -814,6 +834,87 @@
         </div>
     </div>
 
+    <!-- Clinical Note Prompt Modal -->
+    <div id="clinicalNotePromptModal" class="modal">
+        <div class="modal-content">
+            <h2 style="margin-bottom: 20px;">📝 Session Completed</h2>
+            <p style="color: #6b7280; margin-bottom: 20px;">The session with <strong id="promptClientName"></strong> has ended. Would you like to create a clinical note?</p>
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button class="btn" onclick="closeClinicalNotePrompt()">Later</button>
+                <button class="btn btn-primary" onclick="goToCreateNote()">Create Note Now</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Processor Settings Modal -->
+    <div id="paymentProcessorModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <h2 style="margin-bottom: 20px;">Payment Processor Integration</h2>
+            <form id="paymentProcessorForm" onsubmit="savePaymentProcessorSettings(event)">
+                <div class="input-group">
+                    <label style="display: flex; align-items: center; cursor: pointer;">
+                        <input type="checkbox" id="processorEnabled" style="margin-right: 8px;">
+                        <span>Enable Payment Processor Integration</span>
+                    </label>
+                </div>
+                <div class="input-group">
+                    <label>API Key / Merchant ID</label>
+                    <input type="text" id="processorApiKey" class="input" placeholder="Enter your API key or merchant ID">
+                    <p style="color: #6b7280; font-size: 12px; margin-top: 5px;">Your payment processor credentials will be stored securely</p>
+                </div>
+                <div class="input-group">
+                    <label>Webhook URL (Optional)</label>
+                    <input type="text" id="processorWebhook" class="input" placeholder="https://your-payment-processor.com/webhook">
+                    <p style="color: #6b7280; font-size: 12px; margin-top: 5px;">For receiving payment notifications</p>
+                </div>
+                <div class="input-group">
+                    <label style="display: flex; align-items: center; cursor: pointer;">
+                        <input type="checkbox" id="processorTestMode" style="margin-right: 8px;">
+                        <span>Test Mode</span>
+                    </label>
+                    <p style="color: #6b7280; font-size: 12px; margin-top: 5px;">Enable to use sandbox/test credentials</p>
+                </div>
+                <div style="padding: 15px; background: #fef3c7; border-radius: 8px; margin-bottom: 20px;">
+                    <p style="color: #92400e; font-size: 14px;">💡 <strong>Integration Instructions:</strong></p>
+                    <p style="color: #92400e; font-size: 12px; margin-top: 5px;">Once enabled, this system will be ready to send payment requests to your processor. You'll need to provide your processor's specific integration details.</p>
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" class="btn" onclick="closePaymentProcessorModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Settings</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Session Rates Modal -->
+    <div id="sessionRatesModal" class="modal">
+        <div class="modal-content">
+            <h2 style="margin-bottom: 20px;">Session Rates</h2>
+            <form id="sessionRatesForm" onsubmit="saveSessionRates(event)">
+                <div class="input-group">
+                    <label>Initial Consultation</label>
+                    <input type="number" id="rateInitial" class="input" step="0.01" min="0" required>
+                </div>
+                <div class="input-group">
+                    <label>Follow-up Session</label>
+                    <input type="number" id="rateFollowup" class="input" step="0.01" min="0" required>
+                </div>
+                <div class="input-group">
+                    <label>Therapy Session</label>
+                    <input type="number" id="rateTherapy" class="input" step="0.01" min="0" required>
+                </div>
+                <div class="input-group">
+                    <label>Medication Management</label>
+                    <input type="number" id="rateMedication" class="input" step="0.01" min="0" required>
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                    <button type="button" class="btn" onclick="closeSessionRatesModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Rates</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
 <script>
 // Mock Database
 let users = [
@@ -827,8 +928,8 @@ let allClients = [
 ];
 
 let appointments = [
-    { id: 1, clientId: 1, clientName: 'John Doe', date: '2025-10-10', time: '10:00', duration: 60, type: 'Initial Consultation', notes: 'First session', location: 'Office A' },
-    { id: 2, clientId: 2, clientName: 'Jane Smith', date: '2025-10-10', time: '14:00', duration: 60, type: 'Follow-up', notes: '', location: 'Office B' }
+    { id: 1, clientId: 1, clientName: 'John Doe', date: '2025-10-10', time: '10:00', duration: 60, type: 'Initial Consultation', notes: 'First session', location: 'Office A', status: 'scheduled' },
+    { id: 2, clientId: 2, clientName: 'Jane Smith', date: '2025-10-10', time: '14:00', duration: 60, type: 'Follow-up', notes: '', location: 'Office B', status: 'scheduled' }
 ];
 
 let documentTemplates = [
@@ -887,6 +988,8 @@ let clinicalNotes = JSON.parse(localStorage.getItem('clinicalNotes') || '[]');
 let auditLog = JSON.parse(localStorage.getItem('auditLog') || '[]');
 let invoices = JSON.parse(localStorage.getItem('invoices') || '[]');
 let payments = JSON.parse(localStorage.getItem('payments') || '[]');
+let paymentProcessorSettings = JSON.parse(localStorage.getItem('paymentProcessorSettings') || '{"enabled":false,"apiKey":"","webhookUrl":"","testMode":true}');
+let sessionRates = JSON.parse(localStorage.getItem('sessionRates') || '{"Initial Consultation":150,"Follow-up":120,"Therapy Session":120,"Medication Management":100}');
 
 let selectedDocs = new Set();
 let authToken = localStorage.getItem('authToken');
@@ -897,6 +1000,13 @@ let editingAppointmentId = null;
 let currentNoteId = null;
 let currentInvoiceId = null;
 let currentClientChartId = null;
+let pendingNoteForClient = null;
+
+// Session completion checker - runs every minute
+setInterval(checkCompletedSessions, 60000);
+
+// Check on page load too
+setTimeout(checkCompletedSessions, 5000);
 
 // Audio recording variables
 let mediaRecorder = null;
@@ -1465,7 +1575,8 @@ function saveAppointment(e) {
         duration: parseInt(document.getElementById('appointmentDuration').value),
         type: document.getElementById('appointmentType').value,
         notes: document.getElementById('appointmentNotes').value,
-        location: 'Office A'
+        location: 'Office A',
+        status: 'scheduled'
     };
     
     if (editingAppointmentId) {
@@ -2591,6 +2702,190 @@ function viewCompletedDocument(assignedDocId) {
 
 function closeViewDocModal() {
     document.getElementById('viewDocModal').classList.remove('active');
+}
+
+// Session Completion & Auto-Invoice Functions
+function checkCompletedSessions() {
+    if (userRole !== 'provider') return;
+    
+    const now = new Date();
+    
+    appointments.forEach(apt => {
+        if (apt.status === 'scheduled') {
+            const aptDateTime = new Date(`${apt.date}T${apt.time}`);
+            const aptEndTime = new Date(aptDateTime.getTime() + apt.duration * 60000);
+            
+            // If session has ended
+            if (now >= aptEndTime) {
+                completeSession(apt);
+            }
+        }
+    });
+}
+
+function completeSession(appointment) {
+    // Mark appointment as completed
+    const aptIndex = appointments.findIndex(a => a.id === appointment.id);
+    appointments[aptIndex].status = 'completed';
+    
+    // Auto-generate invoice
+    const rate = sessionRates[appointment.type] || 120;
+    const invoice = {
+        id: Date.now(),
+        clientId: appointment.clientId,
+        clientName: appointment.clientName,
+        date: new Date().toISOString().split('T')[0],
+        dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        lineItems: [{
+            description: `${appointment.type} - ${new Date(appointment.date).toLocaleDateString()}`,
+            quantity: 1,
+            rate: rate,
+            amount: rate
+        }],
+        total: rate,
+        status: 'unpaid',
+        notes: `Auto-generated from appointment on ${new Date(appointment.date).toLocaleDateString()}`,
+        autoGenerated: true
+    };
+    
+    invoices.unshift(invoice);
+    localStorage.setItem('invoices', JSON.stringify(invoices));
+    
+    logAudit('create', 'Invoice', `Auto-generated invoice for ${appointment.clientName} - ${rate.toFixed(2)}`);
+    
+    // Prompt for clinical note
+    promptClinicalNote(appointment);
+    
+    // Update UI if on relevant pages
+    if (document.getElementById('billingContent').style.display === 'block') {
+        renderBilling();
+    }
+}
+
+function promptClinicalNote(appointment) {
+    pendingNoteForClient = appointment.clientId;
+    document.getElementById('promptClientName').textContent = appointment.clientName;
+    document.getElementById('clinicalNotePromptModal').classList.add('active');
+}
+
+function closeClinicalNotePrompt() {
+    document.getElementById('clinicalNotePromptModal').classList.remove('active');
+    pendingNoteForClient = null;
+}
+
+function goToCreateNote() {
+    closeClinicalNotePrompt();
+    showTab('ainotes');
+    
+    // Pre-select the client
+    if (pendingNoteForClient) {
+        document.getElementById('noteClientSelect').value = pendingNoteForClient;
+    }
+    
+    // Focus on manual notes textarea
+    document.getElementById('manualNotes').focus();
+}
+
+// Payment Processor Functions
+function openPaymentProcessorSettings() {
+    document.getElementById('processorEnabled').checked = paymentProcessorSettings.enabled;
+    document.getElementById('processorApiKey').value = paymentProcessorSettings.apiKey;
+    document.getElementById('processorWebhook').value = paymentProcessorSettings.webhookUrl;
+    document.getElementById('processorTestMode').checked = paymentProcessorSettings.testMode;
+    
+    document.getElementById('paymentProcessorModal').classList.add('active');
+}
+
+function closePaymentProcessorModal() {
+    document.getElementById('paymentProcessorModal').classList.remove('active');
+}
+
+function savePaymentProcessorSettings(e) {
+    e.preventDefault();
+    
+    paymentProcessorSettings = {
+        enabled: document.getElementById('processorEnabled').checked,
+        apiKey: document.getElementById('processorApiKey').value,
+        webhookUrl: document.getElementById('processorWebhook').value,
+        testMode: document.getElementById('processorTestMode').checked
+    };
+    
+    localStorage.setItem('paymentProcessorSettings', JSON.stringify(paymentProcessorSettings));
+    
+    logAudit('update', 'Payment Settings', `Updated payment processor settings`);
+    
+    closePaymentProcessorModal();
+    renderBilling();
+    alert('Payment processor settings saved!');
+}
+
+function renderPaymentProcessorStatus() {
+    const container = document.getElementById('paymentProcessorStatus');
+    
+    if (paymentProcessorSettings.enabled) {
+        container.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span class="badge badge-success">Active</span>
+                ${paymentProcessorSettings.testMode ? '<span class="badge badge-warning">Test Mode</span>' : '<span class="badge badge-info">Live Mode</span>'}
+                <span style="color: #6b7280; font-size: 14px;">Ready to process payments</span>
+            </div>
+        `;
+    } else {
+        container.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span class="badge badge-warning">Not Configured</span>
+                <span style="color: #6b7280; font-size: 14px;">Click Settings to integrate your payment processor</span>
+            </div>
+        `;
+    }
+}
+
+// Session Rates Functions
+function openSessionRatesSettings() {
+    document.getElementById('rateInitial').value = sessionRates['Initial Consultation'];
+    document.getElementById('rateFollowup').value = sessionRates['Follow-up'];
+    document.getElementById('rateTherapy').value = sessionRates['Therapy Session'];
+    document.getElementById('rateMedication').value = sessionRates['Medication Management'];
+    
+    document.getElementById('sessionRatesModal').classList.add('active');
+}
+
+function closeSessionRatesModal() {
+    document.getElementById('sessionRatesModal').classList.remove('active');
+}
+
+function saveSessionRates(e) {
+    e.preventDefault();
+    
+    sessionRates = {
+        'Initial Consultation': parseFloat(document.getElementById('rateInitial').value),
+        'Follow-up': parseFloat(document.getElementById('rateFollowup').value),
+        'Therapy Session': parseFloat(document.getElementById('rateTherapy').value),
+        'Medication Management': parseFloat(document.getElementById('rateMedication').value)
+    };
+    
+    localStorage.setItem('sessionRates', JSON.stringify(sessionRates));
+    
+    logAudit('update', 'Session Rates', `Updated session billing rates`);
+    
+    closeSessionRatesModal();
+    renderBilling();
+    alert('Session rates updated!');
+}
+
+function renderSessionRates() {
+    const container = document.getElementById('sessionRatesDisplay');
+    
+    container.innerHTML = `
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+            ${Object.entries(sessionRates).map(([type, rate]) => `
+                <div style="padding: 10px; background: #f9fafb; border-radius: 8px;">
+                    <strong style="color: #374151; display: block; font-size: 14px;">${type}</strong>
+                    <p style="color: #10b981; font-size: 18px; font-weight: 600; margin-top: 5px;">${rate.toFixed(2)}</p>
+                </div>
+            `).join('')}
+        </div>
+    `;
 }
 
 // Initialize
