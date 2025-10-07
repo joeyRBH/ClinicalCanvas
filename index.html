@@ -17,6 +17,86 @@
             min-height: 100vh;
         }
 
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            .header {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .header h1 {
+                font-size: 20px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .tabs {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .tab-btn {
+                white-space: nowrap;
+                padding: 10px 16px;
+                font-size: 13px;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-content {
+                width: 95%;
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .table {
+                font-size: 12px;
+            }
+            
+            .table th, .table td {
+                padding: 8px 6px;
+            }
+            
+            .btn {
+                padding: 10px 16px;
+                font-size: 13px;
+            }
+            
+            .stat-card .value {
+                font-size: 24px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .login-box {
+                padding: 30px 20px;
+            }
+            
+            .header h1 {
+                font-size: 18px;
+            }
+            
+            .content {
+                padding: 15px;
+            }
+            
+            .card {
+                padding: 16px;
+            }
+            
+            .table {
+                display: block;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+        }
+
         .login-container {
             display: flex;
             justify-content: center;
@@ -405,7 +485,7 @@
 
             <!-- Client Chart Detail View -->
             <div id="clientChartContent" style="display: none;">
-                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
                     <button class="btn" onclick="backToClientsList()">← Back to Clients</button>
                     <h2 style="color: #1f2937; flex: 1;" id="clientChartName"></h2>
                     <button class="btn" onclick="editClientFromChart()">Edit Client</button>
@@ -415,7 +495,16 @@
                 <!-- Personal Information -->
                 <div class="card" style="margin-bottom: 20px;">
                     <h3 style="margin-bottom: 15px; color: #374151;">Personal Information</h3>
-                    <div id="clientChartInfo" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;"></div>
+                    <div id="clientChartInfo" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;"></div>
+                </div>
+
+                <!-- Diagnosis & Treatment -->
+                <div class="card" style="margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h3 style="color: #374151;">Diagnosis (ICD-10)</h3>
+                        <button class="btn btn-primary" onclick="openAddDiagnosis()">Add Diagnosis</button>
+                    </div>
+                    <div id="clientDiagnosisList"></div>
                 </div>
 
                 <!-- Quick Stats -->
@@ -693,10 +782,12 @@
                 <div class="input-group">
                     <label>Type</label>
                     <select id="appointmentType" class="input" required>
-                        <option value="Initial Consultation">Initial Consultation</option>
-                        <option value="Follow-up">Follow-up</option>
-                        <option value="Therapy Session">Therapy Session</option>
-                        <option value="Medication Management">Medication Management</option>
+                        <option value="Initial Consultation">Initial Consultation (CPT: 90791)</option>
+                        <option value="Follow-up">Follow-up (CPT: 90834)</option>
+                        <option value="Therapy Session">Therapy Session (CPT: 90837)</option>
+                        <option value="Medication Management">Medication Management (CPT: 99214)</option>
+                        <option value="Family Therapy">Family Therapy (CPT: 90847)</option>
+                        <option value="Group Therapy">Group Therapy (CPT: 90853)</option>
                     </select>
                 </div>
                 <div class="input-group">
@@ -892,24 +983,60 @@
             <h2 style="margin-bottom: 20px;">Session Rates</h2>
             <form id="sessionRatesForm" onsubmit="saveSessionRates(event)">
                 <div class="input-group">
-                    <label>Initial Consultation</label>
+                    <label>Initial Consultation (CPT: 90791)</label>
                     <input type="number" id="rateInitial" class="input" step="0.01" min="0" required>
                 </div>
                 <div class="input-group">
-                    <label>Follow-up Session</label>
+                    <label>Follow-up Session (CPT: 90834)</label>
                     <input type="number" id="rateFollowup" class="input" step="0.01" min="0" required>
                 </div>
                 <div class="input-group">
-                    <label>Therapy Session</label>
+                    <label>Therapy Session (CPT: 90837)</label>
                     <input type="number" id="rateTherapy" class="input" step="0.01" min="0" required>
                 </div>
                 <div class="input-group">
-                    <label>Medication Management</label>
+                    <label>Medication Management (CPT: 99214)</label>
                     <input type="number" id="rateMedication" class="input" step="0.01" min="0" required>
+                </div>
+                <div class="input-group">
+                    <label>Family Therapy (CPT: 90847)</label>
+                    <input type="number" id="rateFamily" class="input" step="0.01" min="0" required>
+                </div>
+                <div class="input-group">
+                    <label>Group Therapy (CPT: 90853)</label>
+                    <input type="number" id="rateGroup" class="input" step="0.01" min="0" required>
                 </div>
                 <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
                     <button type="button" class="btn" onclick="closeSessionRatesModal()">Cancel</button>
                     <button type="submit" class="btn btn-primary">Save Rates</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Diagnosis Modal -->
+    <div id="diagnosisModal" class="modal">
+        <div class="modal-content">
+            <h2 style="margin-bottom: 20px;">Add Diagnosis</h2>
+            <form id="diagnosisForm" onsubmit="saveDiagnosis(event)">
+                <div class="input-group">
+                    <label>ICD-10 Code</label>
+                    <select id="diagnosisCode" class="input" required onchange="updateDiagnosisDescription()">
+                        <option value="">Select diagnosis...</option>
+                        ${icd10Codes.map(d => `<option value="${d.code}" data-desc="${d.description}">${d.code} - ${d.description}</option>`).join('')}
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Additional Notes</label>
+                    <textarea id="diagnosisNotes" class="input" rows="3" placeholder="Optional clinical notes about this diagnosis"></textarea>
+                </div>
+                <div class="input-group">
+                    <label>Date of Diagnosis</label>
+                    <input type="date" id="diagnosisDate" class="input" required>
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                    <button type="button" class="btn" onclick="closeDiagnosisModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Diagnosis</button>
                 </div>
             </form>
         </div>
@@ -988,8 +1115,33 @@ let clinicalNotes = JSON.parse(localStorage.getItem('clinicalNotes') || '[]');
 let auditLog = JSON.parse(localStorage.getItem('auditLog') || '[]');
 let invoices = JSON.parse(localStorage.getItem('invoices') || '[]');
 let payments = JSON.parse(localStorage.getItem('payments') || '[]');
+let clientDiagnoses = JSON.parse(localStorage.getItem('clientDiagnoses') || '[]');
 let paymentProcessorSettings = JSON.parse(localStorage.getItem('paymentProcessorSettings') || '{"enabled":false,"apiKey":"","webhookUrl":"","testMode":true}');
-let sessionRates = JSON.parse(localStorage.getItem('sessionRates') || '{"Initial Consultation":150,"Follow-up":120,"Therapy Session":120,"Medication Management":100}');
+let sessionRates = JSON.parse(localStorage.getItem('sessionRates') || '{"Initial Consultation":150,"Follow-up":120,"Therapy Session":120,"Medication Management":100,"Family Therapy":140,"Group Therapy":60}');
+
+// CPT Codes for session types
+const cptCodes = {
+    'Initial Consultation': '90791',
+    'Follow-up': '90834',
+    'Therapy Session': '90837',
+    'Medication Management': '99214',
+    'Family Therapy': '90847',
+    'Group Therapy': '90853'
+};
+
+// Common ICD-10 codes
+const icd10Codes = [
+    { code: 'F41.1', description: 'Generalized anxiety disorder' },
+    { code: 'F32.9', description: 'Major depressive disorder, single episode, unspecified' },
+    { code: 'F33.1', description: 'Major depressive disorder, recurrent, moderate' },
+    { code: 'F43.10', description: 'Post-traumatic stress disorder, unspecified' },
+    { code: 'F43.21', description: 'Adjustment disorder with depressed mood' },
+    { code: 'F60.3', description: 'Borderline personality disorder' },
+    { code: 'F84.0', description: 'Autistic disorder' },
+    { code: 'F90.2', description: 'Attention-deficit hyperactivity disorder, combined type' },
+    { code: 'F31.81', description: 'Bipolar II disorder' },
+    { code: 'F20.9', description: 'Schizophrenia, unspecified' }
+];
 
 let selectedDocs = new Set();
 let authToken = localStorage.getItem('authToken');
@@ -1477,6 +1629,65 @@ function deleteClientFromChart() {
         backToClientsList();
         renderClients();
         updateDashboard();
+    }
+}
+
+// Diagnosis Functions
+function openAddDiagnosis() {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('diagnosisDate').value = today;
+    document.getElementById('diagnosisCode').value = '';
+    document.getElementById('diagnosisNotes').value = '';
+    document.getElementById('diagnosisModal').classList.add('active');
+}
+
+function closeDiagnosisModal() {
+    document.getElementById('diagnosisModal').classList.remove('active');
+}
+
+function updateDiagnosisDescription() {
+    // This is called when diagnosis is selected - description is already in the option text
+}
+
+function saveDiagnosis(e) {
+    e.preventDefault();
+    
+    const select = document.getElementById('diagnosisCode');
+    const code = select.value;
+    const option = select.options[select.selectedIndex];
+    const description = option.getAttribute('data-desc');
+    
+    const diagnosis = {
+        id: Date.now(),
+        clientId: currentClientChartId,
+        code,
+        description,
+        notes: document.getElementById('diagnosisNotes').value,
+        date: document.getElementById('diagnosisDate').value,
+        addedBy: localStorage.getItem('userName'),
+        addedAt: new Date().toISOString()
+    };
+    
+    clientDiagnoses.push(diagnosis);
+    localStorage.setItem('clientDiagnoses', JSON.stringify(clientDiagnoses));
+    
+    const client = allClients.find(c => c.id === currentClientChartId);
+    logAudit('create', 'Diagnosis', `Added diagnosis ${code} for ${client.name}`);
+    
+    closeDiagnosisModal();
+    viewClientChart(currentClientChartId);
+}
+
+function removeDiagnosis(diagnosisId) {
+    if (confirm('Are you sure you want to remove this diagnosis?')) {
+        const diagnosis = clientDiagnoses.find(d => d.id === diagnosisId);
+        clientDiagnoses = clientDiagnoses.filter(d => d.id !== diagnosisId);
+        localStorage.setItem('clientDiagnoses', JSON.stringify(clientDiagnoses));
+        
+        const client = allClients.find(c => c.id === currentClientChartId);
+        logAudit('delete', 'Diagnosis', `Removed diagnosis ${diagnosis.code} for ${client.name}`);
+        
+        viewClientChart(currentClientChartId);
     }
 }
 
@@ -2846,6 +3057,8 @@ function openSessionRatesSettings() {
     document.getElementById('rateFollowup').value = sessionRates['Follow-up'];
     document.getElementById('rateTherapy').value = sessionRates['Therapy Session'];
     document.getElementById('rateMedication').value = sessionRates['Medication Management'];
+    document.getElementById('rateFamily').value = sessionRates['Family Therapy'] || 140;
+    document.getElementById('rateGroup').value = sessionRates['Group Therapy'] || 60;
     
     document.getElementById('sessionRatesModal').classList.add('active');
 }
@@ -2861,7 +3074,9 @@ function saveSessionRates(e) {
         'Initial Consultation': parseFloat(document.getElementById('rateInitial').value),
         'Follow-up': parseFloat(document.getElementById('rateFollowup').value),
         'Therapy Session': parseFloat(document.getElementById('rateTherapy').value),
-        'Medication Management': parseFloat(document.getElementById('rateMedication').value)
+        'Medication Management': parseFloat(document.getElementById('rateMedication').value),
+        'Family Therapy': parseFloat(document.getElementById('rateFamily').value),
+        'Group Therapy': parseFloat(document.getElementById('rateGroup').value)
     };
     
     localStorage.setItem('sessionRates', JSON.stringify(sessionRates));
