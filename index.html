@@ -1023,7 +1023,6 @@
                     <label>ICD-10 Code</label>
                     <select id="diagnosisCode" class="input" required onchange="updateDiagnosisDescription()">
                         <option value="">Select diagnosis...</option>
-                        ${icd10Codes.map(d => `<option value="${d.code}" data-desc="${d.description}">${d.code} - ${d.description}</option>`).join('')}
                     </select>
                 </div>
                 <div class="input-group">
@@ -1129,18 +1128,169 @@ const cptCodes = {
     'Group Therapy': '90853'
 };
 
-// Common ICD-10 codes
+// Comprehensive Mental Health ICD-10 codes
 const icd10Codes = [
+    // Anxiety Disorders
+    { code: 'F41.0', description: 'Panic disorder without agoraphobia' },
     { code: 'F41.1', description: 'Generalized anxiety disorder' },
+    { code: 'F41.3', description: 'Other mixed anxiety disorders' },
+    { code: 'F41.8', description: 'Other specified anxiety disorders' },
+    { code: 'F41.9', description: 'Anxiety disorder, unspecified' },
+    { code: 'F40.00', description: 'Agoraphobia, unspecified' },
+    { code: 'F40.01', description: 'Agoraphobia with panic disorder' },
+    { code: 'F40.10', description: 'Social phobia, unspecified' },
+    { code: 'F40.11', description: 'Social phobia, generalized' },
+    { code: 'F40.218', description: 'Other animal type phobia' },
+    { code: 'F40.228', description: 'Other natural environment type phobia' },
+    { code: 'F40.230', description: 'Fear of blood' },
+    { code: 'F40.231', description: 'Fear of injections and transfusions' },
+    { code: 'F40.232', description: 'Fear of other medical care' },
+    { code: 'F40.233', description: 'Fear of injury' },
+    { code: 'F40.248', description: 'Other situational type phobia' },
+    { code: 'F40.298', description: 'Other specified phobia' },
+    
+    // Depressive Disorders
+    { code: 'F32.0', description: 'Major depressive disorder, single episode, mild' },
+    { code: 'F32.1', description: 'Major depressive disorder, single episode, moderate' },
+    { code: 'F32.2', description: 'Major depressive disorder, single episode, severe without psychotic features' },
+    { code: 'F32.3', description: 'Major depressive disorder, single episode, severe with psychotic features' },
+    { code: 'F32.4', description: 'Major depressive disorder, single episode, in partial remission' },
+    { code: 'F32.5', description: 'Major depressive disorder, single episode, in full remission' },
     { code: 'F32.9', description: 'Major depressive disorder, single episode, unspecified' },
+    { code: 'F33.0', description: 'Major depressive disorder, recurrent, mild' },
     { code: 'F33.1', description: 'Major depressive disorder, recurrent, moderate' },
+    { code: 'F33.2', description: 'Major depressive disorder, recurrent severe without psychotic features' },
+    { code: 'F33.3', description: 'Major depressive disorder, recurrent, severe with psychotic symptoms' },
+    { code: 'F33.40', description: 'Major depressive disorder, recurrent, in remission, unspecified' },
+    { code: 'F33.41', description: 'Major depressive disorder, recurrent, in partial remission' },
+    { code: 'F33.42', description: 'Major depressive disorder, recurrent, in full remission' },
+    { code: 'F33.9', description: 'Major depressive disorder, recurrent, unspecified' },
+    { code: 'F34.1', description: 'Dysthymic disorder (Persistent depressive disorder)' },
+    { code: 'F34.81', description: 'Disruptive mood dysregulation disorder' },
+    
+    // Trauma and Stress-Related Disorders
+    { code: 'F43.0', description: 'Acute stress reaction' },
     { code: 'F43.10', description: 'Post-traumatic stress disorder, unspecified' },
+    { code: 'F43.11', description: 'Post-traumatic stress disorder, acute' },
+    { code: 'F43.12', description: 'Post-traumatic stress disorder, chronic' },
+    { code: 'F43.20', description: 'Adjustment disorder, unspecified' },
     { code: 'F43.21', description: 'Adjustment disorder with depressed mood' },
-    { code: 'F60.3', description: 'Borderline personality disorder' },
-    { code: 'F84.0', description: 'Autistic disorder' },
-    { code: 'F90.2', description: 'Attention-deficit hyperactivity disorder, combined type' },
+    { code: 'F43.22', description: 'Adjustment disorder with anxiety' },
+    { code: 'F43.23', description: 'Adjustment disorder with mixed anxiety and depressed mood' },
+    { code: 'F43.24', description: 'Adjustment disorder with disturbance of conduct' },
+    { code: 'F43.25', description: 'Adjustment disorder with mixed disturbance of emotions and conduct' },
+    { code: 'F43.29', description: 'Adjustment disorder with other symptoms' },
+    
+    // Bipolar Disorders
+    { code: 'F31.0', description: 'Bipolar disorder, current episode hypomanic' },
+    { code: 'F31.10', description: 'Bipolar disorder, current episode manic without psychotic features, unspecified' },
+    { code: 'F31.11', description: 'Bipolar disorder, current episode manic without psychotic features, mild' },
+    { code: 'F31.12', description: 'Bipolar disorder, current episode manic without psychotic features, moderate' },
+    { code: 'F31.13', description: 'Bipolar disorder, current episode manic without psychotic features, severe' },
+    { code: 'F31.2', description: 'Bipolar disorder, current episode manic severe with psychotic features' },
+    { code: 'F31.30', description: 'Bipolar disorder, current episode depressed, mild or moderate severity, unspecified' },
+    { code: 'F31.31', description: 'Bipolar disorder, current episode depressed, mild' },
+    { code: 'F31.32', description: 'Bipolar disorder, current episode depressed, moderate' },
+    { code: 'F31.4', description: 'Bipolar disorder, current episode depressed, severe, without psychotic features' },
+    { code: 'F31.5', description: 'Bipolar disorder, current episode depressed, severe, with psychotic features' },
+    { code: 'F31.60', description: 'Bipolar disorder, current episode mixed, unspecified' },
+    { code: 'F31.61', description: 'Bipolar disorder, current episode mixed, mild' },
+    { code: 'F31.62', description: 'Bipolar disorder, current episode mixed, moderate' },
+    { code: 'F31.63', description: 'Bipolar disorder, current episode mixed, severe, without psychotic features' },
+    { code: 'F31.64', description: 'Bipolar disorder, current episode mixed, severe, with psychotic features' },
+    { code: 'F31.70', description: 'Bipolar disorder, currently in remission, most recent episode unspecified' },
+    { code: 'F31.71', description: 'Bipolar disorder, in partial remission, most recent episode hypomanic' },
+    { code: 'F31.72', description: 'Bipolar disorder, in full remission, most recent episode hypomanic' },
+    { code: 'F31.73', description: 'Bipolar disorder, in partial remission, most recent episode manic' },
+    { code: 'F31.74', description: 'Bipolar disorder, in full remission, most recent episode manic' },
+    { code: 'F31.75', description: 'Bipolar disorder, in partial remission, most recent episode depressed' },
+    { code: 'F31.76', description: 'Bipolar disorder, in full remission, most recent episode depressed' },
+    { code: 'F31.77', description: 'Bipolar disorder, in partial remission, most recent episode mixed' },
+    { code: 'F31.78', description: 'Bipolar disorder, in full remission, most recent episode mixed' },
     { code: 'F31.81', description: 'Bipolar II disorder' },
-    { code: 'F20.9', description: 'Schizophrenia, unspecified' }
+    { code: 'F31.89', description: 'Other bipolar disorder' },
+    { code: 'F31.9', description: 'Bipolar disorder, unspecified' },
+    
+    // Obsessive-Compulsive and Related Disorders
+    { code: 'F42.2', description: 'Mixed obsessional thoughts and acts' },
+    { code: 'F42.3', description: 'Hoarding disorder' },
+    { code: 'F42.4', description: 'Excoriation (skin-picking) disorder' },
+    { code: 'F42.8', description: 'Other obsessive-compulsive disorder' },
+    { code: 'F42.9', description: 'Obsessive-compulsive disorder, unspecified' },
+    { code: 'F45.22', description: 'Body dysmorphic disorder' },
+    
+    // Schizophrenia and Psychotic Disorders
+    { code: 'F20.0', description: 'Paranoid schizophrenia' },
+    { code: 'F20.1', description: 'Disorganized schizophrenia' },
+    { code: 'F20.2', description: 'Catatonic schizophrenia' },
+    { code: 'F20.3', description: 'Undifferentiated schizophrenia' },
+    { code: 'F20.5', description: 'Residual schizophrenia' },
+    { code: 'F20.81', description: 'Schizophreniform disorder' },
+    { code: 'F20.89', description: 'Other schizophrenia' },
+    { code: 'F20.9', description: 'Schizophrenia, unspecified' },
+    { code: 'F25.0', description: 'Schizoaffective disorder, bipolar type' },
+    { code: 'F25.1', description: 'Schizoaffective disorder, depressive type' },
+    { code: 'F25.8', description: 'Other schizoaffective disorders' },
+    { code: 'F25.9', description: 'Schizoaffective disorder, unspecified' },
+    
+    // Personality Disorders
+    { code: 'F60.0', description: 'Paranoid personality disorder' },
+    { code: 'F60.1', description: 'Schizoid personality disorder' },
+    { code: 'F60.2', description: 'Antisocial personality disorder' },
+    { code: 'F60.3', description: 'Borderline personality disorder' },
+    { code: 'F60.4', description: 'Histrionic personality disorder' },
+    { code: 'F60.5', description: 'Obsessive-compulsive personality disorder' },
+    { code: 'F60.6', description: 'Avoidant personality disorder' },
+    { code: 'F60.7', description: 'Dependent personality disorder' },
+    { code: 'F60.81', description: 'Narcissistic personality disorder' },
+    { code: 'F60.89', description: 'Other specific personality disorders' },
+    { code: 'F60.9', description: 'Personality disorder, unspecified' },
+    
+    // ADHD and Disruptive Disorders
+    { code: 'F90.0', description: 'Attention-deficit hyperactivity disorder, predominantly inattentive type' },
+    { code: 'F90.1', description: 'Attention-deficit hyperactivity disorder, predominantly hyperactive type' },
+    { code: 'F90.2', description: 'Attention-deficit hyperactivity disorder, combined type' },
+    { code: 'F90.8', description: 'Attention-deficit hyperactivity disorder, other type' },
+    { code: 'F90.9', description: 'Attention-deficit hyperactivity disorder, unspecified type' },
+    { code: 'F91.1', description: 'Conduct disorder, childhood-onset type' },
+    { code: 'F91.2', description: 'Conduct disorder, adolescent-onset type' },
+    { code: 'F91.3', description: 'Oppositional defiant disorder' },
+    { code: 'F91.8', description: 'Other conduct disorders' },
+    { code: 'F91.9', description: 'Conduct disorder, unspecified' },
+    
+    // Autism Spectrum Disorder
+    { code: 'F84.0', description: 'Autistic disorder' },
+    { code: 'F84.5', description: 'Asperger syndrome' },
+    { code: 'F84.8', description: 'Other pervasive developmental disorders' },
+    { code: 'F84.9', description: 'Pervasive developmental disorder, unspecified' },
+    
+    // Substance Use Disorders
+    { code: 'F10.10', description: 'Alcohol abuse, uncomplicated' },
+    { code: 'F10.20', description: 'Alcohol dependence, uncomplicated' },
+    { code: 'F11.10', description: 'Opioid abuse, uncomplicated' },
+    { code: 'F11.20', description: 'Opioid dependence, uncomplicated' },
+    { code: 'F12.10', description: 'Cannabis abuse, uncomplicated' },
+    { code: 'F12.20', description: 'Cannabis dependence, uncomplicated' },
+    { code: 'F14.10', description: 'Cocaine abuse, uncomplicated' },
+    { code: 'F14.20', description: 'Cocaine dependence, uncomplicated' },
+    { code: 'F15.10', description: 'Other stimulant abuse, uncomplicated' },
+    { code: 'F15.20', description: 'Other stimulant dependence, uncomplicated' },
+    
+    // Sleep-Wake Disorders
+    { code: 'F51.01', description: 'Primary insomnia' },
+    { code: 'F51.11', description: 'Primary hypersomnia' },
+    { code: 'F51.3', description: 'Sleepwalking' },
+    { code: 'F51.4', description: 'Sleep terrors' },
+    { code: 'F51.5', description: 'Nightmare disorder' },
+    
+    // Eating Disorders
+    { code: 'F50.00', description: 'Anorexia nervosa, unspecified' },
+    { code: 'F50.01', description: 'Anorexia nervosa, restricting type' },
+    { code: 'F50.02', description: 'Anorexia nervosa, binge eating/purging type' },
+    { code: 'F50.2', description: 'Bulimia nervosa' },
+    { code: 'F50.82', description: 'Avoidant/restrictive food intake disorder' },
+    { code: 'F50.89', description: 'Other specified eating disorder' },
+    { code: 'F50.9', description: 'Eating disorder, unspecified' }
 ];
 
 let selectedDocs = new Set();
@@ -1467,6 +1617,9 @@ function viewClientChart(clientId) {
         </div>
     `;
     
+    // Render diagnosis list
+    renderClientDiagnosisList();
+    
     // Calculate stats
     const clientAppointments = appointments.filter(a => a.clientId === clientId);
     const clientNotes = clinicalNotes.filter(n => n.clientId === clientId);
@@ -1476,8 +1629,8 @@ function viewClientChart(clientId) {
     
     document.getElementById('clientTotalSessions').textContent = clientAppointments.length;
     document.getElementById('clientTotalNotes').textContent = clientNotes.length;
-    document.getElementById('clientTotalBilled').textContent = `${totalBilled.toFixed(2)}`;
-    document.getElementById('clientOutstanding').textContent = `${outstanding.toFixed(2)}`;
+    document.getElementById('clientTotalBilled').textContent = `$${totalBilled.toFixed(2)}`;
+    document.getElementById('clientOutstanding').textContent = `$${outstanding.toFixed(2)}`;
     
     // Render appointments
     const appointmentsContainer = document.getElementById('clientChartAppointments');
@@ -1553,7 +1706,7 @@ function viewClientChart(clientId) {
                             <td>#${inv.id}</td>
                             <td>${new Date(inv.date).toLocaleDateString()}</td>
                             <td>${new Date(inv.dueDate).toLocaleDateString()}</td>
-                            <td>${inv.total.toFixed(2)}</td>
+                            <td>$${inv.total.toFixed(2)}</td>
                             <td><span class="badge badge-${inv.status === 'paid' ? 'success' : 'warning'}">${inv.status}</span></td>
                             <td>
                                 <button class="btn" style="padding: 6px 12px; font-size: 12px;" onclick="viewInvoice(${inv.id})">View</button>
@@ -1598,6 +1751,41 @@ function viewClientChart(clientId) {
     }
 }
 
+function renderClientDiagnosisList() {
+    const diagnoses = clientDiagnoses.filter(d => d.clientId === currentClientChartId);
+    const container = document.getElementById('clientDiagnosisList');
+    
+    if (diagnoses.length === 0) {
+        container.innerHTML = '<p style="color: #6b7280;">No diagnoses recorded</p>';
+        return;
+    }
+    
+    container.innerHTML = `
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Description</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${diagnoses.map(d => `
+                    <tr>
+                        <td><span class="badge badge-info">${d.code}</span></td>
+                        <td>${d.description}</td>
+                        <td>${new Date(d.date).toLocaleDateString()}</td>
+                        <td>
+                            <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;" onclick="removeDiagnosis(${d.id})">Remove</button>
+                        </td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
+}
+
 function calculateAge(dob) {
     const today = new Date();
     const birthDate = new Date(dob);
@@ -1636,8 +1824,13 @@ function deleteClientFromChart() {
 function openAddDiagnosis() {
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('diagnosisDate').value = today;
-    document.getElementById('diagnosisCode').value = '';
     document.getElementById('diagnosisNotes').value = '';
+    
+    // Populate diagnosis dropdown dynamically
+    const select = document.getElementById('diagnosisCode');
+    select.innerHTML = '<option value="">Select diagnosis...</option>' +
+        icd10Codes.map(d => `<option value="${d.code}" data-desc="${d.description}">${d.code} - ${d.description}</option>`).join('');
+    
     document.getElementById('diagnosisModal').classList.add('active');
 }
 
@@ -1675,7 +1868,7 @@ function saveDiagnosis(e) {
     logAudit('create', 'Diagnosis', `Added diagnosis ${code} for ${client.name}`);
     
     closeDiagnosisModal();
-    viewClientChart(currentClientChartId);
+    renderClientDiagnosisList();
 }
 
 function removeDiagnosis(diagnosisId) {
@@ -1687,7 +1880,7 @@ function removeDiagnosis(diagnosisId) {
         const client = allClients.find(c => c.id === currentClientChartId);
         logAudit('delete', 'Diagnosis', `Removed diagnosis ${diagnosis.code} for ${client.name}`);
         
-        viewClientChart(currentClientChartId);
+        renderClientDiagnosisList();
     }
 }
 
@@ -2159,9 +2352,18 @@ function renderBilling() {
         return sum + (inv.status === 'paid' && invDate >= monthStart ? inv.total : 0);
     }, 0);
     
-    document.getElementById('totalRevenue').textContent = `${totalRevenue.toFixed(2)}`;
-    document.getElementById('outstandingBalance').textContent = `${outstanding.toFixed(2)}`;
-    document.getElementById('monthRevenue').textContent = `${monthRevenue.toFixed(2)}`;
+    const autoCount = invoices.filter(inv => inv.autoGenerated).length;
+    
+    document.getElementById('totalRevenue').textContent = `$${totalRevenue.toFixed(2)}`;
+    document.getElementById('outstandingBalance').textContent = `$${outstanding.toFixed(2)}`;
+    document.getElementById('monthRevenue').textContent = `$${monthRevenue.toFixed(2)}`;
+    document.getElementById('autoInvoiceCount').textContent = autoCount;
+    
+    // Render payment processor status
+    renderPaymentProcessorStatus();
+    
+    // Render session rates
+    renderSessionRates();
     
     // Render invoices
     renderInvoicesList();
@@ -2196,7 +2398,7 @@ function renderInvoicesList() {
                         <td>${inv.clientName}</td>
                         <td>${new Date(inv.date).toLocaleDateString()}</td>
                         <td>${new Date(inv.dueDate).toLocaleDateString()}</td>
-                        <td>${inv.total.toFixed(2)}</td>
+                        <td>$${inv.total.toFixed(2)}</td>
                         <td><span class="badge badge-${inv.status === 'paid' ? 'success' : 'warning'}">${inv.status}</span></td>
                         <td>
                             <button class="btn" style="padding: 6px 12px; font-size: 12px;" onclick="viewInvoice(${inv.id})">View</button>
@@ -2233,7 +2435,7 @@ function renderPaymentsList() {
                         <td>${new Date(payment.date).toLocaleDateString()}</td>
                         <td>${payment.clientName}</td>
                         <td>#${payment.invoiceId}</td>
-                        <td>${payment.amount.toFixed(2)}</td>
+                        <td>$${payment.amount.toFixed(2)}</td>
                         <td><span class="badge badge-info">${payment.method || 'Payment'}</span></td>
                     </tr>
                 `).join('')}
@@ -2322,7 +2524,7 @@ function saveInvoice(e) {
     invoices.unshift(invoice);
     localStorage.setItem('invoices', JSON.stringify(invoices));
     
-    logAudit('create', 'Invoice', `Created invoice for ${client.name} - ${total.toFixed(2)}`);
+    logAudit('create', 'Invoice', `Created invoice for ${client.name} - $${total.toFixed(2)}`);
     
     closeInvoiceModal();
     renderBilling();
@@ -2381,15 +2583,15 @@ function viewInvoice(invoiceId) {
                     <tr>
                         <td>${item.description}</td>
                         <td>${item.quantity}</td>
-                        <td>${item.rate.toFixed(2)}</td>
-                        <td>${item.amount.toFixed(2)}</td>
+                        <td>$${item.rate.toFixed(2)}</td>
+                        <td>$${item.amount.toFixed(2)}</td>
                     </tr>
                 `).join('')}
             </tbody>
         </table>
         
         <div style="text-align: right; padding: 20px; background: #f9fafb; border-radius: 8px;">
-            <h3 style="color: #1f2937;">Total: ${invoice.total.toFixed(2)}</h3>
+            <h3 style="color: #1f2937;">Total: $${invoice.total.toFixed(2)}</h3>
         </div>
         
         ${invoice.notes ? `
@@ -2405,714 +2607,4 @@ function viewInvoice(invoiceId) {
 
 function closeViewInvoiceModal() {
     document.getElementById('viewInvoiceModal').classList.remove('active');
-    currentInvoiceId = null;
-}
-
-function markInvoicePaid() {
-    if (confirm('Mark this invoice as paid?')) {
-        const invoice = invoices.find(inv => inv.id === currentInvoiceId);
-        const index = invoices.findIndex(inv => inv.id === currentInvoiceId);
-        
-        invoices[index].status = 'paid';
-        invoices[index].paidDate = new Date().toISOString();
-        
-        // Create payment record
-        const payment = {
-            id: Date.now(),
-            invoiceId: invoice.id,
-            clientId: invoice.clientId,
-            clientName: invoice.clientName,
-            amount: invoice.total,
-            date: new Date().toISOString(),
-            method: 'Payment'
-        };
-        
-        payments.unshift(payment);
-        
-        localStorage.setItem('invoices', JSON.stringify(invoices));
-        localStorage.setItem('payments', JSON.stringify(payments));
-        
-        logAudit('update', 'Invoice', `Marked invoice #${invoice.id} as paid - ${invoice.total.toFixed(2)}`);
-        
-        closeViewInvoiceModal();
-        renderBilling();
-        alert('Invoice marked as paid!');
-    }
-}
-
-function deleteInvoice() {
-    if (confirm('Are you sure you want to delete this invoice?')) {
-        const invoice = invoices.find(inv => inv.id === currentInvoiceId);
-        invoices = invoices.filter(inv => inv.id !== currentInvoiceId);
-        localStorage.setItem('invoices', JSON.stringify(invoices));
-        
-        logAudit('delete', 'Invoice', `Deleted invoice #${invoice.id} for ${invoice.clientName}`);
-        
-        closeViewInvoiceModal();
-        renderBilling();
-    }
-}
-
-// Audit Log Functions
-function renderAuditLog() {
-    filterAuditLogs();
-}
-
-function filterAuditLogs() {
-    const searchTerm = document.getElementById('auditSearch').value.toLowerCase();
-    const actionFilter = document.getElementById('auditActionFilter').value;
-    
-    let filtered = auditLog;
-    
-    if (searchTerm) {
-        filtered = filtered.filter(entry => 
-            entry.user.toLowerCase().includes(searchTerm) ||
-            entry.resource.toLowerCase().includes(searchTerm) ||
-            entry.details.toLowerCase().includes(searchTerm)
-        );
-    }
-    
-    if (actionFilter) {
-        filtered = filtered.filter(entry => entry.action === actionFilter);
-    }
-    
-    const container = document.getElementById('auditLogList');
-    
-    if (filtered.length === 0) {
-        container.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 20px;">No audit entries found</p>';
-        return;
-    }
-    
-    container.innerHTML = `
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Timestamp</th>
-                    <th>User</th>
-                    <th>Action</th>
-                    <th>Resource</th>
-                    <th>Details</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${filtered.map(entry => `
-                    <tr>
-                        <td style="font-size: 12px;">${new Date(entry.timestamp).toLocaleString()}</td>
-                        <td>${entry.user}</td>
-                        <td><span class="badge badge-${getActionBadgeColor(entry.action)}">${entry.action}</span></td>
-                        <td>${entry.resource}</td>
-                        <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${entry.details}</td>
-                    </tr>
-                `).join('')}
-            </tbody>
-        </table>
-    `;
-}
-
-function getActionBadgeColor(action) {
-    const colors = {
-        'create': 'success',
-        'view': 'info',
-        'update': 'warning',
-        'delete': 'danger',
-        'login': 'info',
-        'logout': 'info'
-    };
-    return colors[action] || 'info';
-}
-
-// Document Functions
-function renderDocumentTemplates() {
-    const container = document.getElementById('documentTemplatesList');
-    
-    container.innerHTML = `
-        <div class="grid">
-            ${documentTemplates.map(template => `
-                <div class="card" style="margin: 0;">
-                    <h4 style="margin-bottom: 10px; color: #1f2937;">${template.name}</h4>
-                    <p style="color: #6b7280; font-size: 14px;">${template.description}</p>
-                </div>
-            `).join('')}
-        </div>
-    `;
-}
-
-function openAssignModal() {
-    const clientSelect = document.getElementById('assignClientSelect');
-    clientSelect.innerHTML = '<option value="">Choose a client...</option>' + 
-        allClients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-    
-    selectedDocs.clear();
-    const list = document.getElementById('documentCheckboxList');
-    list.innerHTML = '';
-    
-    documentTemplates.forEach(template => {
-        const card = document.createElement('div');
-        card.style.cssText = 'padding: 12px; border-bottom: 1px solid #e5e7eb; cursor: pointer;';
-        card.innerHTML = `
-            <label style="display: flex; align-items: center; cursor: pointer;">
-                <input type="checkbox" value="${template.id}" style="margin-right: 10px;" onchange="toggleDocSelection(${template.id})">
-                <div>
-                    <div style="font-weight: 500; color: #1f2937;">${template.name}</div>
-                    <div style="font-size: 12px; color: #6b7280;">${template.description}</div>
-                </div>
-            </label>
-        `;
-        card.onclick = (e) => {
-            if (e.target.tagName !== 'INPUT') {
-                const checkbox = card.querySelector('input');
-                checkbox.checked = !checkbox.checked;
-                toggleDocSelection(template.id);
-            }
-        };
-        
-        list.appendChild(card);
-    });
-    
-    document.getElementById('assignModal').classList.add('active');
-}
-
-function toggleDocSelection(docId) {
-    if (selectedDocs.has(docId)) {
-        selectedDocs.delete(docId);
-    } else {
-        selectedDocs.add(docId);
-    }
-}
-
-function closeAssignModal() {
-    document.getElementById('assignModal').classList.remove('active');
-    selectedDocs.clear();
-}
-
-function assignDocuments() {
-    const clientId = parseInt(document.getElementById('assignClientSelect').value);
-    
-    if (!clientId) {
-        alert('Please select a client');
-        return;
-    }
-    
-    if (selectedDocs.size === 0) {
-        alert('Please select at least one document');
-        return;
-    }
-    
-    const client = allClients.find(c => c.id === clientId);
-    selectedDocs.forEach(docId => {
-        assignedDocs.push({
-            id: Date.now() + Math.random(),
-            clientId,
-            clientName: client.name,
-            docId,
-            docName: documentTemplates.find(d => d.id === docId).name,
-            assignedDate: new Date().toISOString(),
-            status: 'pending'
-        });
-    });
-    
-    localStorage.setItem('assignedDocs', JSON.stringify(assignedDocs));
-    
-    logAudit('create', 'Document Assignment', `Assigned ${selectedDocs.size} document(s) to ${client.name}`);
-    
-    renderAssignedDocs();
-    closeAssignModal();
-    updateDashboard();
-    alert(`${selectedDocs.size} document(s) assigned to ${client.name}`);
-}
-
-function renderAssignedDocs() {
-    const container = document.getElementById('assignedDocsList');
-    
-    if (assignedDocs.length === 0) {
-        container.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 20px;">No documents assigned yet</p>';
-        return;
-    }
-    
-    container.innerHTML = `
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Client</th>
-                    <th>Document</th>
-                    <th>Assigned Date</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${assignedDocs.map(doc => `
-                    <tr>
-                        <td>${doc.clientName}</td>
-                        <td>${doc.docName}</td>
-                        <td>${new Date(doc.assignedDate).toLocaleDateString()}</td>
-                        <td><span class="badge badge-${doc.status === 'completed' ? 'success' : 'warning'}">${doc.status}</span></td>
-                        <td>
-                            ${doc.status === 'completed' ? `<button class="btn" style="padding: 6px 12px; font-size: 12px;" onclick="viewCompletedDocument(${doc.id})">View</button>` : '-'}
-                        </td>
-                    </tr>
-                `).join('')}
-            </tbody>
-        </table>
-    `;
-}
-
-// Client portal document functions
-function showClientDocuments() {
-    const clientDocs = assignedDocs.filter(doc => 
-        doc.clientId === parseInt(localStorage.getItem('userId'))
-    );
-    
-    const container = document.getElementById('clientDocumentsContainer');
-    
-    if (clientDocs.length === 0) {
-        container.innerHTML = '<div class="card"><p style="color: #6b7280; text-align: center; padding: 40px;">No documents assigned</p></div>';
-        return;
-    }
-    
-    container.innerHTML = clientDocs.map(doc => `
-        <div class="card" style="margin-bottom: 15px;">
-            <h3 style="margin-bottom: 10px; color: #1f2937;">${doc.docName}</h3>
-            <p style="color: #6b7280; margin-bottom: 15px;">Assigned: ${new Date(doc.assignedDate).toLocaleDateString()}</p>
-            <span class="badge badge-${doc.status === 'completed' ? 'success' : 'warning'}" style="margin-bottom: 15px; display: inline-block;">${doc.status}</span>
-            ${doc.status === 'pending' ? `
-                <br><button class="btn btn-primary" onclick="openDocumentForm(${doc.id}, ${doc.docId})">Complete Document</button>
-            ` : `
-                <br><button class="btn" onclick="viewCompletedDocument(${doc.id})">View Completed</button>
-            `}
-        </div>
-    `).join('');
-}
-
-function openDocumentForm(assignedDocId, templateId) {
-    const template = documentTemplates.find(t => t.id === templateId);
-    const modal = document.getElementById('documentFormModal');
-    
-    document.getElementById('documentFormTitle').textContent = template.name;
-    
-    const fieldsHtml = template.fields.map(field => {
-        if (field.type === 'text') {
-            return `
-                <div style="margin-bottom: 20px;">
-                    <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #374151;">${field.label}</label>
-                    <input type="text" id="field_${field.id}" class="input" required>
-                </div>
-            `;
-        } else if (field.type === 'textarea') {
-            return `
-                <div style="margin-bottom: 20px;">
-                    <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #374151;">${field.label}</label>
-                    <textarea id="field_${field.id}" class="input" rows="4" required></textarea>
-                </div>
-            `;
-        } else if (field.type === 'checkbox') {
-            return `
-                <div style="margin-bottom: 20px;">
-                    <label style="display: flex; align-items: center; cursor: pointer;">
-                        <input type="checkbox" id="field_${field.id}" required style="margin-right: 8px;">
-                        <span style="color: #374151;">${field.label}</span>
-                    </label>
-                </div>
-            `;
-        } else if (field.type === 'date') {
-            return `
-                <div style="margin-bottom: 20px;">
-                    <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #374151;">${field.label}</label>
-                    <input type="date" id="field_${field.id}" class="input" required>
-                </div>
-            `;
-        }
-    }).join('');
-    
-    document.getElementById('documentFormFields').innerHTML = fieldsHtml;
-    document.getElementById('documentFormSubmit').onclick = () => submitDocument(assignedDocId, template);
-    
-    // Clear signature canvas
-    const canvas = document.getElementById('signatureCanvas');
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    modal.classList.add('active');
-}
-
-function closeDocumentForm() {
-    document.getElementById('documentFormModal').classList.remove('active');
-}
-
-let isDrawing = false;
-let lastX = 0;
-let lastY = 0;
-
-function initSignatureCanvas() {
-    const canvas = document.getElementById('signatureCanvas');
-    const ctx = canvas.getContext('2d');
-    
-    canvas.addEventListener('mousedown', (e) => {
-        isDrawing = true;
-        const rect = canvas.getBoundingClientRect();
-        lastX = e.clientX - rect.left;
-        lastY = e.clientY - rect.top;
-    });
-    
-    canvas.addEventListener('mousemove', (e) => {
-        if (!isDrawing) return;
-        const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        
-        ctx.beginPath();
-        ctx.moveTo(lastX, lastY);
-        ctx.lineTo(x, y);
-        ctx.strokeStyle = '#000';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-        
-        lastX = x;
-        lastY = y;
-    });
-    
-    canvas.addEventListener('mouseup', () => {
-        isDrawing = false;
-    });
-    
-    canvas.addEventListener('mouseleave', () => {
-        isDrawing = false;
-    });
-    
-    // Touch support
-    canvas.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        isDrawing = true;
-        const rect = canvas.getBoundingClientRect();
-        const touch = e.touches[0];
-        lastX = touch.clientX - rect.left;
-        lastY = touch.clientY - rect.top;
-    });
-    
-    canvas.addEventListener('touchmove', (e) => {
-        e.preventDefault();
-        if (!isDrawing) return;
-        const rect = canvas.getBoundingClientRect();
-        const touch = e.touches[0];
-        const x = touch.clientX - rect.left;
-        const y = touch.clientY - rect.top;
-        
-        ctx.beginPath();
-        ctx.moveTo(lastX, lastY);
-        ctx.lineTo(x, y);
-        ctx.strokeStyle = '#000';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-        
-        lastX = x;
-        lastY = y;
-    });
-    
-    canvas.addEventListener('touchend', () => {
-        isDrawing = false;
-    });
-}
-
-function clearSignature() {
-    const canvas = document.getElementById('signatureCanvas');
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-}
-
-function submitDocument(assignedDocId, template) {
-    // Collect form data
-    const formData = {};
-    let isValid = true;
-    
-    template.fields.forEach(field => {
-        const element = document.getElementById(`field_${field.id}`);
-        if (field.type === 'checkbox') {
-            formData[field.id] = element.checked;
-            if (!element.checked) isValid = false;
-        } else {
-            formData[field.id] = element.value;
-            if (!element.value) isValid = false;
-        }
-    });
-    
-    if (!isValid) {
-        alert('Please complete all fields');
-        return;
-    }
-    
-    // Get signature
-    const canvas = document.getElementById('signatureCanvas');
-    const ctx = canvas.getContext('2d');
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const pixels = imageData.data;
-    let hasSignature = false;
-    
-    for (let i = 0; i < pixels.length; i += 4) {
-        if (pixels[i + 3] > 0) {
-            hasSignature = true;
-            break;
-        }
-    }
-    
-    if (!hasSignature) {
-        alert('Please provide your signature');
-        return;
-    }
-    
-    const signatureData = canvas.toDataURL();
-    
-    // Update assigned doc
-    const docIndex = assignedDocs.findIndex(d => d.id === assignedDocId);
-    const doc = assignedDocs[docIndex];
-    assignedDocs[docIndex].status = 'completed';
-    assignedDocs[docIndex].completedDate = new Date().toISOString();
-    assignedDocs[docIndex].formData = formData;
-    assignedDocs[docIndex].signature = signatureData;
-    
-    localStorage.setItem('assignedDocs', JSON.stringify(assignedDocs));
-    
-    logAudit('update', 'Document', `Completed document: ${doc.docName}`);
-    
-    closeDocumentForm();
-    showClientDocuments();
-    alert('Document submitted successfully!');
-}
-
-function viewCompletedDocument(assignedDocId) {
-    const doc = assignedDocs.find(d => d.id === assignedDocId);
-    const template = documentTemplates.find(t => t.id === doc.docId);
-    
-    logAudit('view', 'Document', `Viewed completed document: ${doc.docName} for ${doc.clientName}`);
-    
-    const modal = document.getElementById('viewDocModal');
-    document.getElementById('viewDocTitle').textContent = template.name;
-    
-    const fieldsHtml = template.fields.map(field => {
-        const value = doc.formData[field.id];
-        return `
-            <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #e5e7eb;">
-                <strong style="display: block; margin-bottom: 5px; color: #374151;">${field.label}</strong>
-                <p style="color: #6b7280;">${field.type === 'checkbox' ? (value ? 'Yes' : 'No') : value}</p>
-            </div>
-        `;
-    }).join('');
-    
-    document.getElementById('viewDocContent').innerHTML = `
-        ${fieldsHtml}
-        <div style="margin-top: 30px;">
-            <strong style="display: block; margin-bottom: 10px; color: #374151;">Signature:</strong>
-            <img src="${doc.signature}" style="border: 1px solid #e5e7eb; max-width: 100%;">
-        </div>
-        <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
-            <p style="color: #6b7280; font-size: 14px;">Completed: ${new Date(doc.completedDate).toLocaleString()}</p>
-        </div>
-    `;
-    
-    modal.classList.add('active');
-}
-
-function closeViewDocModal() {
-    document.getElementById('viewDocModal').classList.remove('active');
-}
-
-// Session Completion & Auto-Invoice Functions
-function checkCompletedSessions() {
-    if (userRole !== 'provider') return;
-    
-    const now = new Date();
-    
-    appointments.forEach(apt => {
-        if (apt.status === 'scheduled') {
-            const aptDateTime = new Date(`${apt.date}T${apt.time}`);
-            const aptEndTime = new Date(aptDateTime.getTime() + apt.duration * 60000);
-            
-            // If session has ended
-            if (now >= aptEndTime) {
-                completeSession(apt);
-            }
-        }
-    });
-}
-
-function completeSession(appointment) {
-    // Mark appointment as completed
-    const aptIndex = appointments.findIndex(a => a.id === appointment.id);
-    appointments[aptIndex].status = 'completed';
-    
-    // Auto-generate invoice
-    const rate = sessionRates[appointment.type] || 120;
-    const invoice = {
-        id: Date.now(),
-        clientId: appointment.clientId,
-        clientName: appointment.clientName,
-        date: new Date().toISOString().split('T')[0],
-        dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        lineItems: [{
-            description: `${appointment.type} - ${new Date(appointment.date).toLocaleDateString()}`,
-            quantity: 1,
-            rate: rate,
-            amount: rate
-        }],
-        total: rate,
-        status: 'unpaid',
-        notes: `Auto-generated from appointment on ${new Date(appointment.date).toLocaleDateString()}`,
-        autoGenerated: true
-    };
-    
-    invoices.unshift(invoice);
-    localStorage.setItem('invoices', JSON.stringify(invoices));
-    
-    logAudit('create', 'Invoice', `Auto-generated invoice for ${appointment.clientName} - ${rate.toFixed(2)}`);
-    
-    // Prompt for clinical note
-    promptClinicalNote(appointment);
-    
-    // Update UI if on relevant pages
-    if (document.getElementById('billingContent').style.display === 'block') {
-        renderBilling();
-    }
-}
-
-function promptClinicalNote(appointment) {
-    pendingNoteForClient = appointment.clientId;
-    document.getElementById('promptClientName').textContent = appointment.clientName;
-    document.getElementById('clinicalNotePromptModal').classList.add('active');
-}
-
-function closeClinicalNotePrompt() {
-    document.getElementById('clinicalNotePromptModal').classList.remove('active');
-    pendingNoteForClient = null;
-}
-
-function goToCreateNote() {
-    closeClinicalNotePrompt();
-    showTab('ainotes');
-    
-    // Pre-select the client
-    if (pendingNoteForClient) {
-        document.getElementById('noteClientSelect').value = pendingNoteForClient;
-    }
-    
-    // Focus on manual notes textarea
-    document.getElementById('manualNotes').focus();
-}
-
-// Payment Processor Functions
-function openPaymentProcessorSettings() {
-    document.getElementById('processorEnabled').checked = paymentProcessorSettings.enabled;
-    document.getElementById('processorApiKey').value = paymentProcessorSettings.apiKey;
-    document.getElementById('processorWebhook').value = paymentProcessorSettings.webhookUrl;
-    document.getElementById('processorTestMode').checked = paymentProcessorSettings.testMode;
-    
-    document.getElementById('paymentProcessorModal').classList.add('active');
-}
-
-function closePaymentProcessorModal() {
-    document.getElementById('paymentProcessorModal').classList.remove('active');
-}
-
-function savePaymentProcessorSettings(e) {
-    e.preventDefault();
-    
-    paymentProcessorSettings = {
-        enabled: document.getElementById('processorEnabled').checked,
-        apiKey: document.getElementById('processorApiKey').value,
-        webhookUrl: document.getElementById('processorWebhook').value,
-        testMode: document.getElementById('processorTestMode').checked
-    };
-    
-    localStorage.setItem('paymentProcessorSettings', JSON.stringify(paymentProcessorSettings));
-    
-    logAudit('update', 'Payment Settings', `Updated payment processor settings`);
-    
-    closePaymentProcessorModal();
-    renderBilling();
-    alert('Payment processor settings saved!');
-}
-
-function renderPaymentProcessorStatus() {
-    const container = document.getElementById('paymentProcessorStatus');
-    
-    if (paymentProcessorSettings.enabled) {
-        container.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <span class="badge badge-success">Active</span>
-                ${paymentProcessorSettings.testMode ? '<span class="badge badge-warning">Test Mode</span>' : '<span class="badge badge-info">Live Mode</span>'}
-                <span style="color: #6b7280; font-size: 14px;">Ready to process payments</span>
-            </div>
-        `;
-    } else {
-        container.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <span class="badge badge-warning">Not Configured</span>
-                <span style="color: #6b7280; font-size: 14px;">Click Settings to integrate your payment processor</span>
-            </div>
-        `;
-    }
-}
-
-// Session Rates Functions
-function openSessionRatesSettings() {
-    document.getElementById('rateInitial').value = sessionRates['Initial Consultation'];
-    document.getElementById('rateFollowup').value = sessionRates['Follow-up'];
-    document.getElementById('rateTherapy').value = sessionRates['Therapy Session'];
-    document.getElementById('rateMedication').value = sessionRates['Medication Management'];
-    document.getElementById('rateFamily').value = sessionRates['Family Therapy'] || 140;
-    document.getElementById('rateGroup').value = sessionRates['Group Therapy'] || 60;
-    
-    document.getElementById('sessionRatesModal').classList.add('active');
-}
-
-function closeSessionRatesModal() {
-    document.getElementById('sessionRatesModal').classList.remove('active');
-}
-
-function saveSessionRates(e) {
-    e.preventDefault();
-    
-    sessionRates = {
-        'Initial Consultation': parseFloat(document.getElementById('rateInitial').value),
-        'Follow-up': parseFloat(document.getElementById('rateFollowup').value),
-        'Therapy Session': parseFloat(document.getElementById('rateTherapy').value),
-        'Medication Management': parseFloat(document.getElementById('rateMedication').value),
-        'Family Therapy': parseFloat(document.getElementById('rateFamily').value),
-        'Group Therapy': parseFloat(document.getElementById('rateGroup').value)
-    };
-    
-    localStorage.setItem('sessionRates', JSON.stringify(sessionRates));
-    
-    logAudit('update', 'Session Rates', `Updated session billing rates`);
-    
-    closeSessionRatesModal();
-    renderBilling();
-    alert('Session rates updated!');
-}
-
-function renderSessionRates() {
-    const container = document.getElementById('sessionRatesDisplay');
-    
-    container.innerHTML = `
-        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
-            ${Object.entries(sessionRates).map(([type, rate]) => `
-                <div style="padding: 10px; background: #f9fafb; border-radius: 8px;">
-                    <strong style="color: #374151; display: block; font-size: 14px;">${type}</strong>
-                    <p style="color: #10b981; font-size: 18px; font-weight: 600; margin-top: 5px;">${rate.toFixed(2)}</p>
-                </div>
-            `).join('')}
-        </div>
-    `;
-}
-
-// Initialize
-if (authToken) {
-    showApp();
-    if (userRole === 'client') {
-        initSignatureCanvas();
-    }
-} else {
-    showAuth();
-}
-</script>
-
-</body>
-</html>
+    current
