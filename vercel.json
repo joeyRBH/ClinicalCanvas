@@ -8,6 +8,14 @@
     {
       "src": "index.html",
       "use": "@vercel/static"
+    },
+    {
+      "src": "styles.css",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "app.js",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
@@ -16,8 +24,25 @@
       "dest": "api/index.js"
     },
     {
+      "src": "/styles.css",
+      "dest": "styles.css",
+      "headers": {
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "src": "/app.js",
+      "dest": "app.js",
+      "headers": {
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
       "src": "/(.*)",
-      "dest": "index.html"
+      "dest": "index.html",
+      "headers": {
+        "Cache-Control": "public, max-age=3600"
+      }
     }
   ],
   "env": {
