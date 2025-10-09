@@ -414,11 +414,9 @@
                     <input type="password" id="password" class="input" autocomplete="current-password" onkeypress="if(event.key==='Enter') handleLogin()">
                 </div>
                 <button type="button" class="btn btn-primary" style="width: 100%;" onclick="handleLogin()">Login</button>
-                <button type="button" class="btn" style="width: 100%; margin-top: 10px;" onclick="alert('JavaScript is working! ✓')">Test JavaScript</button>
             </div>
             <p style="margin-top: 20px; text-align: center; color: #6b7280; font-size: 12px;">
-                Demo credentials: <strong>admin</strong> / <strong>admin123</strong><br>
-                <small>Click "Test JavaScript" first to verify the page loaded correctly</small>
+                Demo credentials: <strong>admin</strong> / <strong>admin123</strong>
             </p>
         </div>
     </div>
@@ -485,75 +483,6 @@
                 </div>
             </div>
 
-            <!-- Client Chart Detail View -->
-            <div id="clientChartContent" style="display: none;">
-                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
-                    <button class="btn" onclick="backToClientsList()">← Back to Clients</button>
-                    <h2 style="color: #1f2937; flex: 1;" id="clientChartName"></h2>
-                    <button class="btn" onclick="editClientFromChart()">Edit Client</button>
-                    <button class="btn btn-danger" onclick="deleteClientFromChart()">Delete Client</button>
-                </div>
-
-                <!-- Personal Information -->
-                <div class="card" style="margin-bottom: 20px;">
-                    <h3 style="margin-bottom: 15px; color: #374151;">Personal Information</h3>
-                    <div id="clientChartInfo" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;"></div>
-                </div>
-
-                <!-- Diagnosis & Treatment -->
-                <div class="card" style="margin-bottom: 20px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <h3 style="color: #374151;">Diagnosis (ICD-10)</h3>
-                        <button class="btn btn-primary" onclick="openAddDiagnosis()">Add Diagnosis</button>
-                    </div>
-                    <div id="clientDiagnosisList"></div>
-                </div>
-
-                <!-- Quick Stats -->
-                <div class="grid" style="margin-bottom: 20px;">
-                    <div class="stat-card">
-                        <h3>Total Sessions</h3>
-                        <div class="value" id="clientTotalSessions">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Clinical Notes</h3>
-                        <div class="value" id="clientTotalNotes">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Total Billed</h3>
-                        <div class="value" style="color: #10b981;" id="clientTotalBilled">$0</div>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Outstanding</h3>
-                        <div class="value" style="color: #f59e0b;" id="clientOutstanding">$0</div>
-                    </div>
-                </div>
-
-                <!-- Appointments -->
-                <div class="card" style="margin-bottom: 20px;">
-                    <h3 style="margin-bottom: 15px;">Appointments</h3>
-                    <div id="clientChartAppointments"></div>
-                </div>
-
-                <!-- Clinical Notes -->
-                <div class="card" style="margin-bottom: 20px;">
-                    <h3 style="margin-bottom: 15px;">Clinical Notes</h3>
-                    <div id="clientChartNotes"></div>
-                </div>
-
-                <!-- Invoices -->
-                <div class="card" style="margin-bottom: 20px;">
-                    <h3 style="margin-bottom: 15px;">Invoices</h3>
-                    <div id="clientChartInvoices"></div>
-                </div>
-
-                <!-- Documents -->
-                <div class="card">
-                    <h3 style="margin-bottom: 15px;">Assigned Documents</h3>
-                    <div id="clientChartDocuments"></div>
-                </div>
-            </div>
-
             <!-- Calendar -->
             <div id="calendarContent" style="display: none;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -579,22 +508,8 @@
                         </select>
                     </div>
 
-                    <div style="margin-bottom: 20px;">
-                        <label style="display: block; margin-bottom: 8px; font-weight: 500;">Record Session Audio</label>
-                        <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
-                            <button id="recordBtn" class="btn btn-danger" onclick="toggleRecording()">
-                                <span id="recordBtnText">🎤 Start Recording</span>
-                            </button>
-                            <div id="recordingStatus" style="display: none;" class="recording-indicator">
-                                <div class="recording-dot"></div>
-                                <span id="recordingTime">00:00</span>
-                            </div>
-                        </div>
-                        <p style="color: #6b7280; font-size: 12px;">Record your session notes verbally, then AI will convert to DAP format</p>
-                    </div>
-
                     <div class="input-group">
-                        <label>Or Type Notes Manually</label>
+                        <label>Type Notes Manually</label>
                         <textarea id="manualNotes" class="input" rows="6" placeholder="Describe the session..."></textarea>
                     </div>
 
@@ -631,26 +546,6 @@
                         <h3>This Month</h3>
                         <div class="value" id="monthRevenue">$0</div>
                     </div>
-                    <div class="stat-card">
-                        <h3>Auto-Generated</h3>
-                        <div class="value" id="autoInvoiceCount">0</div>
-                    </div>
-                </div>
-
-                <div class="card" style="margin-bottom: 20px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <h3>Payment Processor Integration</h3>
-                        <button class="btn" onclick="openPaymentProcessorSettings()">⚙️ Settings</button>
-                    </div>
-                    <div id="paymentProcessorStatus"></div>
-                </div>
-
-                <div class="card" style="margin-bottom: 20px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <h3>Session Rates</h3>
-                        <button class="btn" onclick="openSessionRatesSettings()">Edit Rates</button>
-                    </div>
-                    <div id="sessionRatesDisplay"></div>
                 </div>
 
                 <div class="card" style="margin-bottom: 20px;">
@@ -659,11 +554,6 @@
                         <button class="btn btn-primary" onclick="openCreateInvoice()">Create Invoice</button>
                     </div>
                     <div id="invoicesList"></div>
-                </div>
-
-                <div class="card">
-                    <h3 style="margin-bottom: 20px;">Payment History</h3>
-                    <div id="paymentsList"></div>
                 </div>
             </div>
 
@@ -784,12 +674,9 @@
                 <div class="input-group">
                     <label>Type</label>
                     <select id="appointmentType" class="input" required>
-                        <option value="Initial Consultation">Initial Consultation (CPT: 90791)</option>
-                        <option value="Follow-up">Follow-up (CPT: 90834)</option>
-                        <option value="Therapy Session">Therapy Session (CPT: 90837)</option>
-                        <option value="Medication Management">Medication Management (CPT: 99214)</option>
-                        <option value="Family Therapy">Family Therapy (CPT: 90847)</option>
-                        <option value="Group Therapy">Group Therapy (CPT: 90853)</option>
+                        <option value="Initial Consultation">Initial Consultation</option>
+                        <option value="Follow-up">Follow-up</option>
+                        <option value="Therapy Session">Therapy Session</option>
                     </select>
                 </div>
                 <div class="input-group">
@@ -804,7 +691,7 @@
         </div>
     </div>
 
-    <!-- View SOAP Note Modal -->
+    <!-- View Note Modal -->
     <div id="viewNoteModal" class="modal">
         <div class="modal-content" style="max-width: 700px; max-height: 90vh; overflow-y: auto;">
             <h2 style="margin-bottom: 20px;">Clinical Note (DAP Format)</h2>
@@ -906,7 +793,10 @@
             <div style="margin-bottom: 20px;">
                 <label style="display: block; margin-bottom: 10px; font-weight: 500; color: #374151;">Your Signature</label>
                 <canvas id="signatureCanvas" width="600" height="200" style="border: 2px solid #e5e7eb; border-radius: 8px; cursor: crosshair; display: block; max-width: 100%;"></canvas>
-                <button class="btn" onclick="clearSignature()" style="margin-top: 10px;">Clear Signature</button>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                    <button class="btn" onclick="clearSignature()">Clear Signature</button>
+                    <span id="signatureTimestamp" style="color: #6b7280; font-size: 12px;"></span>
+                </div>
             </div>
             
             <div style="display: flex; gap: 10px; justify-content: flex-end;">
@@ -921,198 +811,93 @@
         <div class="modal-content" style="max-width: 700px; max-height: 90vh; overflow-y: auto;">
             <h2 id="viewDocTitle" style="margin-bottom: 20px;"></h2>
             <div id="viewDocContent"></div>
+            
+            <!-- Clinician Signature Section -->
+            <div id="clinicianSignatureSection" style="display: none; margin-top: 30px; padding-top: 20px; border-top: 2px solid #e5e7eb;">
+                <h3 style="color: #374151; margin-bottom: 15px;">Clinician Review & Signature</h3>
+                <p style="color: #6b7280; margin-bottom: 15px; font-size: 14px;">Please sign below to acknowledge review of this completed document:</p>
+                <canvas id="clinicianSignatureCanvas" width="600" height="150" style="border: 2px solid #e5e7eb; border-radius: 8px; cursor: crosshair; display: block; max-width: 100%; margin-bottom: 10px;"></canvas>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <button class="btn" onclick="clearClinicianSignature()">Clear Signature</button>
+                    <span id="clinicianSignatureTimestamp" style="color: #6b7280; font-size: 12px;"></span>
+                </div>
+                <button class="btn btn-primary" onclick="saveClinicianSignature()">Save Review Signature</button>
+            </div>
+            
             <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
                 <button class="btn" onclick="closeViewDocModal()">Close</button>
             </div>
         </div>
     </div>
 
-    <!-- Clinical Note Prompt Modal -->
-    <div id="clinicalNotePromptModal" class="modal">
-        <div class="modal-content">
-            <h2 style="margin-bottom: 20px;">📝 Session Completed</h2>
-            <p style="color: #6b7280; margin-bottom: 20px;">The session with <strong id="promptClientName"></strong> has ended. Would you like to create a clinical note?</p>
-            <div style="display: flex; gap: 10px; justify-content: flex-end;">
-                <button class="btn" onclick="closeClinicalNotePrompt()">Later</button>
-                <button class="btn btn-primary" onclick="goToCreateNote()">Create Note Now</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Payment Processor Settings Modal -->
-    <div id="paymentProcessorModal" class="modal">
-        <div class="modal-content" style="max-width: 600px;">
-            <h2 style="margin-bottom: 20px;">Payment Processor Integration</h2>
-            <form id="paymentProcessorForm" onsubmit="savePaymentProcessorSettings(event)">
-                <div class="input-group">
-                    <label style="display: flex; align-items: center; cursor: pointer;">
-                        <input type="checkbox" id="processorEnabled" style="margin-right: 8px;">
-                        <span>Enable Payment Processor Integration</span>
-                    </label>
-                </div>
-                <div class="input-group">
-                    <label>API Key / Merchant ID</label>
-                    <input type="text" id="processorApiKey" class="input" placeholder="Enter your API key or merchant ID">
-                    <p style="color: #6b7280; font-size: 12px; margin-top: 5px;">Your payment processor credentials will be stored securely</p>
-                </div>
-                <div class="input-group">
-                    <label>Webhook URL (Optional)</label>
-                    <input type="text" id="processorWebhook" class="input" placeholder="https://your-payment-processor.com/webhook">
-                    <p style="color: #6b7280; font-size: 12px; margin-top: 5px;">For receiving payment notifications</p>
-                </div>
-                <div class="input-group">
-                    <label style="display: flex; align-items: center; cursor: pointer;">
-                        <input type="checkbox" id="processorTestMode" style="margin-right: 8px;">
-                        <span>Test Mode</span>
-                    </label>
-                    <p style="color: #6b7280; font-size: 12px; margin-top: 5px;">Enable to use sandbox/test credentials</p>
-                </div>
-                <div style="padding: 15px; background: #fef3c7; border-radius: 8px; margin-bottom: 20px;">
-                    <p style="color: #92400e; font-size: 14px;">💡 <strong>Integration Instructions:</strong></p>
-                    <p style="color: #92400e; font-size: 12px; margin-top: 5px;">Once enabled, this system will be ready to send payment requests to your processor. You'll need to provide your processor's specific integration details.</p>
-                </div>
-                <div style="display: flex; gap: 10px; justify-content: flex-end;">
-                    <button type="button" class="btn" onclick="closePaymentProcessorModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Settings</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Session Rates Modal -->
-    <div id="sessionRatesModal" class="modal">
-        <div class="modal-content">
-            <h2 style="margin-bottom: 20px;">Session Rates</h2>
-            <form id="sessionRatesForm" onsubmit="saveSessionRates(event)">
-                <div class="input-group">
-                    <label>Initial Consultation (CPT: 90791)</label>
-                    <input type="number" id="rateInitial" class="input" step="0.01" min="0" required>
-                </div>
-                <div class="input-group">
-                    <label>Follow-up Session (CPT: 90834)</label>
-                    <input type="number" id="rateFollowup" class="input" step="0.01" min="0" required>
-                </div>
-                <div class="input-group">
-                    <label>Therapy Session (CPT: 90837)</label>
-                    <input type="number" id="rateTherapy" class="input" step="0.01" min="0" required>
-                </div>
-                <div class="input-group">
-                    <label>Medication Management (CPT: 99214)</label>
-                    <input type="number" id="rateMedication" class="input" step="0.01" min="0" required>
-                </div>
-                <div class="input-group">
-                    <label>Family Therapy (CPT: 90847)</label>
-                    <input type="number" id="rateFamily" class="input" step="0.01" min="0" required>
-                </div>
-                <div class="input-group">
-                    <label>Group Therapy (CPT: 90853)</label>
-                    <input type="number" id="rateGroup" class="input" step="0.01" min="0" required>
-                </div>
-                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
-                    <button type="button" class="btn" onclick="closeSessionRatesModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Rates</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Add Diagnosis Modal -->
-    <div id="diagnosisModal" class="modal">
-        <div class="modal-content">
-            <h2 style="margin-bottom: 20px;">Add Diagnosis</h2>
-            <form id="diagnosisForm" onsubmit="saveDiagnosis(event)">
-                <div class="input-group">
-                    <label>ICD-10 Code</label>
-                    <select id="diagnosisCode" class="input" required onchange="updateDiagnosisDescription()">
-                        <option value="">Select diagnosis...</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <label>Additional Notes</label>
-                    <textarea id="diagnosisNotes" class="input" rows="3" placeholder="Optional clinical notes about this diagnosis"></textarea>
-                </div>
-                <div class="input-group">
-                    <label>Date of Diagnosis</label>
-                    <input type="date" id="diagnosisDate" class="input" required>
-                </div>
-                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
-                    <button type="button" class="btn" onclick="closeDiagnosisModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Add Diagnosis</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
 <script>
-// Test script execution
-console.log('ClinicalCanvas EHR v48 - Script loaded successfully');
-console.log('Current date:', new Date().toISOString());
+console.log('ClinicalCanvas EHR - Full version loaded');
 
-// Mock Database
+// Mock Database - RESTORED FROM ORIGINAL
 let users = [
     { id: 1, username: 'admin', password: 'admin123', role: 'provider', name: 'Dr. Smith' },
     { id: 2, username: 'john.doe@email.com', password: 'password123', role: 'client', name: 'John Doe' }
 ];
 
-console.log('Users initialized:', users.length, 'users loaded');
-
 let allClients = [
-    { id: 1, name: 'John Doe', email: 'john.doe@email.com', phone: '555-0101', dob: '1990-05-15' },
-    { id: 2, name: 'Jane Smith', email: 'jane.smith@email.com', phone: '555-0102', dob: '1985-08-22' }
+    { id: 2, name: 'John Doe', email: 'john.doe@email.com', phone: '555-0101', dob: '1990-05-15' },
+    { id: 3, name: 'Jane Smith', email: 'jane.smith@email.com', phone: '555-0102', dob: '1985-08-22' }
 ];
 
 let appointments = [
-    { id: 1, clientId: 1, clientName: 'John Doe', date: '2025-10-10', time: '10:00', duration: 60, type: 'Initial Consultation', notes: 'First session', location: 'Office A', status: 'scheduled' },
-    { id: 2, clientId: 2, clientName: 'Jane Smith', date: '2025-10-10', time: '14:00', duration: 60, type: 'Follow-up', notes: '', location: 'Office B', status: 'scheduled' }
+    { id: 1, clientId: 2, clientName: 'John Doe', date: '2025-10-10', time: '10:00', duration: 60, type: 'Initial Consultation', notes: 'First session', location: 'Office A', status: 'scheduled' },
+    { id: 2, clientId: 3, clientName: 'Jane Smith', date: '2025-10-10', time: '14:00', duration: 60, type: 'Follow-up', notes: '', location: 'Office B', status: 'scheduled' }
 ];
 
+// UPDATED: Document Templates with ONLY working intake forms
 let documentTemplates = [
-    { 
-        id: 1, 
-        name: 'Client Intake Form',
-        description: 'Initial client information and medical history',
+    {
+        id: 2,
+        name: 'ACE Questionnaire (Complete)',
+        description: 'Adverse Childhood Experiences - Full 10 Question Assessment',
         fields: [
-            { id: 'fullName', label: 'Full Name', type: 'text' },
-            { id: 'address', label: 'Address', type: 'textarea' },
-            { id: 'emergencyContact', label: 'Emergency Contact', type: 'text' },
-            { id: 'emergencyPhone', label: 'Emergency Contact Phone', type: 'text' },
-            { id: 'medicalHistory', label: 'Medical History', type: 'textarea' },
-            { id: 'currentMedications', label: 'Current Medications', type: 'textarea' }
+            { id: 'ace_intro', label: 'Prior to your 18th birthday:', type: 'info' },
+            { id: 'ace_1', label: '1. Did a parent or other adult in the household often swear at you, insult you, put you down, or humiliate you? OR Act in a way that made you afraid that you might be physically hurt?', type: 'radio', options: ['Yes', 'No'] },
+            { id: 'ace_2', label: '2. Did a parent or other adult in the household often push, grab, slap, or throw something at you? OR Ever hit you so hard that you had marks or were injured?', type: 'radio', options: ['Yes', 'No'] },
+            { id: 'ace_3', label: '3. Did an adult or person at least 5 years older than you ever touch or fondle you or have you touch their body in a sexual way? OR Attempt or actually have oral, anal, or vaginal intercourse with you?', type: 'radio', options: ['Yes', 'No'] },
+            { id: 'ace_4', label: '4. Did you often or very often feel that no one in your family loved you or thought you were important or special? OR Your family didn\'t look out for each other, feel close to each other, or support each other?', type: 'radio', options: ['Yes', 'No'] },
+            { id: 'ace_5', label: '5. Did you often or very often feel that you didn\'t have enough to eat, had to wear dirty clothes, and had no one to protect you? OR Your parents were too drunk or high to take care of you or take you to the doctor if you needed it?', type: 'radio', options: ['Yes', 'No'] },
+            { id: 'ace_6', label: '6. Were your parents ever separated or divorced?', type: 'radio', options: ['Yes', 'No'] },
+            { id: 'ace_7', label: '7. Was your mother or stepmother often or very often pushed, grabbed, slapped, or had something thrown at her? OR Sometimes, often, or very often kicked, bitten, hit with a fist, or hit with something hard? OR Ever repeatedly hit over at least a few minutes or threatened with a gun or knife?', type: 'radio', options: ['Yes', 'No'] },
+            { id: 'ace_8', label: '8. Did you live with anyone who was a problem drinker or alcoholic, or who used street drugs?', type: 'radio', options: ['Yes', 'No'] },
+            { id: 'ace_9', label: '9. Was a household member depressed or mentally ill, or did a household member attempt suicide?', type: 'radio', options: ['Yes', 'No'] },
+            { id: 'ace_10', label: '10. Did a household member go to prison?', type: 'radio', options: ['Yes', 'No'] }
         ]
     },
-    { 
-        id: 2, 
-        name: 'Consent for Treatment',
-        description: 'Authorization for treatment services',
+    {
+        id: 3,
+        name: 'DAST-10 (Complete)',
+        description: 'Drug Abuse Screening Test - Full 10 Questions',
         fields: [
-            { id: 'clientName', label: 'Client Name', type: 'text' },
-            { id: 'treatmentDate', label: 'Date', type: 'date' },
-            { id: 'consentStatement', label: 'I consent to treatment', type: 'checkbox' },
-            { id: 'privacyAcknowledgement', label: 'I acknowledge the privacy policy', type: 'checkbox' }
+            { id: 'dast_intro', label: 'The following questions concern information about your potential involvement with drugs not including alcoholic beverages during the past 12 months. Please answer every question.', type: 'info' },
+            { id: 'dast_1', label: '1. Have you used drugs other than those required for medical reasons?', type: 'radio', options: ['Yes', 'No'] },
+            { id: 'dast_2', label: '2. Do you abuse more than one drug at a time?', type: 'radio', options: ['Yes', 'No'] },
+            { id: 'dast_3', label: '3. Are you unable to stop using drugs when you want to?', type: 'radio', options: ['Yes', 'No'] },
+            { id: 'dast_4', label: '4. Have you ever had blackouts or flashbacks as a result of drug use?', type: 'radio', options: ['Yes', 'No'] },
+            { id: 'dast_5', label: '5. Do you ever feel bad or guilty about your drug use?', type: 'radio', options: ['Yes', 'No'] },
+            { id: 'dast_6', label: '6. Does your spouse (or parents) ever complain about your involvement with drugs?', type: 'radio', options: ['Yes', 'No'] },
+            { id: 'dast_7', label: '7. Have you neglected your family because of your use of drugs?', type: 'radio', options: ['Yes', 'No'] },
+            { id: 'dast_8', label: '8. Have you engaged in illegal activities in order to obtain drugs?', type: 'radio', options: ['Yes', 'No'] },
+            { id: 'dast_9', label: '9. Have you ever experienced withdrawal symptoms (felt sick) when you stopped taking drugs?', type: 'radio', options: ['Yes', 'No'] },
+            { id: 'dast_10', label: '10. Have you had medical problems as a result of your drug use (e.g., memory loss, hepatitis, convulsions, bleeding, etc.)?', type: 'radio', options: ['Yes', 'No'] }
         ]
     },
-    { 
-        id: 3, 
-        name: 'Release of Information',
-        description: 'Authorization to share information',
+    {
+        id: 4,
+        name: 'AUDIT Screening',
+        description: 'Alcohol Use Disorders Identification Test',
         fields: [
-            { id: 'clientName', label: 'Client Name', type: 'text' },
-            { id: 'releaseToName', label: 'Release Information To', type: 'text' },
-            { id: 'releaseToOrg', label: 'Organization', type: 'text' },
-            { id: 'purposeOfRelease', label: 'Purpose of Release', type: 'textarea' },
-            { id: 'expirationDate', label: 'Expiration Date', type: 'date' }
-        ]
-    },
-    { 
-        id: 4, 
-        name: 'Treatment Plan',
-        description: 'Collaborative treatment goals and objectives',
-        fields: [
-            { id: 'clientName', label: 'Client Name', type: 'text' },
-            { id: 'diagnosisCode', label: 'Diagnosis Code', type: 'text' },
-            { id: 'treatmentGoals', label: 'Treatment Goals', type: 'textarea' },
-            { id: 'interventions', label: 'Planned Interventions', type: 'textarea' },
-            { id: 'reviewDate', label: 'Next Review Date', type: 'date' }
+            { id: 'audit_intro', label: 'Please answer the following questions about your alcohol use:', type: 'info' },
+            { id: 'audit_1', label: '1. How often do you have a drink containing alcohol?', type: 'radio', options: ['Never', 'Monthly or less', '2-4 times a month', '2-3 times a week', '4 or more times a week'] },
+            { id: 'audit_2', label: '2. How many drinks containing alcohol do you have on a typical day when you are drinking?', type: 'radio', options: ['1 or 2', '3 or 4', '5 or 6', '7 to 9', '10 or more'] },
+            { id: 'audit_3', label: '3. How often do you have six or more drinks on one occasion?', type: 'radio', options: ['Never', 'Less than monthly', 'Monthly', 'Weekly', 'Daily or almost daily'] },
+            { id: 'audit_4', label: '4. How often during the last year have you found that you were not able to stop drinking once you had started?', type: 'radio', options: ['Never', 'Less than monthly', 'Monthly', 'Weekly', 'Daily or almost daily'] },
+            { id: 'audit_5', label: '5. How often during the last year have you failed to do what was normally expected of you because of drinking?', type: 'radio', options: ['Never', 'Less than monthly', 'Monthly', 'Weekly', 'Daily or almost daily'] }
         ]
     }
 ];
@@ -1122,184 +907,6 @@ let clinicalNotes = JSON.parse(localStorage.getItem('clinicalNotes') || '[]');
 let auditLog = JSON.parse(localStorage.getItem('auditLog') || '[]');
 let invoices = JSON.parse(localStorage.getItem('invoices') || '[]');
 let payments = JSON.parse(localStorage.getItem('payments') || '[]');
-let clientDiagnoses = JSON.parse(localStorage.getItem('clientDiagnoses') || '[]');
-let paymentProcessorSettings = JSON.parse(localStorage.getItem('paymentProcessorSettings') || '{"enabled":false,"apiKey":"","webhookUrl":"","testMode":true}');
-let sessionRates = JSON.parse(localStorage.getItem('sessionRates') || '{"Initial Consultation":150,"Follow-up":120,"Therapy Session":120,"Medication Management":100,"Family Therapy":140,"Group Therapy":60}');
-
-// CPT Codes for session types
-const cptCodes = {
-    'Initial Consultation': '90791',
-    'Follow-up': '90834',
-    'Therapy Session': '90837',
-    'Medication Management': '99214',
-    'Family Therapy': '90847',
-    'Group Therapy': '90853'
-};
-
-// Comprehensive Mental Health ICD-10 codes
-const icd10Codes = [
-    // Anxiety Disorders
-    { code: 'F41.0', description: 'Panic disorder without agoraphobia' },
-    { code: 'F41.1', description: 'Generalized anxiety disorder' },
-    { code: 'F41.3', description: 'Other mixed anxiety disorders' },
-    { code: 'F41.8', description: 'Other specified anxiety disorders' },
-    { code: 'F41.9', description: 'Anxiety disorder, unspecified' },
-    { code: 'F40.00', description: 'Agoraphobia, unspecified' },
-    { code: 'F40.01', description: 'Agoraphobia with panic disorder' },
-    { code: 'F40.10', description: 'Social phobia, unspecified' },
-    { code: 'F40.11', description: 'Social phobia, generalized' },
-    { code: 'F40.218', description: 'Other animal type phobia' },
-    { code: 'F40.228', description: 'Other natural environment type phobia' },
-    { code: 'F40.230', description: 'Fear of blood' },
-    { code: 'F40.231', description: 'Fear of injections and transfusions' },
-    { code: 'F40.232', description: 'Fear of other medical care' },
-    { code: 'F40.233', description: 'Fear of injury' },
-    { code: 'F40.248', description: 'Other situational type phobia' },
-    { code: 'F40.298', description: 'Other specified phobia' },
-    
-    // Depressive Disorders
-    { code: 'F32.0', description: 'Major depressive disorder, single episode, mild' },
-    { code: 'F32.1', description: 'Major depressive disorder, single episode, moderate' },
-    { code: 'F32.2', description: 'Major depressive disorder, single episode, severe without psychotic features' },
-    { code: 'F32.3', description: 'Major depressive disorder, single episode, severe with psychotic features' },
-    { code: 'F32.4', description: 'Major depressive disorder, single episode, in partial remission' },
-    { code: 'F32.5', description: 'Major depressive disorder, single episode, in full remission' },
-    { code: 'F32.9', description: 'Major depressive disorder, single episode, unspecified' },
-    { code: 'F33.0', description: 'Major depressive disorder, recurrent, mild' },
-    { code: 'F33.1', description: 'Major depressive disorder, recurrent, moderate' },
-    { code: 'F33.2', description: 'Major depressive disorder, recurrent severe without psychotic features' },
-    { code: 'F33.3', description: 'Major depressive disorder, recurrent, severe with psychotic symptoms' },
-    { code: 'F33.40', description: 'Major depressive disorder, recurrent, in remission, unspecified' },
-    { code: 'F33.41', description: 'Major depressive disorder, recurrent, in partial remission' },
-    { code: 'F33.42', description: 'Major depressive disorder, recurrent, in full remission' },
-    { code: 'F33.9', description: 'Major depressive disorder, recurrent, unspecified' },
-    { code: 'F34.1', description: 'Dysthymic disorder (Persistent depressive disorder)' },
-    { code: 'F34.81', description: 'Disruptive mood dysregulation disorder' },
-    
-    // Trauma and Stress-Related Disorders
-    { code: 'F43.0', description: 'Acute stress reaction' },
-    { code: 'F43.10', description: 'Post-traumatic stress disorder, unspecified' },
-    { code: 'F43.11', description: 'Post-traumatic stress disorder, acute' },
-    { code: 'F43.12', description: 'Post-traumatic stress disorder, chronic' },
-    { code: 'F43.20', description: 'Adjustment disorder, unspecified' },
-    { code: 'F43.21', description: 'Adjustment disorder with depressed mood' },
-    { code: 'F43.22', description: 'Adjustment disorder with anxiety' },
-    { code: 'F43.23', description: 'Adjustment disorder with mixed anxiety and depressed mood' },
-    { code: 'F43.24', description: 'Adjustment disorder with disturbance of conduct' },
-    { code: 'F43.25', description: 'Adjustment disorder with mixed disturbance of emotions and conduct' },
-    { code: 'F43.29', description: 'Adjustment disorder with other symptoms' },
-    
-    // Bipolar Disorders
-    { code: 'F31.0', description: 'Bipolar disorder, current episode hypomanic' },
-    { code: 'F31.10', description: 'Bipolar disorder, current episode manic without psychotic features, unspecified' },
-    { code: 'F31.11', description: 'Bipolar disorder, current episode manic without psychotic features, mild' },
-    { code: 'F31.12', description: 'Bipolar disorder, current episode manic without psychotic features, moderate' },
-    { code: 'F31.13', description: 'Bipolar disorder, current episode manic without psychotic features, severe' },
-    { code: 'F31.2', description: 'Bipolar disorder, current episode manic severe with psychotic features' },
-    { code: 'F31.30', description: 'Bipolar disorder, current episode depressed, mild or moderate severity, unspecified' },
-    { code: 'F31.31', description: 'Bipolar disorder, current episode depressed, mild' },
-    { code: 'F31.32', description: 'Bipolar disorder, current episode depressed, moderate' },
-    { code: 'F31.4', description: 'Bipolar disorder, current episode depressed, severe, without psychotic features' },
-    { code: 'F31.5', description: 'Bipolar disorder, current episode depressed, severe, with psychotic features' },
-    { code: 'F31.60', description: 'Bipolar disorder, current episode mixed, unspecified' },
-    { code: 'F31.61', description: 'Bipolar disorder, current episode mixed, mild' },
-    { code: 'F31.62', description: 'Bipolar disorder, current episode mixed, moderate' },
-    { code: 'F31.63', description: 'Bipolar disorder, current episode mixed, severe, without psychotic features' },
-    { code: 'F31.64', description: 'Bipolar disorder, current episode mixed, severe, with psychotic features' },
-    { code: 'F31.70', description: 'Bipolar disorder, currently in remission, most recent episode unspecified' },
-    { code: 'F31.71', description: 'Bipolar disorder, in partial remission, most recent episode hypomanic' },
-    { code: 'F31.72', description: 'Bipolar disorder, in full remission, most recent episode hypomanic' },
-    { code: 'F31.73', description: 'Bipolar disorder, in partial remission, most recent episode manic' },
-    { code: 'F31.74', description: 'Bipolar disorder, in full remission, most recent episode manic' },
-    { code: 'F31.75', description: 'Bipolar disorder, in partial remission, most recent episode depressed' },
-    { code: 'F31.76', description: 'Bipolar disorder, in full remission, most recent episode depressed' },
-    { code: 'F31.77', description: 'Bipolar disorder, in partial remission, most recent episode mixed' },
-    { code: 'F31.78', description: 'Bipolar disorder, in full remission, most recent episode mixed' },
-    { code: 'F31.81', description: 'Bipolar II disorder' },
-    { code: 'F31.89', description: 'Other bipolar disorder' },
-    { code: 'F31.9', description: 'Bipolar disorder, unspecified' },
-    
-    // Obsessive-Compulsive and Related Disorders
-    { code: 'F42.2', description: 'Mixed obsessional thoughts and acts' },
-    { code: 'F42.3', description: 'Hoarding disorder' },
-    { code: 'F42.4', description: 'Excoriation (skin-picking) disorder' },
-    { code: 'F42.8', description: 'Other obsessive-compulsive disorder' },
-    { code: 'F42.9', description: 'Obsessive-compulsive disorder, unspecified' },
-    { code: 'F45.22', description: 'Body dysmorphic disorder' },
-    
-    // Schizophrenia and Psychotic Disorders
-    { code: 'F20.0', description: 'Paranoid schizophrenia' },
-    { code: 'F20.1', description: 'Disorganized schizophrenia' },
-    { code: 'F20.2', description: 'Catatonic schizophrenia' },
-    { code: 'F20.3', description: 'Undifferentiated schizophrenia' },
-    { code: 'F20.5', description: 'Residual schizophrenia' },
-    { code: 'F20.81', description: 'Schizophreniform disorder' },
-    { code: 'F20.89', description: 'Other schizophrenia' },
-    { code: 'F20.9', description: 'Schizophrenia, unspecified' },
-    { code: 'F25.0', description: 'Schizoaffective disorder, bipolar type' },
-    { code: 'F25.1', description: 'Schizoaffective disorder, depressive type' },
-    { code: 'F25.8', description: 'Other schizoaffective disorders' },
-    { code: 'F25.9', description: 'Schizoaffective disorder, unspecified' },
-    
-    // Personality Disorders
-    { code: 'F60.0', description: 'Paranoid personality disorder' },
-    { code: 'F60.1', description: 'Schizoid personality disorder' },
-    { code: 'F60.2', description: 'Antisocial personality disorder' },
-    { code: 'F60.3', description: 'Borderline personality disorder' },
-    { code: 'F60.4', description: 'Histrionic personality disorder' },
-    { code: 'F60.5', description: 'Obsessive-compulsive personality disorder' },
-    { code: 'F60.6', description: 'Avoidant personality disorder' },
-    { code: 'F60.7', description: 'Dependent personality disorder' },
-    { code: 'F60.81', description: 'Narcissistic personality disorder' },
-    { code: 'F60.89', description: 'Other specific personality disorders' },
-    { code: 'F60.9', description: 'Personality disorder, unspecified' },
-    
-    // ADHD and Disruptive Disorders
-    { code: 'F90.0', description: 'Attention-deficit hyperactivity disorder, predominantly inattentive type' },
-    { code: 'F90.1', description: 'Attention-deficit hyperactivity disorder, predominantly hyperactive type' },
-    { code: 'F90.2', description: 'Attention-deficit hyperactivity disorder, combined type' },
-    { code: 'F90.8', description: 'Attention-deficit hyperactivity disorder, other type' },
-    { code: 'F90.9', description: 'Attention-deficit hyperactivity disorder, unspecified type' },
-    { code: 'F91.1', description: 'Conduct disorder, childhood-onset type' },
-    { code: 'F91.2', description: 'Conduct disorder, adolescent-onset type' },
-    { code: 'F91.3', description: 'Oppositional defiant disorder' },
-    { code: 'F91.8', description: 'Other conduct disorders' },
-    { code: 'F91.9', description: 'Conduct disorder, unspecified' },
-    
-    // Autism Spectrum Disorder
-    { code: 'F84.0', description: 'Autistic disorder' },
-    { code: 'F84.5', description: 'Asperger syndrome' },
-    { code: 'F84.8', description: 'Other pervasive developmental disorders' },
-    { code: 'F84.9', description: 'Pervasive developmental disorder, unspecified' },
-    
-    // Substance Use Disorders
-    { code: 'F10.10', description: 'Alcohol abuse, uncomplicated' },
-    { code: 'F10.20', description: 'Alcohol dependence, uncomplicated' },
-    { code: 'F11.10', description: 'Opioid abuse, uncomplicated' },
-    { code: 'F11.20', description: 'Opioid dependence, uncomplicated' },
-    { code: 'F12.10', description: 'Cannabis abuse, uncomplicated' },
-    { code: 'F12.20', description: 'Cannabis dependence, uncomplicated' },
-    { code: 'F14.10', description: 'Cocaine abuse, uncomplicated' },
-    { code: 'F14.20', description: 'Cocaine dependence, uncomplicated' },
-    { code: 'F15.10', description: 'Other stimulant abuse, uncomplicated' },
-    { code: 'F15.20', description: 'Other stimulant dependence, uncomplicated' },
-    
-    // Sleep-Wake Disorders
-    { code: 'F51.01', description: 'Primary insomnia' },
-    { code: 'F51.11', description: 'Primary hypersomnia' },
-    { code: 'F51.3', description: 'Sleepwalking' },
-    { code: 'F51.4', description: 'Sleep terrors' },
-    { code: 'F51.5', description: 'Nightmare disorder' },
-    
-    // Eating Disorders
-    { code: 'F50.00', description: 'Anorexia nervosa, unspecified' },
-    { code: 'F50.01', description: 'Anorexia nervosa, restricting type' },
-    { code: 'F50.02', description: 'Anorexia nervosa, binge eating/purging type' },
-    { code: 'F50.2', description: 'Bulimia nervosa' },
-    { code: 'F50.82', description: 'Avoidant/restrictive food intake disorder' },
-    { code: 'F50.89', description: 'Other specified eating disorder' },
-    { code: 'F50.9', description: 'Eating disorder, unspecified' }
-];
 
 let selectedDocs = new Set();
 let authToken = localStorage.getItem('authToken');
@@ -1309,21 +916,17 @@ let editingClientId = null;
 let editingAppointmentId = null;
 let currentNoteId = null;
 let currentInvoiceId = null;
-let currentClientChartId = null;
-let pendingNoteForClient = null;
+let currentViewingDocId = null;
 
-// Session completion checker - runs every minute
-setInterval(checkCompletedSessions, 60000);
-
-// Check on page load too
-setTimeout(checkCompletedSessions, 5000);
-
-// Audio recording variables
-let mediaRecorder = null;
-let audioChunks = [];
-let recordingStartTime = null;
-let recordingInterval = null;
-let recordedAudioBlob = null;
+// Signature variables
+let isDrawing = false;
+let lastX = 0;
+let lastY = 0;
+let signatureTime = null;
+let clinicianSignatureTime = null;
+let isClinicianDrawing = false;
+let clinicianLastX = 0;
+let clinicianLastY = 0;
 
 // Audit logging function
 function logAudit(action, resource, details = '') {
@@ -1342,19 +945,12 @@ function logAudit(action, resource, details = '') {
 
 // Auth Functions
 function handleLogin() {
-    console.log('handleLogin called');
-    
     const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value.trim();
-    
-    console.log('Username:', username);
-    console.log('Password length:', password.length);
-    console.log('Available users:', users);
     
     const user = users.find(u => u.username === username && u.password === password);
     
     if (user) {
-        console.log('User found:', user);
         authToken = 'token_' + Date.now();
         userRole = user.role;
         currentUser = user;
@@ -1367,18 +963,8 @@ function handleLogin() {
         
         showApp();
     } else {
-        console.log('No matching user found');
-        alert('Invalid credentials. Please use:\nUsername: admin\nPassword: admin123');
+        alert('Invalid credentials');
     }
-}
-
-function login(e) {
-    if (e) {
-        e.preventDefault();
-        e.stopPropagation();
-    }
-    handleLogin();
-    return false;
 }
 
 function logout() {
@@ -1422,12 +1008,14 @@ function showTab(tab) {
     
     document.getElementById('dashboardContent').style.display = 'none';
     document.getElementById('clientsContent').style.display = 'none';
-    document.getElementById('clientChartContent').style.display = 'none';
     document.getElementById('calendarContent').style.display = 'none';
     document.getElementById('ainotesContent').style.display = 'none';
     document.getElementById('billingContent').style.display = 'none';
     document.getElementById('documentsContent').style.display = 'none';
     document.getElementById('auditContent').style.display = 'none';
+    document.getElementById('clientInfo').style.display = 'none';
+    document.getElementById('clientAppointments').style.display = 'none';
+    document.getElementById('clientPortalContent').style.display = 'none';
     
     if (tab === 'dashboard') {
         document.getElementById('dashboardContent').style.display = 'block';
@@ -1461,6 +1049,13 @@ function showClientTab(tab) {
     document.getElementById('clientInfo').style.display = 'none';
     document.getElementById('clientAppointments').style.display = 'none';
     document.getElementById('clientPortalContent').style.display = 'none';
+    document.getElementById('dashboardContent').style.display = 'none';
+    document.getElementById('clientsContent').style.display = 'none';
+    document.getElementById('calendarContent').style.display = 'none';
+    document.getElementById('ainotesContent').style.display = 'none';
+    document.getElementById('billingContent').style.display = 'none';
+    document.getElementById('documentsContent').style.display = 'none';
+    document.getElementById('auditContent').style.display = 'none';
     
     if (tab === 'portal') {
         document.getElementById('clientInfo').style.display = 'block';
@@ -1510,7 +1105,7 @@ function renderClients() {
             <tbody>
                 ${allClients.map(client => `
                     <tr>
-                        <td><a href="#" onclick="viewClientChart(${client.id}); return false;" style="color: #667eea; text-decoration: none; font-weight: 500;">${client.name}</a></td>
+                        <td>${client.name}</td>
                         <td>${client.email}</td>
                         <td>${client.phone}</td>
                         <td>${new Date(client.dob).toLocaleDateString()}</td>
@@ -1568,13 +1163,6 @@ function saveClient(e) {
         const index = allClients.findIndex(c => c.id === editingClientId);
         allClients[index] = { ...allClients[index], ...clientData };
         logAudit('update', 'Client Record', `Updated client: ${clientData.name}`);
-        
-        // If we're viewing this client's chart, refresh it
-        if (currentClientChartId === editingClientId) {
-            closeClientModal();
-            viewClientChart(editingClientId);
-            return;
-        }
     } else {
         clientData.id = Date.now();
         allClients.push(clientData);
@@ -1604,307 +1192,6 @@ function deleteClient(id) {
         
         renderClients();
         updateDashboard();
-    }
-}
-
-// Client Chart Functions
-function viewClientChart(clientId) {
-    currentClientChartId = clientId;
-    const client = allClients.find(c => c.id === clientId);
-    
-    logAudit('view', 'Client Chart', `Viewed complete chart for ${client.name}`);
-    
-    // Hide clients list, show chart
-    document.getElementById('clientsContent').style.display = 'none';
-    document.getElementById('clientChartContent').style.display = 'block';
-    
-    // Set client name
-    document.getElementById('clientChartName').textContent = client.name;
-    
-    // Render personal information
-    document.getElementById('clientChartInfo').innerHTML = `
-        <div>
-            <strong style="color: #374151; display: block; margin-bottom: 5px;">Email</strong>
-            <p style="color: #6b7280;">${client.email}</p>
-        </div>
-        <div>
-            <strong style="color: #374151; display: block; margin-bottom: 5px;">Phone</strong>
-            <p style="color: #6b7280;">${client.phone}</p>
-        </div>
-        <div>
-            <strong style="color: #374151; display: block; margin-bottom: 5px;">Date of Birth</strong>
-            <p style="color: #6b7280;">${new Date(client.dob).toLocaleDateString()}</p>
-        </div>
-        <div>
-            <strong style="color: #374151; display: block; margin-bottom: 5px;">Age</strong>
-            <p style="color: #6b7280;">${calculateAge(client.dob)} years</p>
-        </div>
-    `;
-    
-    // Render diagnosis list
-    renderClientDiagnosisList();
-    
-    // Calculate stats
-    const clientAppointments = appointments.filter(a => a.clientId === clientId);
-    const clientNotes = clinicalNotes.filter(n => n.clientId === clientId);
-    const clientInvoices = invoices.filter(inv => inv.clientId === clientId);
-    const totalBilled = clientInvoices.reduce((sum, inv) => sum + inv.total, 0);
-    const outstanding = clientInvoices.reduce((sum, inv) => sum + (inv.status === 'unpaid' ? inv.total : 0), 0);
-    
-    document.getElementById('clientTotalSessions').textContent = clientAppointments.length;
-    document.getElementById('clientTotalNotes').textContent = clientNotes.length;
-    document.getElementById('clientTotalBilled').textContent = `$${totalBilled.toFixed(2)}`;
-    document.getElementById('clientOutstanding').textContent = `$${outstanding.toFixed(2)}`;
-    
-    // Render appointments
-    const appointmentsContainer = document.getElementById('clientChartAppointments');
-    if (clientAppointments.length === 0) {
-        appointmentsContainer.innerHTML = '<p style="color: #6b7280;">No appointments scheduled</p>';
-    } else {
-        appointmentsContainer.innerHTML = `
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Time</th>
-                        <th>Type</th>
-                        <th>Duration</th>
-                        <th>Notes</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${clientAppointments.map(apt => `
-                        <tr>
-                            <td>${new Date(apt.date).toLocaleDateString()}</td>
-                            <td>${apt.time}</td>
-                            <td><span class="badge badge-info">${apt.type}</span></td>
-                            <td>${apt.duration} min</td>
-                            <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${apt.notes || '-'}</td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>
-        `;
-    }
-    
-    // Render clinical notes
-    const notesContainer = document.getElementById('clientChartNotes');
-    if (clientNotes.length === 0) {
-        notesContainer.innerHTML = '<p style="color: #6b7280;">No clinical notes</p>';
-    } else {
-        notesContainer.innerHTML = clientNotes.map(note => `
-            <div class="card note-card" style="margin-bottom: 15px; cursor: pointer;" onclick="viewNote(${note.id})">
-                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
-                    <div>
-                        <p style="color: #6b7280; font-size: 12px;">${new Date(note.createdAt).toLocaleString()}</p>
-                    </div>
-                    <span class="badge badge-info">${note.type || 'Session Note'}</span>
-                </div>
-                <p style="color: #6b7280; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                    ${note.dap.data.substring(0, 100)}...
-                </p>
-            </div>
-        `).join('');
-    }
-    
-    // Render invoices
-    const invoicesContainer = document.getElementById('clientChartInvoices');
-    if (clientInvoices.length === 0) {
-        invoicesContainer.innerHTML = '<p style="color: #6b7280;">No invoices</p>';
-    } else {
-        invoicesContainer.innerHTML = `
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Invoice #</th>
-                        <th>Date</th>
-                        <th>Due Date</th>
-                        <th>Amount</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${clientInvoices.map(inv => `
-                        <tr>
-                            <td>#${inv.id}</td>
-                            <td>${new Date(inv.date).toLocaleDateString()}</td>
-                            <td>${new Date(inv.dueDate).toLocaleDateString()}</td>
-                            <td>$${inv.total.toFixed(2)}</td>
-                            <td><span class="badge badge-${inv.status === 'paid' ? 'success' : 'warning'}">${inv.status}</span></td>
-                            <td>
-                                <button class="btn" style="padding: 6px 12px; font-size: 12px;" onclick="viewInvoice(${inv.id})">View</button>
-                            </td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>
-        `;
-    }
-    
-    // Render documents
-    const clientDocs = assignedDocs.filter(doc => doc.clientId === clientId);
-    const documentsContainer = document.getElementById('clientChartDocuments');
-    if (clientDocs.length === 0) {
-        documentsContainer.innerHTML = '<p style="color: #6b7280;">No documents assigned</p>';
-    } else {
-        documentsContainer.innerHTML = `
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Document</th>
-                        <th>Assigned Date</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${clientDocs.map(doc => `
-                        <tr>
-                            <td>${doc.docName}</td>
-                            <td>${new Date(doc.assignedDate).toLocaleDateString()}</td>
-                            <td><span class="badge badge-${doc.status === 'completed' ? 'success' : 'warning'}">${doc.status}</span></td>
-                            <td>
-                                ${doc.status === 'completed' ? `<button class="btn" style="padding: 6px 12px; font-size: 12px;" onclick="viewCompletedDocument(${doc.id})">View</button>` : '-'}
-                            </td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>
-        `;
-    }
-}
-
-function renderClientDiagnosisList() {
-    const diagnoses = clientDiagnoses.filter(d => d.clientId === currentClientChartId);
-    const container = document.getElementById('clientDiagnosisList');
-    
-    if (diagnoses.length === 0) {
-        container.innerHTML = '<p style="color: #6b7280;">No diagnoses recorded</p>';
-        return;
-    }
-    
-    container.innerHTML = `
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Code</th>
-                    <th>Description</th>
-                    <th>Date</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${diagnoses.map(d => `
-                    <tr>
-                        <td><span class="badge badge-info">${d.code}</span></td>
-                        <td>${d.description}</td>
-                        <td>${new Date(d.date).toLocaleDateString()}</td>
-                        <td>
-                            <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;" onclick="removeDiagnosis(${d.id})">Remove</button>
-                        </td>
-                    </tr>
-                `).join('')}
-            </tbody>
-        </table>
-    `;
-}
-
-function calculateAge(dob) {
-    const today = new Date();
-    const birthDate = new Date(dob);
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDiff = today.getMonth() - birthDate.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-        age--;
-    }
-    return age;
-}
-
-function backToClientsList() {
-    document.getElementById('clientChartContent').style.display = 'none';
-    document.getElementById('clientsContent').style.display = 'block';
-    currentClientChartId = null;
-}
-
-function editClientFromChart() {
-    editClient(currentClientChartId);
-}
-
-function deleteClientFromChart() {
-    if (confirm('Are you sure you want to delete this client? All associated data will remain but will not be accessible through this client record.')) {
-        const client = allClients.find(c => c.id === currentClientChartId);
-        allClients = allClients.filter(c => c.id !== currentClientChartId);
-        
-        logAudit('delete', 'Client Record', `Deleted client: ${client.name}`);
-        
-        backToClientsList();
-        renderClients();
-        updateDashboard();
-    }
-}
-
-// Diagnosis Functions
-function openAddDiagnosis() {
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('diagnosisDate').value = today;
-    document.getElementById('diagnosisNotes').value = '';
-    
-    // Populate diagnosis dropdown dynamically
-    const select = document.getElementById('diagnosisCode');
-    select.innerHTML = '<option value="">Select diagnosis...</option>' +
-        icd10Codes.map(d => `<option value="${d.code}" data-desc="${d.description}">${d.code} - ${d.description}</option>`).join('');
-    
-    document.getElementById('diagnosisModal').classList.add('active');
-}
-
-function closeDiagnosisModal() {
-    document.getElementById('diagnosisModal').classList.remove('active');
-}
-
-function updateDiagnosisDescription() {
-    // This is called when diagnosis is selected - description is already in the option text
-}
-
-function saveDiagnosis(e) {
-    e.preventDefault();
-    
-    const select = document.getElementById('diagnosisCode');
-    const code = select.value;
-    const option = select.options[select.selectedIndex];
-    const description = option.getAttribute('data-desc');
-    
-    const diagnosis = {
-        id: Date.now(),
-        clientId: currentClientChartId,
-        code,
-        description,
-        notes: document.getElementById('diagnosisNotes').value,
-        date: document.getElementById('diagnosisDate').value,
-        addedBy: localStorage.getItem('userName'),
-        addedAt: new Date().toISOString()
-    };
-    
-    clientDiagnoses.push(diagnosis);
-    localStorage.setItem('clientDiagnoses', JSON.stringify(clientDiagnoses));
-    
-    const client = allClients.find(c => c.id === currentClientChartId);
-    logAudit('create', 'Diagnosis', `Added diagnosis ${code} for ${client.name}`);
-    
-    closeDiagnosisModal();
-    renderClientDiagnosisList();
-}
-
-function removeDiagnosis(diagnosisId) {
-    if (confirm('Are you sure you want to remove this diagnosis?')) {
-        const diagnosis = clientDiagnoses.find(d => d.id === diagnosisId);
-        clientDiagnoses = clientDiagnoses.filter(d => d.id !== diagnosisId);
-        localStorage.setItem('clientDiagnoses', JSON.stringify(clientDiagnoses));
-        
-        const client = allClients.find(c => c.id === currentClientChartId);
-        logAudit('delete', 'Diagnosis', `Removed diagnosis ${diagnosis.code} for ${client.name}`);
-        
-        renderClientDiagnosisList();
     }
 }
 
@@ -2071,24 +1358,20 @@ function loadClientAppointments() {
 
 // AI Notes Functions
 function renderAINotes() {
-    // Populate client select
     const clientSelect = document.getElementById('noteClientSelect');
     clientSelect.innerHTML = '<option value="">Choose a client...</option>' + 
         allClients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
     
-    // Populate filter select
     const filterSelect = document.getElementById('notesFilterClient');
     filterSelect.innerHTML = '<option value="">All Clients</option>' + 
         allClients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
     
-    // Filter notes
     const filterClientId = filterSelect.value;
     let filteredNotes = clinicalNotes;
     if (filterClientId) {
         filteredNotes = clinicalNotes.filter(n => n.clientId === parseInt(filterClientId));
     }
     
-    // Render recent notes
     const container = document.getElementById('recentNotesList');
     
     if (filteredNotes.length === 0) {
@@ -2112,70 +1395,6 @@ function renderAINotes() {
     `).join('');
 }
 
-async function toggleRecording() {
-    if (mediaRecorder && mediaRecorder.state === 'recording') {
-        // Stop recording
-        mediaRecorder.stop();
-    } else {
-        // Start recording
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            mediaRecorder = new MediaRecorder(stream);
-            audioChunks = [];
-            
-            mediaRecorder.ondataavailable = (event) => {
-                audioChunks.push(event.data);
-            };
-            
-            mediaRecorder.onstop = () => {
-                recordedAudioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                stream.getTracks().forEach(track => track.stop());
-                updateRecordingUI(false);
-            };
-            
-            mediaRecorder.start();
-            recordingStartTime = Date.now();
-            updateRecordingUI(true);
-            startRecordingTimer();
-            
-        } catch (error) {
-            alert('Could not access microphone. Please check permissions.');
-            console.error('Recording error:', error);
-        }
-    }
-}
-
-function updateRecordingUI(isRecording) {
-    const recordBtn = document.getElementById('recordBtn');
-    const recordStatus = document.getElementById('recordingStatus');
-    const recordBtnText = document.getElementById('recordBtnText');
-    
-    if (isRecording) {
-        recordBtn.classList.remove('btn-danger');
-        recordBtn.classList.add('btn-success');
-        recordBtnText.textContent = '⏹️ Stop Recording';
-        recordStatus.style.display = 'flex';
-    } else {
-        recordBtn.classList.remove('btn-success');
-        recordBtn.classList.add('btn-danger');
-        recordBtnText.textContent = '🎤 Start Recording';
-        recordStatus.style.display = 'none';
-        if (recordingInterval) {
-            clearInterval(recordingInterval);
-        }
-    }
-}
-
-function startRecordingTimer() {
-    recordingInterval = setInterval(() => {
-        const elapsed = Date.now() - recordingStartTime;
-        const minutes = Math.floor(elapsed / 60000);
-        const seconds = Math.floor((elapsed % 60000) / 1000);
-        document.getElementById('recordingTime').textContent = 
-            `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    }, 1000);
-}
-
 async function generateDAPNote() {
     const clientId = parseInt(document.getElementById('noteClientSelect').value);
     const manualNotes = document.getElementById('manualNotes').value.trim();
@@ -2185,8 +1404,8 @@ async function generateDAPNote() {
         return;
     }
     
-    if (!recordedAudioBlob && !manualNotes) {
-        alert('Please record audio or type manual notes');
+    if (!manualNotes) {
+        alert('Please type manual notes');
         return;
     }
     
@@ -2195,24 +1414,15 @@ async function generateDAPNote() {
     generateBtn.textContent = '⏳ Processing...';
     
     try {
-        let sessionNotes = manualNotes;
+        const dapNote = await generateDAPFromNotes(manualNotes);
         
-        // If we have audio, transcribe it first
-        if (recordedAudioBlob && !manualNotes) {
-            sessionNotes = await transcribeAudio(recordedAudioBlob);
-        }
-        
-        // Generate DAP note using Claude API
-        const dapNote = await generateDAPFromNotes(sessionNotes);
-        
-        // Save the note
         const client = allClients.find(c => c.id === clientId);
         const note = {
             id: Date.now(),
             clientId,
             clientName: client.name,
             createdAt: new Date().toISOString(),
-            rawNotes: sessionNotes,
+            rawNotes: manualNotes,
             dap: dapNote,
             type: 'Session Note'
         };
@@ -2222,16 +1432,12 @@ async function generateDAPNote() {
         
         logAudit('create', 'Clinical Note', `Created DAP note for ${client.name}`);
         
-        // Clear form
         document.getElementById('noteClientSelect').value = '';
         document.getElementById('manualNotes').value = '';
-        recordedAudioBlob = null;
         
-        // Refresh notes list
         renderAINotes();
         updateDashboard();
         
-        // Show the note
         viewNote(note.id);
         
         alert('DAP note generated successfully!');
@@ -2243,11 +1449,6 @@ async function generateDAPNote() {
         generateBtn.disabled = false;
         generateBtn.textContent = '✨ Generate DAP Note';
     }
-}
-
-async function transcribeAudio(audioBlob) {
-    // Simulated transcription - in production, you'd use a speech-to-text API
-    return "Patient presented for follow-up session. Discussed recent stressors at work and family relationships. Patient reports improved sleep but continuing anxiety symptoms. We reviewed coping strategies and practiced breathing exercises. Patient engaged well in session.";
 }
 
 async function generateDAPFromNotes(notes) {
@@ -2268,17 +1469,11 @@ async function generateDAPFromNotes(notes) {
 Session Notes:
 ${notes}
 
-DAP Format:
-- Data: Observable facts, client statements, and relevant session information
-- Assessment: Clinical impressions, interpretations, and professional judgment
-- Plan: Treatment goals, interventions, and next steps
-
-CRITICAL: Respond ONLY with valid JSON in this exact format. DO NOT include any markdown, backticks, or explanatory text:
-
+Respond ONLY with valid JSON in this exact format:
 {
   "data": "Observable behaviors, client statements, and factual information from the session",
-  "assessment": "Clinical impressions, diagnostic considerations, progress evaluation, and professional interpretation",
-  "plan": "Treatment goals, planned interventions, homework, follow-up schedule, and next steps"
+  "assessment": "Clinical impressions, diagnostic considerations, progress evaluation",
+  "plan": "Treatment goals, planned interventions, and next steps"
 }
 
 Remember: Output ONLY the JSON object, nothing else.`
@@ -2290,7 +1485,6 @@ Remember: Output ONLY the JSON object, nothing else.`
         const data = await response.json();
         let responseText = data.content[0].text;
         
-        // Strip any markdown formatting
         responseText = responseText.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
         
         const dapNote = JSON.parse(responseText);
@@ -2298,11 +1492,10 @@ Remember: Output ONLY the JSON object, nothing else.`
         
     } catch (error) {
         console.error('Error calling Claude API:', error);
-        // Fallback DAP note
         return {
             data: notes,
-            assessment: "Client appeared engaged and cooperative during session. Continue monitoring progress.",
-            plan: "Schedule follow-up session in one week. Continue current interventions and track progress on treatment goals."
+            assessment: "Client appeared engaged and cooperative during session.",
+            plan: "Schedule follow-up session. Continue current interventions."
         };
     }
 }
@@ -2365,7 +1558,6 @@ function deleteNote() {
 
 // Billing Functions
 function renderBilling() {
-    // Calculate totals
     const totalRevenue = invoices.reduce((sum, inv) => sum + (inv.status === 'paid' ? inv.total : 0), 0);
     const outstanding = invoices.reduce((sum, inv) => sum + (inv.status === 'unpaid' ? inv.total : 0), 0);
     
@@ -2376,22 +1568,11 @@ function renderBilling() {
         return sum + (inv.status === 'paid' && invDate >= monthStart ? inv.total : 0);
     }, 0);
     
-    const autoCount = invoices.filter(inv => inv.autoGenerated).length;
-    
     document.getElementById('totalRevenue').textContent = `$${totalRevenue.toFixed(2)}`;
     document.getElementById('outstandingBalance').textContent = `$${outstanding.toFixed(2)}`;
     document.getElementById('monthRevenue').textContent = `$${monthRevenue.toFixed(2)}`;
-    document.getElementById('autoInvoiceCount').textContent = autoCount;
     
-    // Render payment processor status
-    renderPaymentProcessorStatus();
-    
-    // Render session rates
-    renderSessionRates();
-    
-    // Render invoices
     renderInvoicesList();
-    renderPaymentsList();
 }
 
 function renderInvoicesList() {
@@ -2409,7 +1590,6 @@ function renderInvoicesList() {
                     <th>Invoice #</th>
                     <th>Client</th>
                     <th>Date</th>
-                    <th>Due Date</th>
                     <th>Amount</th>
                     <th>Status</th>
                     <th>Actions</th>
@@ -2421,7 +1601,6 @@ function renderInvoicesList() {
                         <td>#${inv.id}</td>
                         <td>${inv.clientName}</td>
                         <td>${new Date(inv.date).toLocaleDateString()}</td>
-                        <td>${new Date(inv.dueDate).toLocaleDateString()}</td>
                         <td>$${inv.total.toFixed(2)}</td>
                         <td><span class="badge badge-${inv.status === 'paid' ? 'success' : 'warning'}">${inv.status}</span></td>
                         <td>
@@ -2434,46 +1613,11 @@ function renderInvoicesList() {
     `;
 }
 
-function renderPaymentsList() {
-    const container = document.getElementById('paymentsList');
-    
-    if (payments.length === 0) {
-        container.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 20px;">No payments yet</p>';
-        return;
-    }
-    
-    container.innerHTML = `
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Client</th>
-                    <th>Invoice #</th>
-                    <th>Amount</th>
-                    <th>Method</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${payments.map(payment => `
-                    <tr>
-                        <td>${new Date(payment.date).toLocaleDateString()}</td>
-                        <td>${payment.clientName}</td>
-                        <td>#${payment.invoiceId}</td>
-                        <td>$${payment.amount.toFixed(2)}</td>
-                        <td><span class="badge badge-info">${payment.method || 'Payment'}</span></td>
-                    </tr>
-                `).join('')}
-            </tbody>
-        </table>
-    `;
-}
-
 function openCreateInvoice() {
     const clientSelect = document.getElementById('invoiceClient');
     clientSelect.innerHTML = '<option value="">Select a client...</option>' + 
         allClients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
     
-    // Set default dates
     const today = new Date().toISOString().split('T')[0];
     const dueDate = new Date();
     dueDate.setDate(dueDate.getDate() + 30);
@@ -2481,7 +1625,6 @@ function openCreateInvoice() {
     document.getElementById('invoiceDate').value = today;
     document.getElementById('invoiceDueDate').value = dueDate.toISOString().split('T')[0];
     
-    // Reset line items
     document.getElementById('invoiceLineItems').innerHTML = `
         <div class="invoice-line-item" style="display: flex; gap: 10px; margin-bottom: 10px;">
             <input type="text" class="input item-description" placeholder="Description" style="flex: 2;" required>
@@ -2518,7 +1661,6 @@ function saveInvoice(e) {
     const clientId = parseInt(document.getElementById('invoiceClient').value);
     const client = allClients.find(c => c.id === clientId);
     
-    // Collect line items
     const lineItems = Array.from(document.querySelectorAll('.invoice-line-item')).map(item => {
         const description = item.querySelector('.item-description').value;
         const quantity = parseInt(item.querySelector('.item-quantity').value);
@@ -2563,7 +1705,6 @@ function viewInvoice(invoiceId) {
     
     const modal = document.getElementById('viewInvoiceModal');
     
-    // Update mark paid button visibility
     const markPaidBtn = document.getElementById('markPaidBtn');
     if (invoice.status === 'paid') {
         markPaidBtn.style.display = 'none';
@@ -2617,13 +1758,6 @@ function viewInvoice(invoiceId) {
         <div style="text-align: right; padding: 20px; background: #f9fafb; border-radius: 8px;">
             <h3 style="color: #1f2937;">Total: $${invoice.total.toFixed(2)}</h3>
         </div>
-        
-        ${invoice.notes ? `
-            <div style="margin-top: 20px; padding: 15px; background: #f9fafb; border-radius: 8px;">
-                <strong style="color: #374151; display: block; margin-bottom: 5px;">Notes</strong>
-                <p style="color: #6b7280;">${invoice.notes}</p>
-            </div>
-        ` : ''}
     `;
     
     modal.classList.add('active');
@@ -2642,7 +1776,6 @@ function markInvoicePaid() {
         invoices[index].status = 'paid';
         invoices[index].paidDate = new Date().toISOString();
         
-        // Create payment record
         const payment = {
             id: Date.now(),
             invoiceId: invoice.id,
@@ -2851,7 +1984,7 @@ function renderAssignedDocs() {
     const container = document.getElementById('assignedDocsList');
     
     if (assignedDocs.length === 0) {
-        container.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 20px;">No documents assigned yet</p>';
+        container.innerHTML = '<p style="color: #6b7280;">No documents assigned yet</p>';
         return;
     }
     
@@ -2861,8 +1994,8 @@ function renderAssignedDocs() {
                 <tr>
                     <th>Client</th>
                     <th>Document</th>
-                    <th>Assigned Date</th>
                     <th>Status</th>
+                    <th>Reviewed</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -2871,10 +2004,10 @@ function renderAssignedDocs() {
                     <tr>
                         <td>${doc.clientName}</td>
                         <td>${doc.docName}</td>
-                        <td>${new Date(doc.assignedDate).toLocaleDateString()}</td>
                         <td><span class="badge badge-${doc.status === 'completed' ? 'success' : 'warning'}">${doc.status}</span></td>
+                        <td>${doc.clinicianSignature ? '<span class="badge badge-success">Yes</span>' : '<span class="badge badge-warning">No</span>'}</td>
                         <td>
-                            ${doc.status === 'completed' ? `<button class="btn" style="padding: 6px 12px; font-size: 12px;" onclick="viewCompletedDocument(${doc.id})">View</button>` : '-'}
+                            ${doc.status === 'completed' ? `<button class="btn" style="padding: 6px 12px; font-size: 12px;" onclick="viewCompletedDocument(${doc.id})">${doc.clinicianSignature ? 'View' : 'Review & Sign'}</button>` : '-'}
                         </td>
                     </tr>
                 `).join('')}
@@ -2883,7 +2016,7 @@ function renderAssignedDocs() {
     `;
 }
 
-// Client portal document functions
+// Client Portal
 function showClientDocuments() {
     const clientDocs = assignedDocs.filter(doc => 
         doc.clientId === parseInt(localStorage.getItem('userId'))
@@ -2892,7 +2025,7 @@ function showClientDocuments() {
     const container = document.getElementById('clientDocumentsContainer');
     
     if (clientDocs.length === 0) {
-        container.innerHTML = '<div class="card"><p style="color: #6b7280; text-align: center; padding: 40px;">No documents assigned</p></div>';
+        container.innerHTML = '<div class="card"><p style="color: #6b7280;">No documents assigned</p></div>';
         return;
     }
     
@@ -2917,6 +2050,14 @@ function openDocumentForm(assignedDocId, templateId) {
     document.getElementById('documentFormTitle').textContent = template.name;
     
     const fieldsHtml = template.fields.map(field => {
+        if (field.type === 'info') {
+            return `
+                <div style="margin-bottom: 20px; padding: 15px; background: #EFF6FF; border-left: 4px solid #667eea; border-radius: 8px;">
+                    <p style="color: #374151; line-height: 1.6;">${field.label}</p>
+                </div>
+            `;
+        }
+        
         if (field.type === 'text') {
             return `
                 <div style="margin-bottom: 20px;">
@@ -2924,14 +2065,18 @@ function openDocumentForm(assignedDocId, templateId) {
                     <input type="text" id="field_${field.id}" class="input" required>
                 </div>
             `;
-        } else if (field.type === 'textarea') {
+        }
+        
+        if (field.type === 'textarea') {
             return `
                 <div style="margin-bottom: 20px;">
                     <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #374151;">${field.label}</label>
                     <textarea id="field_${field.id}" class="input" rows="4" required></textarea>
                 </div>
             `;
-        } else if (field.type === 'checkbox') {
+        }
+        
+        if (field.type === 'checkbox') {
             return `
                 <div style="margin-bottom: 20px;">
                     <label style="display: flex; align-items: center; cursor: pointer;">
@@ -2940,7 +2085,25 @@ function openDocumentForm(assignedDocId, templateId) {
                     </label>
                 </div>
             `;
-        } else if (field.type === 'date') {
+        }
+        
+        if (field.type === 'radio') {
+            return `
+                <div style="margin-bottom: 20px; padding: 15px; background: #f9fafb; border-radius: 8px;">
+                    <label style="display: block; margin-bottom: 10px; font-weight: 500; color: #374151;">${field.label}</label>
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                        ${field.options.map(option => `
+                            <label style="display: flex; align-items: center; cursor: pointer;">
+                                <input type="radio" name="field_${field.id}" value="${option}" required style="margin-right: 8px;">
+                                <span style="color: #374151;">${option}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+        
+        if (field.type === 'date') {
             return `
                 <div style="margin-bottom: 20px;">
                     <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #374151;">${field.label}</label>
@@ -2953,21 +2116,21 @@ function openDocumentForm(assignedDocId, templateId) {
     document.getElementById('documentFormFields').innerHTML = fieldsHtml;
     document.getElementById('documentFormSubmit').onclick = () => submitDocument(assignedDocId, template);
     
-    // Clear signature canvas
-    const canvas = document.getElementById('signatureCanvas');
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
     modal.classList.add('active');
+    
+    setTimeout(() => {
+        signatureTime = null;
+        initSignatureCanvas();
+        const canvas = document.getElementById('signatureCanvas');
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        document.getElementById('signatureTimestamp').textContent = '';
+    }, 100);
 }
 
 function closeDocumentForm() {
     document.getElementById('documentFormModal').classList.remove('active');
 }
-
-let isDrawing = false;
-let lastX = 0;
-let lastY = 0;
 
 function initSignatureCanvas() {
     const canvas = document.getElementById('signatureCanvas');
@@ -2978,6 +2141,12 @@ function initSignatureCanvas() {
         const rect = canvas.getBoundingClientRect();
         lastX = e.clientX - rect.left;
         lastY = e.clientY - rect.top;
+        
+        if (!signatureTime) {
+            signatureTime = new Date();
+            document.getElementById('signatureTimestamp').textContent = 
+                'Signed: ' + signatureTime.toLocaleString();
+        }
     });
     
     canvas.addEventListener('mousemove', (e) => {
@@ -3013,6 +2182,12 @@ function initSignatureCanvas() {
         const touch = e.touches[0];
         lastX = touch.clientX - rect.left;
         lastY = touch.clientY - rect.top;
+        
+        if (!signatureTime) {
+            signatureTime = new Date();
+            document.getElementById('signatureTimestamp').textContent = 
+                'Signed: ' + signatureTime.toLocaleString();
+        }
     });
     
     canvas.addEventListener('touchmove', (e) => {
@@ -3043,30 +2218,62 @@ function clearSignature() {
     const canvas = document.getElementById('signatureCanvas');
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    signatureTime = null;
+    document.getElementById('signatureTimestamp').textContent = '';
 }
 
 function submitDocument(assignedDocId, template) {
-    // Collect form data
     const formData = {};
     let isValid = true;
+    let missingFields = [];
     
     template.fields.forEach(field => {
-        const element = document.getElementById(`field_${field.id}`);
-        if (field.type === 'checkbox') {
+        if (field.type === 'info') return;
+        
+        if (field.type === 'radio') {
+            const selected = document.querySelector(`input[name="field_${field.id}"]:checked`);
+            if (selected) {
+                formData[field.id] = selected.value;
+            } else {
+                isValid = false;
+                missingFields.push(field.label);
+            }
+        } else if (field.type === 'checkbox') {
+            const element = document.getElementById(`field_${field.id}`);
             formData[field.id] = element.checked;
-            if (!element.checked) isValid = false;
-        } else {
+            if (!element.checked) {
+                isValid = false;
+                missingFields.push(field.label);
+            }
+        } else if (field.type === 'date') {
+            const element = document.getElementById(`field_${field.id}`);
             formData[field.id] = element.value;
-            if (!element.value) isValid = false;
+            if (!element.value) {
+                isValid = false;
+                missingFields.push(field.label);
+            }
+        } else if (field.type === 'text') {
+            const element = document.getElementById(`field_${field.id}`);
+            formData[field.id] = element.value;
+            if (!element.value || element.value.trim() === '') {
+                isValid = false;
+                missingFields.push(field.label);
+            }
+        } else if (field.type === 'textarea') {
+            const element = document.getElementById(`field_${field.id}`);
+            formData[field.id] = element.value;
+            if (!element.value || element.value.trim() === '') {
+                isValid = false;
+                missingFields.push(field.label);
+            }
         }
     });
     
     if (!isValid) {
-        alert('Please complete all fields');
+        alert('Please complete all required fields:\n\n' + missingFields.slice(0, 5).join('\n') + (missingFields.length > 5 ? '\n... and more' : ''));
         return;
     }
     
-    // Get signature
     const canvas = document.getElementById('signatureCanvas');
     const ctx = canvas.getContext('2d');
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -3087,17 +2294,14 @@ function submitDocument(assignedDocId, template) {
     
     const signatureData = canvas.toDataURL();
     
-    // Update assigned doc
     const docIndex = assignedDocs.findIndex(d => d.id === assignedDocId);
-    const doc = assignedDocs[docIndex];
     assignedDocs[docIndex].status = 'completed';
     assignedDocs[docIndex].completedDate = new Date().toISOString();
+    assignedDocs[docIndex].signatureDate = signatureTime ? signatureTime.toISOString() : new Date().toISOString();
     assignedDocs[docIndex].formData = formData;
     assignedDocs[docIndex].signature = signatureData;
     
     localStorage.setItem('assignedDocs', JSON.stringify(assignedDocs));
-    
-    logAudit('update', 'Document', `Completed document: ${doc.docName}`);
     
     closeDocumentForm();
     showClientDocuments();
@@ -3105,15 +2309,16 @@ function submitDocument(assignedDocId, template) {
 }
 
 function viewCompletedDocument(assignedDocId) {
+    currentViewingDocId = assignedDocId;
     const doc = assignedDocs.find(d => d.id === assignedDocId);
     const template = documentTemplates.find(t => t.id === doc.docId);
-    
-    logAudit('view', 'Document', `Viewed completed document: ${doc.docName} for ${doc.clientName}`);
     
     const modal = document.getElementById('viewDocModal');
     document.getElementById('viewDocTitle').textContent = template.name;
     
     const fieldsHtml = template.fields.map(field => {
+        if (field.type === 'info') return '';
+        
         const value = doc.formData[field.id];
         return `
             <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #e5e7eb;">
@@ -3123,218 +2328,185 @@ function viewCompletedDocument(assignedDocId) {
         `;
     }).join('');
     
+    let clinicianSigHtml = '';
+    if (doc.clinicianSignature) {
+        clinicianSigHtml = `
+            <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #e5e7eb;">
+                <strong style="display: block; margin-bottom: 10px; color: #374151;">Clinician Review Signature:</strong>
+                <img src="${doc.clinicianSignature}" style="border: 1px solid #e5e7eb; max-width: 100%;">
+                <p style="color: #6b7280; font-size: 12px; margin-top: 5px;">Reviewed by: ${doc.clinicianName || 'Clinician'}</p>
+                ${doc.clinicianSignatureDate ? `<p style="color: #6b7280; font-size: 12px;">Signed: ${new Date(doc.clinicianSignatureDate).toLocaleString()}</p>` : ''}
+            </div>
+        `;
+    }
+    
     document.getElementById('viewDocContent').innerHTML = `
         ${fieldsHtml}
         <div style="margin-top: 30px;">
-            <strong style="display: block; margin-bottom: 10px; color: #374151;">Signature:</strong>
+            <strong style="display: block; margin-bottom: 10px; color: #374151;">Client Signature:</strong>
             <img src="${doc.signature}" style="border: 1px solid #e5e7eb; max-width: 100%;">
+            ${doc.signatureDate ? `<p style="color: #6b7280; font-size: 12px; margin-top: 5px;">Signed: ${new Date(doc.signatureDate).toLocaleString()}</p>` : ''}
         </div>
+        ${clinicianSigHtml}
         <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
             <p style="color: #6b7280; font-size: 14px;">Completed: ${new Date(doc.completedDate).toLocaleString()}</p>
         </div>
     `;
+    
+    // Show clinician signature section if provider and not yet signed
+    const clinicianSection = document.getElementById('clinicianSignatureSection');
+    if (userRole === 'provider' && !doc.clinicianSignature) {
+        clinicianSection.style.display = 'block';
+        setTimeout(() => {
+            clinicianSignatureTime = null;
+            initClinicianSignatureCanvas();
+            const canvas = document.getElementById('clinicianSignatureCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            document.getElementById('clinicianSignatureTimestamp').textContent = '';
+        }, 100);
+    } else {
+        clinicianSection.style.display = 'none';
+    }
     
     modal.classList.add('active');
 }
 
 function closeViewDocModal() {
     document.getElementById('viewDocModal').classList.remove('active');
+    currentViewingDocId = null;
 }
 
-// Session Completion & Auto-Invoice Functions
-function checkCompletedSessions() {
-    if (userRole !== 'provider') return;
+function initClinicianSignatureCanvas() {
+    const canvas = document.getElementById('clinicianSignatureCanvas');
+    const ctx = canvas.getContext('2d');
     
-    const now = new Date();
-    
-    appointments.forEach(apt => {
-        if (apt.status === 'scheduled') {
-            const aptDateTime = new Date(`${apt.date}T${apt.time}`);
-            const aptEndTime = new Date(aptDateTime.getTime() + apt.duration * 60000);
-            
-            // If session has ended
-            if (now >= aptEndTime) {
-                completeSession(apt);
-            }
+    canvas.addEventListener('mousedown', (e) => {
+        isClinicianDrawing = true;
+        const rect = canvas.getBoundingClientRect();
+        clinicianLastX = e.clientX - rect.left;
+        clinicianLastY = e.clientY - rect.top;
+        
+        if (!clinicianSignatureTime) {
+            clinicianSignatureTime = new Date();
+            document.getElementById('clinicianSignatureTimestamp').textContent = 
+                'Signed: ' + clinicianSignatureTime.toLocaleString();
         }
+    });
+    
+    canvas.addEventListener('mousemove', (e) => {
+        if (!isClinicianDrawing) return;
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        ctx.beginPath();
+        ctx.moveTo(clinicianLastX, clinicianLastY);
+        ctx.lineTo(x, y);
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        
+        clinicianLastX = x;
+        clinicianLastY = y;
+    });
+    
+    canvas.addEventListener('mouseup', () => {
+        isClinicianDrawing = false;
+    });
+    
+    canvas.addEventListener('mouseleave', () => {
+        isClinicianDrawing = false;
+    });
+    
+    // Touch support
+    canvas.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        isClinicianDrawing = true;
+        const rect = canvas.getBoundingClientRect();
+        const touch = e.touches[0];
+        clinicianLastX = touch.clientX - rect.left;
+        clinicianLastY = touch.clientY - rect.top;
+        
+        if (!clinicianSignatureTime) {
+            clinicianSignatureTime = new Date();
+            document.getElementById('clinicianSignatureTimestamp').textContent = 
+                'Signed: ' + clinicianSignatureTime.toLocaleString();
+        }
+    });
+    
+    canvas.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        if (!isClinicianDrawing) return;
+        const rect = canvas.getBoundingClientRect();
+        const touch = e.touches[0];
+        const x = touch.clientX - rect.left;
+        const y = touch.clientY - rect.top;
+        
+        ctx.beginPath();
+        ctx.moveTo(clinicianLastX, clinicianLastY);
+        ctx.lineTo(x, y);
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        
+        clinicianLastX = x;
+        clinicianLastY = y;
+    });
+    
+    canvas.addEventListener('touchend', () => {
+        isClinicianDrawing = false;
     });
 }
 
-function completeSession(appointment) {
-    // Mark appointment as completed
-    const aptIndex = appointments.findIndex(a => a.id === appointment.id);
-    appointments[aptIndex].status = 'completed';
-    
-    // Auto-generate invoice
-    const rate = sessionRates[appointment.type] || 120;
-    const invoice = {
-        id: Date.now(),
-        clientId: appointment.clientId,
-        clientName: appointment.clientName,
-        date: new Date().toISOString().split('T')[0],
-        dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        lineItems: [{
-            description: `${appointment.type} - ${new Date(appointment.date).toLocaleDateString()}`,
-            quantity: 1,
-            rate: rate,
-            amount: rate
-        }],
-        total: rate,
-        status: 'unpaid',
-        notes: `Auto-generated from appointment on ${new Date(appointment.date).toLocaleDateString()}`,
-        autoGenerated: true
-    };
-    
-    invoices.unshift(invoice);
-    localStorage.setItem('invoices', JSON.stringify(invoices));
-    
-    logAudit('create', 'Invoice', `Auto-generated invoice for ${appointment.clientName} - ${rate.toFixed(2)}`);
-    
-    // Prompt for clinical note
-    promptClinicalNote(appointment);
-    
-    // Update UI if on relevant pages
-    if (document.getElementById('billingContent').style.display === 'block') {
-        renderBilling();
-    }
+function clearClinicianSignature() {
+    const canvas = document.getElementById('clinicianSignatureCanvas');
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    clinicianSignatureTime = null;
+    document.getElementById('clinicianSignatureTimestamp').textContent = '';
 }
 
-function promptClinicalNote(appointment) {
-    pendingNoteForClient = appointment.clientId;
-    document.getElementById('promptClientName').textContent = appointment.clientName;
-    document.getElementById('clinicalNotePromptModal').classList.add('active');
-}
-
-function closeClinicalNotePrompt() {
-    document.getElementById('clinicalNotePromptModal').classList.remove('active');
-    pendingNoteForClient = null;
-}
-
-function goToCreateNote() {
-    closeClinicalNotePrompt();
-    showTab('ainotes');
+function saveClinicianSignature() {
+    const canvas = document.getElementById('clinicianSignatureCanvas');
+    const ctx = canvas.getContext('2d');
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const pixels = imageData.data;
+    let hasSignature = false;
     
-    // Pre-select the client
-    if (pendingNoteForClient) {
-        document.getElementById('noteClientSelect').value = pendingNoteForClient;
+    for (let i = 0; i < pixels.length; i += 4) {
+        if (pixels[i + 3] > 0) {
+            hasSignature = true;
+            break;
+        }
     }
     
-    // Focus on manual notes textarea
-    document.getElementById('manualNotes').focus();
-}
-
-// Payment Processor Functions
-function openPaymentProcessorSettings() {
-    document.getElementById('processorEnabled').checked = paymentProcessorSettings.enabled;
-    document.getElementById('processorApiKey').value = paymentProcessorSettings.apiKey;
-    document.getElementById('processorWebhook').value = paymentProcessorSettings.webhookUrl;
-    document.getElementById('processorTestMode').checked = paymentProcessorSettings.testMode;
-    
-    document.getElementById('paymentProcessorModal').classList.add('active');
-}
-
-function closePaymentProcessorModal() {
-    document.getElementById('paymentProcessorModal').classList.remove('active');
-}
-
-function savePaymentProcessorSettings(e) {
-    e.preventDefault();
-    
-    paymentProcessorSettings = {
-        enabled: document.getElementById('processorEnabled').checked,
-        apiKey: document.getElementById('processorApiKey').value,
-        webhookUrl: document.getElementById('processorWebhook').value,
-        testMode: document.getElementById('processorTestMode').checked
-    };
-    
-    localStorage.setItem('paymentProcessorSettings', JSON.stringify(paymentProcessorSettings));
-    
-    logAudit('update', 'Payment Settings', `Updated payment processor settings`);
-    
-    closePaymentProcessorModal();
-    renderBilling();
-    alert('Payment processor settings saved!');
-}
-
-function renderPaymentProcessorStatus() {
-    const container = document.getElementById('paymentProcessorStatus');
-    
-    if (paymentProcessorSettings.enabled) {
-        container.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <span class="badge badge-success">Active</span>
-                ${paymentProcessorSettings.testMode ? '<span class="badge badge-warning">Test Mode</span>' : '<span class="badge badge-info">Live Mode</span>'}
-                <span style="color: #6b7280; font-size: 14px;">Ready to process payments</span>
-            </div>
-        `;
-    } else {
-        container.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <span class="badge badge-warning">Not Configured</span>
-                <span style="color: #6b7280; font-size: 14px;">Click Settings to integrate your payment processor</span>
-            </div>
-        `;
+    if (!hasSignature) {
+        alert('Please provide your signature to acknowledge review');
+        return;
     }
-}
-
-// Session Rates Functions
-function openSessionRatesSettings() {
-    document.getElementById('rateInitial').value = sessionRates['Initial Consultation'];
-    document.getElementById('rateFollowup').value = sessionRates['Follow-up'];
-    document.getElementById('rateTherapy').value = sessionRates['Therapy Session'];
-    document.getElementById('rateMedication').value = sessionRates['Medication Management'];
-    document.getElementById('rateFamily').value = sessionRates['Family Therapy'] || 140;
-    document.getElementById('rateGroup').value = sessionRates['Group Therapy'] || 60;
     
-    document.getElementById('sessionRatesModal').classList.add('active');
-}
-
-function closeSessionRatesModal() {
-    document.getElementById('sessionRatesModal').classList.remove('active');
-}
-
-function saveSessionRates(e) {
-    e.preventDefault();
+    const signatureData = canvas.toDataURL();
     
-    sessionRates = {
-        'Initial Consultation': parseFloat(document.getElementById('rateInitial').value),
-        'Follow-up': parseFloat(document.getElementById('rateFollowup').value),
-        'Therapy Session': parseFloat(document.getElementById('rateTherapy').value),
-        'Medication Management': parseFloat(document.getElementById('rateMedication').value),
-        'Family Therapy': parseFloat(document.getElementById('rateFamily').value),
-        'Group Therapy': parseFloat(document.getElementById('rateGroup').value)
-    };
+    const docIndex = assignedDocs.findIndex(d => d.id === currentViewingDocId);
+    assignedDocs[docIndex].clinicianSignature = signatureData;
+    assignedDocs[docIndex].clinicianSignatureDate = clinicianSignatureTime ? clinicianSignatureTime.toISOString() : new Date().toISOString();
+    assignedDocs[docIndex].clinicianName = localStorage.getItem('userName');
+    assignedDocs[docIndex].clinicianReviewedAt = new Date().toISOString();
     
-    localStorage.setItem('sessionRates', JSON.stringify(sessionRates));
+    localStorage.setItem('assignedDocs', JSON.stringify(assignedDocs));
     
-    logAudit('update', 'Session Rates', `Updated session billing rates`);
+    alert('Review signature saved successfully!');
+    closeViewDocModal();
     
-    closeSessionRatesModal();
-    renderBilling();
-    alert('Session rates updated!');
-}
-
-function renderSessionRates() {
-    const container = document.getElementById('sessionRatesDisplay');
-    
-    container.innerHTML = `
-        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
-            ${Object.entries(sessionRates).map(([type, rate]) => `
-                <div style="padding: 10px; background: #f9fafb; border-radius: 8px;">
-                    <strong style="color: #374151; display: block; font-size: 14px;">${type}</strong>
-                    <p style="color: #10b981; font-size: 18px; font-weight: 600; margin-top: 5px;">${rate.toFixed(2)}</p>
-                </div>
-            `).join('')}
-        </div>
-    `;
+    if (document.getElementById('documentsContent').style.display === 'block') {
+        renderAssignedDocs();
+    }
 }
 
 // Initialize
 if (authToken) {
     showApp();
-    if (userRole === 'client') {
-        initSignatureCanvas();
-    }
 } else {
     showAuth();
 }
