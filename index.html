@@ -1035,8 +1035,39 @@ function showApp() {
             }
         });
         document.getElementById('assignDocBtn').style.display = 'none';
+        
+        // Add test client data if none exists
+        const userId = localStorage.getItem('userId');
+        if (!clients.find(c => c.id === userId)) {
+            const testClient = {
+                id: userId,
+                name: 'Test Client',
+                email: 'client@test.com',
+                phone: '555-0100',
+                dob: '1990-01-01',
+                notes: 'Demo client account',
+                createdAt: new Date().toISOString()
+            };
+            clients.push(testClient);
+            localStorage.setItem('clients', JSON.stringify(clients));
+        }
+        
         renderClientPortal();
     } else {
+        // Add test client data if none exists
+        if (clients.length === 0) {
+            const testClient = {
+                id: 'client1',
+                name: 'Test Client',
+                email: 'client@test.com',
+                phone: '555-0100',
+                dob: '1990-01-01',
+                notes: 'Demo client account',
+                createdAt: new Date().toISOString()
+            };
+            clients.push(testClient);
+            localStorage.setItem('clients', JSON.stringify(clients));
+        }
         renderClients();
     }
 }
@@ -1076,11 +1107,20 @@ function renderClientPortal() {
     const userId = localStorage.getItem('userId');
     const container = document.getElementById('dashboardContainer');
     
+    console.log('Rendering client portal for userId:', userId);
+    console.log('All assigned docs:', assignedDocs);
+    
     const myAppointments = appointments.filter(apt => apt.clientId === userId);
     const myInvoices = invoices.filter(inv => inv.clientId === userId);
-    const myDocs = assignedDocs.filter(d => d.clientId === userId);
+    const myDocs = assignedDocs.filter(d => {
+        console.log('Checking doc:', d.id, 'clientId:', d.clientId, 'matches:', d.clientId === userId);
+        return d.clientId === userId;
+    });
     const pendingDocs = myDocs.filter(d => d.status === 'pending');
+    const completedDocs = myDocs.filter(d => d.status === 'completed');
     const pendingInvoices = myInvoices.filter(inv => inv.status === 'pending');
+    
+    console.log('My docs:', myDocs.length, 'Pending:', pendingDocs.length);
     
     let html = '<div class="client-portal-card">';
     html += '<h3>📅 My Upcoming Appointments</h3>';
@@ -1111,7 +1151,7 @@ function renderClientPortal() {
             html += `<tr>
                 <td>${inv.id}</td>
                 <td>${new Date(inv.date).toLocaleDateString()}</td>
-                <td>$${inv.total.toFixed(2)}</td>
+                <td><strong>${inv.total.toFixed(2)}</strong></td>
                 <td><button onclick="openPaymentModal('${inv.id}')" class="btn btn-primary" style="padding: 6px 12px; font-size: 12px;">Pay Now</button></td>
             </tr>`;
         });
@@ -1122,19 +1162,36 @@ function renderClientPortal() {
     html += '<div class="client-portal-card">';
     html += '<h3>📄 My Documents</h3>';
     
-    if (pendingDocs.length === 0) {
-        html += '<p>No pending documents to complete.</p>';
+    if (pendingDocs.length === 0 && completedDocs.length === 0) {
+        html += '<p style="color: #999; font-style: italic;">No documents assigned yet. Your clinician will assign intake forms and consent documents as needed.</p>';
     } else {
-        html += '<div style="margin-top: 15px;">';
-        pendingDocs.forEach(doc => {
-            const template = documentTemplates.find(t => t.id === doc.templateId);
-            html += `<div class="card">
-                <h4>${template ? template.name : 'Document'}</h4>
-                <p style="color: #666; margin: 10px 0;">${template ? template.description : ''}</p>
-                <button onclick="openFillDoc('${doc.id}')" class="btn btn-primary">Complete Now</button>
-            </div>`;
-        });
-        html += '</div>';
+        if (pendingDocs.length > 0) {
+            html += '<h4 style="color: #e67e22; margin-top: 15px;">⚠️ Pending Documents (Action Required)</h4>';
+            html += '<div style="margin-top: 15px;">';
+            pendingDocs.forEach(doc => {
+                const template = documentTemplates.find(t => t.id === doc.templateId);
+                html += `<div class="card" style="border-left: 4px solid #e67e22;">
+                    <h4>${template ? template.name : 'Document'}</h4>
+                    <p style="color: #666; margin: 10px 0;">${template ? template.description : ''}</p>
+                    <p style="font-size: 12px; color: #999;">Assigned: ${new Date(doc.assignedAt).toLocaleDateString()}</p>
+                    <button onclick="openFillDoc('${doc.id}')" class="btn btn-primary" style="margin-top: 10px;">Complete Now</button>
+                </div>`;
+            });
+            html += '</div>';
+        }
+        
+        if (completedDocs.length > 0) {
+            html += '<h4 style="color: #27ae60; margin-top: 25px;">✅ Completed Documents</h4>';
+            html += '<div style="margin-top: 15px;">';
+            completedDocs.forEach(doc => {
+                const template = documentTemplates.find(t => t.id === doc.templateId);
+                html += `<div class="card" style="border-left: 4px solid #27ae60;">
+                    <h4>${template ? template.name : 'Document'}</h4>
+                    <p style="font-size: 12px; color: #27ae60;">Completed: ${new Date(doc.completedAt).toLocaleDateString()}</p>
+                </div>`;
+            });
+            html += '</div>';
+        }
     }
     html += '</div>';
     
@@ -1880,34 +1937,65 @@ function renderAssignedDocs() {
     }
     
     if (docsToShow.length === 0) {
-        container.innerHTML = '<div class="card"><p>No documents assigned.</p></div>';
+        container.innerHTML = '<div class="card"><p>No documents assigned. Click "+ Assign Document" to assign forms to clients.</p></div>';
         return;
     }
     
-    container.innerHTML = '<table class="table"><thead><tr>' +
-        '<th>Document</th><th>Client</th><th>Assigned</th><th>Status</th><th>Actions</th>' +
-        '</tr></thead><tbody>' +
-        docsToShow.map(doc => {
+    const pendingDocs = docsToShow.filter(d => d.status === 'pending');
+    const completedDocs = docsToShow.filter(d => d.status === 'completed');
+    
+    let html = '';
+    
+    if (pendingDocs.length > 0) {
+        html += '<div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #e67e22;">';
+        html += '<h3 style="color: #e67e22; margin-bottom: 15px;">⏳ Pending Documents (' + pendingDocs.length + ')</h3>';
+        html += '<table class="table"><thead><tr>';
+        html += '<th>Document</th><th>Client</th><th>Assigned</th><th>Assigned By</th><th>Status</th>';
+        html += '</tr></thead><tbody>';
+        
+        pendingDocs.forEach(doc => {
             const template = documentTemplates.find(t => t.id === doc.templateId);
             const client = clients.find(c => c.id === doc.clientId);
-            const statusClass = doc.status === 'completed' ? 'badge-success' : 'badge-warning';
+            html += '<tr>' +
+                '<td><strong>' + (template ? template.name : 'Unknown') + '</strong></td>' +
+                '<td>' + (client ? client.name : doc.clientName || 'Unknown') + '</td>' +
+                '<td>' + new Date(doc.assignedAt).toLocaleDateString() + '</td>' +
+                '<td>' + (doc.assignedBy || 'N/A') + '</td>' +
+                '<td><span class="badge badge-warning">PENDING</span></td>' +
+                '</tr>';
+        });
+        
+        html += '</tbody></table></div>';
+    }
+    
+    if (completedDocs.length > 0) {
+        html += '<div style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #27ae60;">';
+        html += '<h3 style="color: #27ae60; margin-bottom: 15px;">✅ Completed Documents (' + completedDocs.length + ')</h3>';
+        html += '<table class="table"><thead><tr>';
+        html += '<th>Document</th><th>Client</th><th>Completed</th><th>Actions</th>';
+        html += '</tr></thead><tbody>';
+        
+        completedDocs.forEach(doc => {
+            const template = documentTemplates.find(t => t.id === doc.templateId);
+            const client = clients.find(c => c.id === doc.clientId);
             
             let actionBtn = '';
-            if (userRole === 'client' && doc.status === 'pending') {
-                actionBtn = `<button onclick="openFillDoc('${doc.id}')" class="btn btn-primary" style="padding: 6px 12px; font-size: 12px;">Fill Out</button>`;
-            } else if (userRole === 'admin' && doc.status === 'completed') {
-                actionBtn = `<button onclick="openViewDoc('${doc.id}')" class="btn" style="padding: 6px 12px; font-size: 12px;">View</button>`;
+            if (userRole === 'admin') {
+                actionBtn = `<button onclick="openViewDoc('${doc.id}')" class="btn" style="padding: 6px 12px; font-size: 12px;">View & Sign</button>`;
             }
             
-            return '<tr>' +
-                '<td>' + (template ? template.name : 'Unknown') + '</td>' +
-                '<td>' + (client ? client.name : 'Unknown') + '</td>' +
-                '<td>' + new Date(doc.assignedAt).toLocaleDateString() + '</td>' +
-                '<td><span class="badge ' + statusClass + '">' + doc.status + '</span></td>' +
+            html += '<tr>' +
+                '<td><strong>' + (template ? template.name : 'Unknown') + '</strong></td>' +
+                '<td>' + (client ? client.name : doc.clientName || 'Unknown') + '</td>' +
+                '<td>' + new Date(doc.completedAt).toLocaleDateString() + '</td>' +
                 '<td>' + actionBtn + '</td>' +
                 '</tr>';
-        }).join('') +
-        '</tbody></table>';
+        });
+        
+        html += '</tbody></table></div>';
+    }
+    
+    container.innerHTML = html;
 }
 
 function openAssignDoc() {
@@ -1927,18 +2015,34 @@ function closeAssignDoc() {
 }
 
 function saveAssignDoc() {
+    const clientId = document.getElementById('assignDocClient').value;
+    const templateId = document.getElementById('assignDocTemplate').value;
+    
+    if (!clientId || !templateId) {
+        alert('Please select both a client and a document');
+        return;
+    }
+    
+    const client = clients.find(c => c.id === clientId);
+    const template = documentTemplates.find(t => t.id === templateId);
+    
     const newDoc = {
         id: 'doc_' + Date.now(),
-        clientId: document.getElementById('assignDocClient').value,
-        templateId: document.getElementById('assignDocTemplate').value,
+        clientId: clientId,
+        clientName: client ? client.name : 'Unknown',
+        templateId: templateId,
+        templateName: template ? template.name : 'Unknown',
         assignedAt: new Date().toISOString(),
+        assignedBy: localStorage.getItem('userName'),
         status: 'pending',
         responses: {}
     };
     
     assignedDocs.push(newDoc);
     localStorage.setItem('assignedDocs', JSON.stringify(assignedDocs));
-    logAuditEvent('assign_document', { documentId: newDoc.id });
+    logAuditEvent('assign_document', { documentId: newDoc.id, clientId: clientId, clientName: client.name, documentName: template.name });
+    
+    alert('Document "' + template.name + '" assigned to ' + client.name + ' successfully!');
     
     closeAssignDoc();
     renderAssignedDocs();
@@ -1946,11 +2050,27 @@ function saveAssignDoc() {
 
 function openFillDoc(docId) {
     const doc = assignedDocs.find(d => d.id === docId);
+    if (!doc) {
+        alert('Document not found');
+        return;
+    }
+    
     const template = documentTemplates.find(t => t.id === doc.templateId);
+    if (!template) {
+        alert('Document template not found');
+        return;
+    }
+    
+    // Store current doc ID globally for submission
+    window.currentFillingDocId = docId;
     
     document.getElementById('fillDocTitle').textContent = template.name;
     
-    let formHtml = '<p style="margin-bottom: 20px; color: #666;">' + template.description + '</p>';
+    let formHtml = '<div style="background: #f0f4ff; padding: 15px; border-radius: 8px; margin-bottom: 20px;">';
+    formHtml += '<p style="font-weight: 600; color: #667eea; margin-bottom: 5px;">📋 ' + template.description + '</p>';
+    formHtml += '<p style="font-size: 12px; color: #666;">Assigned by: ' + (doc.assignedBy || 'Your clinician') + '</p>';
+    formHtml += '<p style="font-size: 12px; color: #666;">Date assigned: ' + new Date(doc.assignedAt).toLocaleDateString() + '</p>';
+    formHtml += '</div>';
     
     template.fields.forEach(field => {
         formHtml += '<div style="margin-bottom: 20px;">';
@@ -1961,7 +2081,10 @@ function openFillDoc(docId) {
         } else if (field.type === 'textarea') {
             formHtml += '<textarea id="field_' + field.id + '" class="input"></textarea>';
         } else if (field.type === 'checkbox') {
+            formHtml += '<label style="display: flex; align-items: center;">';
             formHtml += '<input type="checkbox" id="field_' + field.id + '" style="width: auto; margin-right: 10px;">';
+            formHtml += '<span>I agree</span>';
+            formHtml += '</label>';
         } else if (field.type === 'radio') {
             field.options.forEach(opt => {
                 formHtml += '<label style="display: block; margin-bottom: 5px;">' +
@@ -1977,7 +2100,11 @@ function openFillDoc(docId) {
     document.getElementById('fillDocModal').style.display = 'block';
     
     const canvas = document.getElementById('signatureCanvas');
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     setupSignaturePad(canvas);
+    
+    logAuditEvent('open_fill_document', { documentId: docId, templateName: template.name });
 }
 
 function closeFillDocModal() {
@@ -2062,39 +2189,89 @@ function clearSignature() {
 }
 
 function submitDocument() {
-    const doc = assignedDocs.find(d => d.status === 'pending');
+    const docId = window.currentFillingDocId;
+    if (!docId) {
+        alert('Error: Document ID not found');
+        return;
+    }
+    
+    const docIndex = assignedDocs.findIndex(d => d.id === docId);
+    if (docIndex === -1) {
+        alert('Error: Document not found');
+        return;
+    }
+    
+    const doc = assignedDocs[docIndex];
     const template = documentTemplates.find(t => t.id === doc.templateId);
     
+    if (!template) {
+        alert('Error: Document template not found');
+        return;
+    }
+    
+    // Collect form data
     const formData = {};
+    let hasRequiredFields = true;
+    
     template.fields.forEach(field => {
         if (field.type === 'radio') {
             const selected = document.querySelector(`input[name="field_${field.id}"]:checked`);
             formData[field.id] = selected ? selected.value : '';
         } else if (field.type === 'checkbox') {
-            formData[field.id] = document.getElementById(`field_${field.id}`).checked;
+            const checkbox = document.getElementById(`field_${field.id}`);
+            formData[field.id] = checkbox ? checkbox.checked : false;
+            if (field.type === 'checkbox' && !checkbox.checked) {
+                hasRequiredFields = false;
+            }
         } else {
-            formData[field.id] = document.getElementById(`field_${field.id}`).value;
+            const element = document.getElementById(`field_${field.id}`);
+            formData[field.id] = element ? element.value : '';
         }
     });
     
+    // Validate signature
     const canvas = document.getElementById('signatureCanvas');
+    const ctx = canvas.getContext('2d');
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const pixels = imageData.data;
+    let hasSignature = false;
+    
+    for (let i = 0; i < pixels.length; i += 4) {
+        if (pixels[i + 3] > 0) {
+            hasSignature = true;
+            break;
+        }
+    }
+    
+    if (!hasSignature) {
+        alert('Please provide your signature before submitting');
+        return;
+    }
+    
     const signatureData = canvas.toDataURL();
     
-    doc.responses = formData;
-    doc.signature = signatureData;
-    doc.status = 'completed';
-    doc.completedAt = new Date().toISOString();
+    // Update document
+    assignedDocs[docIndex].responses = formData;
+    assignedDocs[docIndex].signature = signatureData;
+    assignedDocs[docIndex].status = 'completed';
+    assignedDocs[docIndex].completedAt = new Date().toISOString();
+    assignedDocs[docIndex].completedBy = localStorage.getItem('userName');
     
     localStorage.setItem('assignedDocs', JSON.stringify(assignedDocs));
-    logAuditEvent('submit_document', { documentId: doc.id });
+    logAuditEvent('submit_document', { 
+        documentId: docId, 
+        templateName: template.name,
+        clientId: doc.clientId 
+    });
     
-    alert('Document submitted successfully!');
+    alert('✅ Document submitted successfully! Your clinician will review it.');
     closeFillDocModal();
-    renderAssignedDocs();
     
     const userRole = localStorage.getItem('userRole');
     if (userRole === 'client') {
         renderClientPortal();
+    } else {
+        renderAssignedDocs();
     }
 }
 
