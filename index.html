@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ClinicalCanvas EHR - Complete</title>
+    <title>ClinicalCanvas EHR</title>
     <style>
         * {
             margin: 0;
@@ -193,6 +193,11 @@
 
         .btn-danger {
             background: #e74c3c;
+            color: white;
+        }
+
+        .btn-success {
+            background: #27ae60;
             color: white;
         }
 
@@ -493,6 +498,37 @@
         .chart-section.active {
             display: block;
         }
+
+        .ai-note-section {
+            background: #f0f4ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .ai-note-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .client-portal-card {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .client-portal-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -513,8 +549,9 @@
             </div>
         </div>
 
-        <div class="tabs">
-            <button class="tab-btn active" onclick="showTab('clients')">Clients</button>
+        <div class="tabs" id="mainTabs">
+            <button class="tab-btn active" onclick="showTab('dashboard')">Dashboard</button>
+            <button class="tab-btn" onclick="showTab('clients')">Clients</button>
             <button class="tab-btn" onclick="showTab('calendar')">Calendar</button>
             <button class="tab-btn" onclick="showTab('billing')">Billing</button>
             <button class="tab-btn" onclick="showTab('documents')">Documents</button>
@@ -522,7 +559,16 @@
         </div>
 
         <div class="content">
-            <div id="clientsContent" class="tab-content" style="display: block;">
+            <!-- Dashboard / Client Portal -->
+            <div id="dashboardContent" class="tab-content" style="display: block;">
+                <div class="content-header">
+                    <h2 id="dashboardTitle">Dashboard</h2>
+                </div>
+                <div id="dashboardContainer"></div>
+            </div>
+
+            <!-- Clients -->
+            <div id="clientsContent" class="tab-content">
                 <div class="content-header">
                     <h2>Client Management</h2>
                     <button onclick="openNewClient()" class="btn btn-primary">+ New Client</button>
@@ -530,6 +576,7 @@
                 <div id="clientsList" class="grid"></div>
             </div>
 
+            <!-- Calendar -->
             <div id="calendarContent" class="tab-content">
                 <div class="content-header">
                     <h2>Calendar</h2>
@@ -545,11 +592,12 @@
                 <div class="calendar-grid" id="calendarGrid"></div>
                 
                 <div style="margin-top: 30px;">
-                    <h3 style="color: white; margin-bottom: 20px;">Upcoming Appointments</h3>
+                    <h3 style="color: white; margin-bottom: 20px;">All Appointments</h3>
                     <div id="appointmentsList"></div>
                 </div>
             </div>
 
+            <!-- Billing -->
             <div id="billingContent" class="tab-content">
                 <div class="content-header">
                     <h2>Billing & Invoices</h2>
@@ -557,6 +605,7 @@
                 <div id="billingList"></div>
             </div>
 
+            <!-- Documents -->
             <div id="documentsContent" class="tab-content">
                 <div class="content-header">
                     <h2>Clinical Documents</h2>
@@ -565,6 +614,7 @@
                 <div id="assignedDocsList"></div>
             </div>
 
+            <!-- Audit Log -->
             <div id="auditContent" class="tab-content">
                 <div class="content-header">
                     <h2>HIPAA Audit Log</h2>
@@ -574,6 +624,8 @@
         </div>
     </div>
 
+    <!-- Modals -->
+    
     <!-- New Client Modal -->
     <div id="newClientModal" class="modal">
         <div class="modal-content">
@@ -617,7 +669,6 @@
             </div>
 
             <div id="chartNotes" class="chart-section">
-                <button onclick="openNewNote()" class="btn btn-primary" style="margin-bottom: 20px;">+ New Note</button>
                 <div id="clientNotesList"></div>
             </div>
 
@@ -628,11 +679,14 @@
         </div>
     </div>
 
-    <!-- New Appointment Modal -->
+    <!-- New/Edit Appointment Modal -->
     <div id="newAppointmentModal" class="modal">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width: 800px;">
             <span class="close" onclick="closeNewAppointment()">&times;</span>
-            <h2>New Appointment</h2>
+            <h2 id="appointmentModalTitle">New Appointment</h2>
+            
+            <input type="hidden" id="editAppointmentId">
+            
             <select id="appointmentClient" class="input">
                 <option value="">Select Client</option>
             </select>
@@ -647,33 +701,35 @@
                 <option value="90853">90853 - Group Psychotherapy</option>
             </select>
             <input type="number" id="appointmentDuration" placeholder="Duration (minutes)" class="input" value="60">
-            <button onclick="saveNewAppointment()" class="btn btn-primary">Save Appointment</button>
-        </div>
-    </div>
-
-    <!-- New Note Modal -->
-    <div id="newNoteModal" class="modal">
-        <div class="modal-content" style="max-width: 800px;">
-            <span class="close" onclick="closeNewNote()">&times;</span>
-            <h2>New Clinical Note (DAP Format)</h2>
             
-            <div style="margin-bottom: 20px; padding: 15px; background: #f0f4ff; border-radius: 8px;">
-                <h4 style="margin-bottom: 10px;">🎙️ AI Note Generator</h4>
-                <textarea id="sessionRecording" placeholder="Enter session notes or paste transcript here..." class="input" style="min-height: 120px;"></textarea>
-                <button onclick="generateAINote()" class="btn btn-primary">Generate AI Note</button>
-                <p style="margin-top: 10px; font-size: 12px; color: #666;">AI will generate a professional DAP note from your session notes</p>
+            <!-- AI Note Taker Section -->
+            <div class="ai-note-section">
+                <h3>🎙️ Session Recording & AI Note Generator</h3>
+                <p style="font-size: 14px; color: #666; margin-bottom: 15px;">Record your entire therapy session here. The AI will help generate a professional DAP note.</p>
+                
+                <textarea id="sessionRecording" placeholder="Paste or type the full session transcript/recording here...
+
+Example: Client arrived on time and appeared anxious. We discussed their work stress and relationship concerns. Client reported improved sleep after trying the relaxation techniques. We practiced cognitive reframing around their negative self-talk..." 
+                    class="input" style="min-height: 200px;"></textarea>
+                
+                <button onclick="generateAINote()" class="btn btn-primary" style="margin-bottom: 15px;">🤖 Generate DAP Note with AI</button>
+                
+                <h4 style="margin-top: 20px; margin-bottom: 10px;">Clinical Note (DAP Format):</h4>
+                
+                <label style="font-weight: 600; display: block; margin-bottom: 5px;">DATA (Observations):</label>
+                <textarea id="noteData" placeholder="What happened in session? Client's presentation, behaviors, topics discussed..." class="input"></textarea>
+                
+                <label style="font-weight: 600; display: block; margin-bottom: 5px;">ASSESSMENT (Clinical Assessment):</label>
+                <textarea id="noteAssessment" placeholder="Clinical interpretation, progress toward goals, risk assessment..." class="input"></textarea>
+                
+                <label style="font-weight: 600; display: block; margin-bottom: 5px;">PLAN (Treatment Plan):</label>
+                <textarea id="notePlan" placeholder="Interventions, homework, next session goals..." class="input"></textarea>
             </div>
             
-            <h4>DATA (Observations):</h4>
-            <textarea id="noteData" placeholder="What happened in session? Client's presentation, behaviors, topics discussed..." class="input"></textarea>
-            
-            <h4>ASSESSMENT (Clinical Assessment):</h4>
-            <textarea id="noteAssessment" placeholder="Clinical interpretation, progress toward goals, risk assessment..." class="input"></textarea>
-            
-            <h4>PLAN (Treatment Plan):</h4>
-            <textarea id="notePlan" placeholder="Interventions, homework, next session goals..." class="input"></textarea>
-            
-            <button onclick="saveNewNote()" class="btn btn-primary">Save Note</button>
+            <div style="display: flex; gap: 10px;">
+                <button onclick="saveNewAppointment()" class="btn btn-primary">Save Appointment</button>
+                <button onclick="deleteAppointment()" class="btn btn-danger" id="deleteAppointmentBtn" style="display: none;">Delete</button>
+            </div>
         </div>
     </div>
 
@@ -753,37 +809,37 @@
                 
                 <div class="payment-methods">
                     <div class="payment-method selected" onclick="selectPaymentMethod('card')" id="cardMethod">
-                        <strong>Credit Card</strong>
+                        <strong>💳 Credit Card</strong>
                         <p style="font-size: 12px; margin-top: 5px;">Visa, MC, Amex</p>
                     </div>
                     <div class="payment-method" onclick="selectPaymentMethod('ach')" id="achMethod">
-                        <strong>Bank Transfer</strong>
+                        <strong>🏦 Bank Transfer</strong>
                         <p style="font-size: 12px; margin-top: 5px;">ACH Transfer</p>
                     </div>
                 </div>
                 
                 <div id="cardPaymentForm" class="payment-form">
-                    <input type="text" id="cardholderName" placeholder="Cardholder Name" class="input" style="margin-bottom: 15px;">
-                    <input type="text" id="cardNumber" placeholder="Card Number" class="input" maxlength="19" style="margin-bottom: 15px;">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                    <input type="text" id="cardholderName" placeholder="Cardholder Name" class="input">
+                    <input type="text" id="cardNumber" placeholder="Card Number" class="input" maxlength="19">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                         <input type="text" id="cardExpiry" placeholder="MM/YY" class="input" maxlength="5">
                         <input type="text" id="cardCVV" placeholder="CVV" class="input" maxlength="4">
                     </div>
-                    <input type="text" id="billingZip" placeholder="Billing ZIP Code" class="input" maxlength="10" style="margin-bottom: 20px;">
+                    <input type="text" id="billingZip" placeholder="Billing ZIP Code" class="input" maxlength="10">
                 </div>
                 
                 <div id="achPaymentForm" class="payment-form" style="display: none;">
-                    <input type="text" id="accountHolderName" placeholder="Account Holder Name" class="input" style="margin-bottom: 15px;">
-                    <input type="text" id="routingNumber" placeholder="Routing Number" class="input" maxlength="9" style="margin-bottom: 15px;">
-                    <input type="text" id="accountNumber" placeholder="Account Number" class="input" style="margin-bottom: 15px;">
-                    <select id="accountType" class="input" style="margin-bottom: 20px;">
+                    <input type="text" id="accountHolderName" placeholder="Account Holder Name" class="input">
+                    <input type="text" id="routingNumber" placeholder="Routing Number" class="input" maxlength="9">
+                    <input type="text" id="accountNumber" placeholder="Account Number" class="input">
+                    <select id="accountType" class="input">
                         <option value="">Select Account Type</option>
                         <option value="checking">Checking</option>
                         <option value="savings">Savings</option>
                     </select>
                 </div>
                 
-                <button onclick="processPayment()" class="btn btn-primary" style="width: 100%;">Process Payment</button>
+                <button onclick="processPayment()" class="btn btn-primary" style="width: 100%;">💰 Process Payment</button>
                 <p style="margin-top: 15px; font-size: 12px; color: #666; text-align: center;">
                     🔒 Secure payment processing • PCI DSS compliant
                 </p>
@@ -804,8 +860,9 @@ let authToken = localStorage.getItem('authToken');
 let currentClientId = null;
 let currentViewingDocId = null;
 let currentCalendarDate = new Date();
+let currentEditingAppointmentId = null;
 
-// Comprehensive Mental Health ICD-10 codes
+// ICD-10 Codes
 const icd10Codes = [
     { code: 'F41.0', description: 'Panic disorder without agoraphobia' },
     { code: 'F41.1', description: 'Generalized anxiety disorder' },
@@ -969,13 +1026,19 @@ function showApp() {
     
     const userRole = localStorage.getItem('userRole');
     if (userRole === 'client') {
+        // Hide admin tabs for clients
         document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
-            if (idx > 0 && idx < 4) btn.style.display = 'none';
+            if (idx === 0) {
+                btn.textContent = 'My Portal';
+            } else if (idx > 0 && idx < 3) {
+                btn.style.display = 'none';
+            }
         });
         document.getElementById('assignDocBtn').style.display = 'none';
+        renderClientPortal();
+    } else {
+        renderClients();
     }
-    
-    renderClients();
 }
 
 function showAuth() {
@@ -990,7 +1053,15 @@ function showTab(tabName) {
     document.getElementById(tabName + 'Content').style.display = 'block';
     event.target.classList.add('active');
     
-    if (tabName === 'clients') renderClients();
+    if (tabName === 'dashboard') {
+        const userRole = localStorage.getItem('userRole');
+        if (userRole === 'client') {
+            renderClientPortal();
+        } else {
+            renderClients();
+        }
+    }
+    else if (tabName === 'clients') renderClients();
     else if (tabName === 'calendar') {
         renderCalendar();
         renderAppointments();
@@ -998,6 +1069,76 @@ function showTab(tabName) {
     else if (tabName === 'billing') renderBilling();
     else if (tabName === 'documents') renderAssignedDocs();
     else if (tabName === 'audit') renderAuditLog();
+}
+
+// Client Portal
+function renderClientPortal() {
+    const userId = localStorage.getItem('userId');
+    const container = document.getElementById('dashboardContainer');
+    
+    const myAppointments = appointments.filter(apt => apt.clientId === userId);
+    const myInvoices = invoices.filter(inv => inv.clientId === userId);
+    const myDocs = assignedDocs.filter(d => d.clientId === userId);
+    const pendingDocs = myDocs.filter(d => d.status === 'pending');
+    const pendingInvoices = myInvoices.filter(inv => inv.status === 'pending');
+    
+    let html = '<div class="client-portal-card">';
+    html += '<h3>📅 My Upcoming Appointments</h3>';
+    
+    if (myAppointments.length === 0) {
+        html += '<p>No appointments scheduled.</p>';
+    } else {
+        html += '<table class="table" style="margin-top: 15px;"><thead><tr><th>Date</th><th>Time</th><th>Type</th></tr></thead><tbody>';
+        myAppointments.slice(0, 5).forEach(apt => {
+            html += `<tr>
+                <td>${new Date(apt.date).toLocaleDateString()}</td>
+                <td>${apt.time}</td>
+                <td><span class="badge badge-info">${apt.type}</span></td>
+            </tr>`;
+        });
+        html += '</tbody></table>';
+    }
+    html += '</div>';
+    
+    html += '<div class="client-portal-card">';
+    html += '<h3>💳 My Billing</h3>';
+    
+    if (pendingInvoices.length === 0) {
+        html += '<p>No pending invoices.</p>';
+    } else {
+        html += '<table class="table" style="margin-top: 15px;"><thead><tr><th>Invoice #</th><th>Date</th><th>Amount</th><th>Action</th></tr></thead><tbody>';
+        pendingInvoices.forEach(inv => {
+            html += `<tr>
+                <td>${inv.id}</td>
+                <td>${new Date(inv.date).toLocaleDateString()}</td>
+                <td>$${inv.total.toFixed(2)}</td>
+                <td><button onclick="openPaymentModal('${inv.id}')" class="btn btn-primary" style="padding: 6px 12px; font-size: 12px;">Pay Now</button></td>
+            </tr>`;
+        });
+        html += '</tbody></table>';
+    }
+    html += '</div>';
+    
+    html += '<div class="client-portal-card">';
+    html += '<h3>📄 My Documents</h3>';
+    
+    if (pendingDocs.length === 0) {
+        html += '<p>No pending documents to complete.</p>';
+    } else {
+        html += '<div style="margin-top: 15px;">';
+        pendingDocs.forEach(doc => {
+            const template = documentTemplates.find(t => t.id === doc.templateId);
+            html += `<div class="card">
+                <h4>${template ? template.name : 'Document'}</h4>
+                <p style="color: #666; margin: 10px 0;">${template ? template.description : ''}</p>
+                <button onclick="openFillDoc('${doc.id}')" class="btn btn-primary">Complete Now</button>
+            </div>`;
+        });
+        html += '</div>';
+    }
+    html += '</div>';
+    
+    container.innerHTML = html;
 }
 
 // Calendar Functions
@@ -1036,7 +1177,7 @@ function renderCalendar() {
         let appointmentsHtml = '';
         dayAppointments.forEach(apt => {
             const client = clients.find(c => c.id === apt.clientId);
-            appointmentsHtml += `<div class="calendar-appointment" onclick="event.stopPropagation(); viewAppointment('${apt.id}')">${apt.time} - ${client ? client.name : 'Unknown'}</div>`;
+            appointmentsHtml += `<div class="calendar-appointment" onclick="event.stopPropagation(); editAppointment('${apt.id}')">${apt.time} - ${client ? client.name : 'Unknown'}</div>`;
         });
         
         html += `<div class="calendar-day ${todayClass}" onclick="quickAddAppointment('${dateStr}')">
@@ -1069,31 +1210,52 @@ function quickAddAppointment(dateStr) {
     openNewAppointment();
 }
 
-function viewAppointment(appointmentId) {
+function editAppointment(appointmentId) {
+    currentEditingAppointmentId = appointmentId;
     const apt = appointments.find(a => a.id === appointmentId);
     if (!apt) return;
     
-    const client = clients.find(c => c.id === apt.clientId);
-    alert(`Appointment Details:\n\nClient: ${client ? client.name : 'Unknown'}\nDate: ${apt.date}\nTime: ${apt.time}\nType: ${apt.type}\nDuration: ${apt.duration} minutes`);
+    document.getElementById('appointmentModalTitle').textContent = 'Edit Appointment';
+    document.getElementById('editAppointmentId').value = appointmentId;
+    document.getElementById('appointmentClient').value = apt.clientId;
+    document.getElementById('appointmentDate').value = apt.date;
+    document.getElementById('appointmentTime').value = apt.time;
+    document.getElementById('appointmentType').value = apt.type;
+    document.getElementById('appointmentDuration').value = apt.duration;
+    
+    // Load note if exists
+    const note = notes.find(n => n.appointmentId === appointmentId);
+    if (note) {
+        document.getElementById('sessionRecording').value = note.recording || '';
+        document.getElementById('noteData').value = note.data || '';
+        document.getElementById('noteAssessment').value = note.assessment || '';
+        document.getElementById('notePlan').value = note.plan || '';
+    } else {
+        document.getElementById('sessionRecording').value = '';
+        document.getElementById('noteData').value = '';
+        document.getElementById('noteAssessment').value = '';
+        document.getElementById('notePlan').value = '';
+    }
+    
+    document.getElementById('deleteAppointmentBtn').style.display = 'inline-block';
+    document.getElementById('newAppointmentModal').style.display = 'block';
+    
+    const select = document.getElementById('appointmentClient');
+    select.innerHTML = '<option value="">Select Client</option>' +
+        clients.map(c => '<option value="' + c.id + '">' + c.name + '</option>').join('');
+    select.value = apt.clientId;
 }
 
 // Client Functions
 function renderClients() {
     const container = document.getElementById('clientsList');
-    const userRole = localStorage.getItem('userRole');
     
-    let clientsToShow = clients;
-    if (userRole === 'client') {
-        const userId = localStorage.getItem('userId');
-        clientsToShow = clients.filter(c => c.id === userId);
-    }
-    
-    if (clientsToShow.length === 0) {
+    if (clients.length === 0) {
         container.innerHTML = '<p style="color: white;">No clients found. Click "+ New Client" to add one.</p>';
         return;
     }
     
-    container.innerHTML = clientsToShow.map(client => `
+    container.innerHTML = clients.map(client => `
         <div class="client-card" onclick="openClientChart('${client.id}')">
             <h3>${client.name}</h3>
             <p>📧 ${client.email}</p>
@@ -1172,21 +1334,14 @@ function showChartTab(tabName) {
 // Appointments
 function renderAppointments() {
     const container = document.getElementById('appointmentsList');
-    const userRole = localStorage.getItem('userRole');
     
-    let userAppts = appointments;
-    if (userRole === 'client') {
-        const userId = localStorage.getItem('userId');
-        userAppts = appointments.filter(apt => apt.clientId === userId);
-    }
-    
-    if (userAppts.length === 0) {
+    if (appointments.length === 0) {
         container.innerHTML = '<div class="card"><p>No appointments scheduled.</p></div>';
         return;
     }
     
-    container.innerHTML = '<table class="table"><thead><tr><th>Date</th><th>Time</th><th>Client</th><th>Type</th><th>Duration</th></tr></thead><tbody>' +
-        userAppts.map(apt => {
+    container.innerHTML = '<table class="table"><thead><tr><th>Date</th><th>Time</th><th>Client</th><th>Type</th><th>Duration</th><th>Actions</th></tr></thead><tbody>' +
+        appointments.map(apt => {
             const client = clients.find(c => c.id === apt.clientId);
             return '<tr>' +
                 '<td>' + new Date(apt.date).toLocaleDateString() + '</td>' +
@@ -1194,6 +1349,7 @@ function renderAppointments() {
                 '<td>' + (client ? client.name : 'Unknown') + '</td>' +
                 '<td><span class="badge badge-info">' + apt.type + '</span></td>' +
                 '<td>' + apt.duration + ' min</td>' +
+                '<td><button onclick="editAppointment(\'' + apt.id + '\')" class="btn" style="padding: 6px 12px; font-size: 12px;">Edit</button></td>' +
                 '</tr>';
         }).join('') +
         '</tbody></table>';
@@ -1208,75 +1364,172 @@ function renderClientAppointments() {
         return;
     }
     
-    container.innerHTML = '<table class="table"><thead><tr><th>Date</th><th>Time</th><th>Type</th><th>Duration</th></tr></thead><tbody>' +
+    container.innerHTML = '<table class="table"><thead><tr><th>Date</th><th>Time</th><th>Type</th><th>Duration</th><th>Actions</th></tr></thead><tbody>' +
         clientAppts.map(apt =>
             '<tr><td>' + new Date(apt.date).toLocaleDateString() + '</td>' +
             '<td>' + apt.time + '</td>' +
             '<td><span class="badge badge-info">' + apt.type + '</span></td>' +
             '<td>' + apt.duration + ' min</td>' +
+            '<td><button onclick="editAppointment(\'' + apt.id + '\')" class="btn" style="padding: 6px 12px; font-size: 12px;">Edit</button></td>' +
             '</tr>'
         ).join('') +
         '</tbody></table>';
 }
 
 function openNewAppointment() {
+    currentEditingAppointmentId = null;
+    document.getElementById('appointmentModalTitle').textContent = 'New Appointment';
+    document.getElementById('editAppointmentId').value = '';
+    document.getElementById('deleteAppointmentBtn').style.display = 'none';
+    
     const select = document.getElementById('appointmentClient');
     select.innerHTML = '<option value="">Select Client</option>' +
         clients.map(c => '<option value="' + c.id + '">' + c.name + '</option>').join('');
+    
+    document.getElementById('appointmentDate').value = '';
+    document.getElementById('appointmentTime').value = '';
+    document.getElementById('appointmentType').value = '';
+    document.getElementById('appointmentDuration').value = '60';
+    document.getElementById('sessionRecording').value = '';
+    document.getElementById('noteData').value = '';
+    document.getElementById('noteAssessment').value = '';
+    document.getElementById('notePlan').value = '';
     
     document.getElementById('newAppointmentModal').style.display = 'block';
 }
 
 function openNewAppointmentForClient() {
+    openNewAppointment();
     document.getElementById('appointmentClient').value = currentClientId;
-    document.getElementById('newAppointmentModal').style.display = 'block';
 }
 
 function closeNewAppointment() {
     document.getElementById('newAppointmentModal').style.display = 'none';
+    currentEditingAppointmentId = null;
 }
 
 function saveNewAppointment() {
-    const newAppt = {
-        id: 'appt_' + Date.now(),
-        clientId: document.getElementById('appointmentClient').value,
-        date: document.getElementById('appointmentDate').value,
-        time: document.getElementById('appointmentTime').value,
-        type: document.getElementById('appointmentType').value,
-        duration: parseInt(document.getElementById('appointmentDuration').value),
-        createdAt: new Date().toISOString()
-    };
+    const editId = document.getElementById('editAppointmentId').value;
+    const clientId = document.getElementById('appointmentClient').value;
+    const date = document.getElementById('appointmentDate').value;
+    const time = document.getElementById('appointmentTime').value;
+    const type = document.getElementById('appointmentType').value;
+    const duration = parseInt(document.getElementById('appointmentDuration').value);
     
-    appointments.push(newAppt);
+    if (!clientId || !date || !time || !type) {
+        alert('Please fill in all appointment fields');
+        return;
+    }
+    
+    if (editId) {
+        // Update existing appointment
+        const aptIndex = appointments.findIndex(a => a.id === editId);
+        appointments[aptIndex].clientId = clientId;
+        appointments[aptIndex].date = date;
+        appointments[aptIndex].time = time;
+        appointments[aptIndex].type = type;
+        appointments[aptIndex].duration = duration;
+        
+        logAuditEvent('update_appointment', { appointmentId: editId });
+    } else {
+        // Create new appointment
+        const newAppt = {
+            id: 'appt_' + Date.now(),
+            clientId: clientId,
+            date: date,
+            time: time,
+            type: type,
+            duration: duration,
+            createdAt: new Date().toISOString()
+        };
+        
+        appointments.push(newAppt);
+        logAuditEvent('create_appointment', { appointmentId: newAppt.id });
+        
+        // Auto-generate invoice
+        const cptCode = type;
+        const rates = {
+            '90791': 200,
+            '90834': 150,
+            '90837': 180,
+            '90847': 200,
+            '90853': 75
+        };
+        
+        const invoice = {
+            id: 'INV-' + Date.now(),
+            clientId: clientId,
+            date: new Date().toISOString(),
+            services: [{
+                code: cptCode,
+                description: document.getElementById('appointmentType').selectedOptions[0].text,
+                units: 1,
+                rate: rates[cptCode] || 150
+            }],
+            total: rates[cptCode] || 150,
+            status: 'pending'
+        };
+        
+        invoices.push(invoice);
+        localStorage.setItem('invoices', JSON.stringify(invoices));
+    }
+    
+    // Save clinical note if provided
+    const sessionRecording = document.getElementById('sessionRecording').value;
+    const noteData = document.getElementById('noteData').value;
+    const noteAssessment = document.getElementById('noteAssessment').value;
+    const notePlan = document.getElementById('notePlan').value;
+    
+    if (noteData || noteAssessment || notePlan) {
+        const appointmentId = editId || appointments[appointments.length - 1].id;
+        
+        // Check if note already exists for this appointment
+        const existingNoteIndex = notes.findIndex(n => n.appointmentId === appointmentId);
+        
+        if (existingNoteIndex >= 0) {
+            // Update existing note
+            notes[existingNoteIndex].recording = sessionRecording;
+            notes[existingNoteIndex].data = noteData;
+            notes[existingNoteIndex].assessment = noteAssessment;
+            notes[existingNoteIndex].plan = notePlan;
+            notes[existingNoteIndex].updatedAt = new Date().toISOString();
+        } else {
+            // Create new note
+            const newNote = {
+                id: 'note_' + Date.now(),
+                clientId: clientId,
+                appointmentId: appointmentId,
+                date: new Date().toISOString(),
+                recording: sessionRecording,
+                data: noteData,
+                assessment: noteAssessment,
+                plan: notePlan
+            };
+            notes.push(newNote);
+        }
+        
+        localStorage.setItem('notes', JSON.stringify(notes));
+        logAuditEvent('save_note', { appointmentId: appointmentId });
+    }
+    
     localStorage.setItem('appointments', JSON.stringify(appointments));
-    logAuditEvent('create_appointment', { appointmentId: newAppt.id });
     
-    // Auto-generate invoice
-    const cptCode = newAppt.type;
-    const rates = {
-        '90791': 200,
-        '90834': 150,
-        '90837': 180,
-        '90847': 200,
-        '90853': 75
-    };
+    closeNewAppointment();
+    renderCalendar();
+    renderAppointments();
+    if (currentClientId) {
+        renderClientAppointments();
+        renderClientNotes();
+    }
+}
+
+function deleteAppointment() {
+    if (!confirm('Are you sure you want to delete this appointment?')) return;
     
-    const invoice = {
-        id: 'INV-' + Date.now(),
-        clientId: newAppt.clientId,
-        date: new Date().toISOString(),
-        services: [{
-            code: cptCode,
-            description: document.getElementById('appointmentType').selectedOptions[0].text,
-            units: 1,
-            rate: rates[cptCode] || 150
-        }],
-        total: rates[cptCode] || 150,
-        status: 'pending'
-    };
-    
-    invoices.push(invoice);
-    localStorage.setItem('invoices', JSON.stringify(invoices));
+    const editId = document.getElementById('editAppointmentId').value;
+    appointments = appointments.filter(a => a.id !== editId);
+    localStorage.setItem('appointments', JSON.stringify(appointments));
+    logAuditEvent('delete_appointment', { appointmentId: editId });
     
     closeNewAppointment();
     renderCalendar();
@@ -1284,34 +1537,7 @@ function saveNewAppointment() {
     if (currentClientId) renderClientAppointments();
 }
 
-// Clinical Notes
-function renderClientNotes() {
-    const container = document.getElementById('clientNotesList');
-    const clientNotes = notes.filter(note => note.clientId === currentClientId);
-    
-    if (clientNotes.length === 0) {
-        container.innerHTML = '<p>No clinical notes for this client.</p>';
-        return;
-    }
-    
-    container.innerHTML = clientNotes.map(note => `
-        <div class="card">
-            <p><strong>Date:</strong> ${new Date(note.date).toLocaleDateString()}</p>
-            <p><strong>DATA:</strong> ${note.data}</p>
-            <p><strong>ASSESSMENT:</strong> ${note.assessment}</p>
-            <p><strong>PLAN:</strong> ${note.plan}</p>
-        </div>
-    `).join('');
-}
-
-function openNewNote() {
-    document.getElementById('newNoteModal').style.display = 'block';
-}
-
-function closeNewNote() {
-    document.getElementById('newNoteModal').style.display = 'none';
-}
-
+// AI Note Generator
 async function generateAINote() {
     const recording = document.getElementById('sessionRecording').value;
     if (!recording) {
@@ -1397,37 +1623,37 @@ Do not include any other text, explanations, or formatting outside of this struc
             document.getElementById('notePlan').value = planMatch[1].trim();
         }
         
-        alert('AI note generated successfully! Please review and edit as needed.');
+        alert('AI note generated successfully! Please review and edit as needed before saving.');
     } catch (error) {
         console.error('Error generating AI note:', error);
         alert('Error generating AI note. Please try again or write manually.');
     } finally {
         generateBtn.disabled = false;
-        generateBtn.textContent = 'Generate AI Note';
+        generateBtn.textContent = '🤖 Generate DAP Note with AI';
     }
 }
 
-function saveNewNote() {
-    const newNote = {
-        id: 'note_' + Date.now(),
-        clientId: currentClientId,
-        date: new Date().toISOString(),
-        data: document.getElementById('noteData').value,
-        assessment: document.getElementById('noteAssessment').value,
-        plan: document.getElementById('notePlan').value
-    };
+// Clinical Notes
+function renderClientNotes() {
+    const container = document.getElementById('clientNotesList');
+    const clientNotes = notes.filter(note => note.clientId === currentClientId);
     
-    notes.push(newNote);
-    localStorage.setItem('notes', JSON.stringify(notes));
-    logAuditEvent('create_note', { noteId: newNote.id, clientId: currentClientId });
+    if (clientNotes.length === 0) {
+        container.innerHTML = '<p>No clinical notes for this client. Notes are created within appointments.</p>';
+        return;
+    }
     
-    closeNewNote();
-    renderClientNotes();
-    
-    document.getElementById('sessionRecording').value = '';
-    document.getElementById('noteData').value = '';
-    document.getElementById('noteAssessment').value = '';
-    document.getElementById('notePlan').value = '';
+    container.innerHTML = clientNotes.map(note => {
+        const apt = appointments.find(a => a.id === note.appointmentId);
+        return `
+        <div class="card">
+            <p><strong>Date:</strong> ${new Date(note.date).toLocaleDateString()}</p>
+            ${apt ? '<p><strong>Appointment:</strong> ' + apt.type + ' - ' + new Date(apt.date).toLocaleDateString() + ' at ' + apt.time + '</p>' : ''}
+            <p><strong>DATA:</strong> ${note.data}</p>
+            <p><strong>ASSESSMENT:</strong> ${note.assessment}</p>
+            <p><strong>PLAN:</strong> ${note.plan}</p>
+        </div>
+    `}).join('');
 }
 
 // Diagnosis
@@ -1510,16 +1736,19 @@ function renderBilling() {
             const client = clients.find(c => c.id === inv.clientId);
             const statusClass = inv.status === 'paid' ? 'badge-success' : 
                               inv.status === 'pending' ? 'badge-warning' : 'badge-danger';
-            const payButton = inv.status === 'pending' && userRole !== 'admin' ? 
-                `<button onclick="openPaymentModal('${inv.id}')" class="btn btn-primary" style="padding: 6px 12px; font-size: 12px;">Pay Now</button>` : '';
+            
+            let payButton = '';
+            if (inv.status === 'pending') {
+                payButton = `<button onclick="openPaymentModal('${inv.id}')" class="btn btn-success" style="padding: 6px 12px; font-size: 12px;">💳 Pay Now</button>`;
+            }
             
             return '<tr>' +
                 '<td>' + inv.id + '</td>' +
                 '<td>' + (client ? client.name : 'Unknown') + '</td>' +
                 '<td>' + new Date(inv.date).toLocaleDateString() + '</td>' +
                 '<td>' + inv.services.map(s => s.code + ' (' + s.units + ')').join(', ') + '</td>' +
-                '<td>$' + inv.total.toFixed(2) + '</td>' +
-                '<td><span class="badge ' + statusClass + '">' + inv.status + '</span></td>' +
+                '<td><strong>$' + inv.total.toFixed(2) + '</strong></td>' +
+                '<td><span class="badge ' + statusClass + '">' + inv.status.toUpperCase() + '</span></td>' +
                 '<td>' + payButton + '</td>' +
                 '</tr>';
         }).join('') +
@@ -1625,13 +1854,18 @@ async function processPayment() {
         method: selectedMethod
     });
     
-    alert('Payment processed successfully! Thank you.');
+    alert('✅ Payment processed successfully! Thank you.');
     
     closePaymentModal();
     renderBilling();
     
+    const userRole = localStorage.getItem('userRole');
+    if (userRole === 'client') {
+        renderClientPortal();
+    }
+    
     processBtn.disabled = false;
-    processBtn.textContent = 'Process Payment';
+    processBtn.textContent = '💰 Process Payment';
 }
 
 // Documents
@@ -1857,6 +2091,11 @@ function submitDocument() {
     alert('Document submitted successfully!');
     closeFillDocModal();
     renderAssignedDocs();
+    
+    const userRole = localStorage.getItem('userRole');
+    if (userRole === 'client') {
+        renderClientPortal();
+    }
 }
 
 function openViewDoc(docId) {
@@ -2069,7 +2308,7 @@ function renderAuditLog() {
         '</tbody></table>';
 }
 
-// Format card number with spaces
+// Format card number and expiry
 window.addEventListener('DOMContentLoaded', function() {
     const cardNumberInput = document.getElementById('cardNumber');
     if (cardNumberInput) {
