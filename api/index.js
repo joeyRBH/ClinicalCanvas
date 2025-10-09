@@ -3,6 +3,9 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { neon } = require('@neondatabase/serverless');
+const compression = require('compression');
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -11,9 +14,31 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-producti
 // Initialize Neon database connection
 const sql = neon(process.env.DATABASE_URL);
 
-// Middleware
+// Security and Performance Middleware
+app.use(helmet()); // Security headers
+app.use(compression()); // Gzip compression
 app.use(cors());
 app.use(express.json());
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: 'Too many requests from this IP, please try again later.'
+});
+
+// Apply rate limiting to API routes
+app.use('/api/', limiter);
+
+// Static file caching headers
+app.use((req, res, next) => {
+  if (req.path.endsWith('.css') || req.path.endsWith('.js')) {
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+  } else if (req.path.endsWith('.html')) {
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+  }
+  next()
+});
 
 // Auth middleware
 const authenticateToken = (req, res, next) => {
@@ -451,35 +476,23 @@ app.post('/api/documents', authenticateToken, async (req, res) => {
 
 // ==================== ANALYTICS ROUTES ====================
 
-// Get dashboard analytics
+// Get dashboard analytics (optimized with parallel queries)
 app.get('/api/analytics/dashboard', authenticateToken, async (req, res) => {
   try {
-    // Total clients
-    const clientsResult = await sql`
-      SELECT COUNT(*) as count FROM clients WHERE therapist_id = ${req.user.id}
-    `;
-
-    // Total appointments this month
-    const appointmentsResult = await sql`
-      SELECT COUNT(*) as count FROM appointments 
-      WHERE therapist_id = ${req.user.id} 
-      AND start_time >= DATE_TRUNC('month', CURRENT_DATE)
-    `;
-
-    // Total revenue this month
-    const revenueResult = await sql`
-      SELECT COALESCE(SUM(amount), 0) as total FROM invoices 
-      WHERE therapist_id = ${req.user.id} 
-      AND status = 'paid'
-      AND service_date >= DATE_TRUNC('month', CURRENT_DATE)
-    `;
-
-    // Outstanding balance
-    const outstandingResult = await sql`
-      SELECT COALESCE(SUM(amount), 0) as total FROM invoices 
-      WHERE therapist_id = ${req.user.id} 
-      AND status = 'pending'
-    `;
+    // Execute all queries in parallel for better performance
+    const [clientsResult, appointmentsResult, revenueResult, outstandingResult] = await Promise.all([
+      sql`SELECT COUNT(*) as count FROM clients WHERE therapist_id = ${req.user.id}`,
+      sql`SELECT COUNT(*) as count FROM appointments 
+          WHERE therapist_id = ${req.user.id} 
+          AND start_time >= DATE_TRUNC('month', CURRENT_DATE)`,
+      sql`SELECT COALESCE(SUM(amount), 0) as total FROM invoices 
+          WHERE therapist_id = ${req.user.id} 
+          AND status = 'paid'
+          AND service_date >= DATE_TRUNC('month', CURRENT_DATE)`,
+      sql`SELECT COALESCE(SUM(amount), 0) as total FROM invoices 
+          WHERE therapist_id = ${req.user.id} 
+          AND status = 'pending'`
+    ]);
 
     res.json({
       totalClients: parseInt(clientsResult[0].count),
@@ -496,6 +509,7 @@ app.get('/api/analytics/dashboard', authenticateToken, async (req, res) => {
 // ==================== HEALTH CHECK ====================
 
 app.get('/api/health', (req, res) => {
+  res.setHeader('Cache-Control', 'no-cache');
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
